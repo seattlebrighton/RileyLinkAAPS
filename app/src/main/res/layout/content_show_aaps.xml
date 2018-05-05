@@ -1,0 +1,146 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="456dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="190dp"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/btnGetStatus"
+                    android:layout_width="match_parent"
+                    android:onClick="onAAPSGetStatusButtonClick"
+                    android:textAllCaps="false"
+                    android:layout_height="wrap_content"
+                    android:text="@string/cmd_aaps_get_status" />
+
+                <Button
+                    android:id="@+id/btnSetTBR"
+                    android:layout_width="match_parent"
+                    android:onClick="onAAPSSetTBRButtonClick"
+                    android:textAllCaps="false"
+                    android:layout_height="wrap_content"
+                    android:text="@string/cmd_aaps_set_tbr" />
+
+                <Button
+                    android:id="@+id/btnCancelTBR"
+                    android:layout_width="match_parent"
+                    android:textAllCaps="false"
+                    android:onClick="onAAPSCancelTBRButtonClick"
+                    android:layout_height="wrap_content"
+                    android:text="@string/cmd_aaps_cancel_tbr" />
+
+
+                <Button
+                    android:id="@+id/btnSetBolus"
+                    android:layout_width="match_parent"
+                    android:onClick="onAAPSSetBolusButtonClick"
+                    android:textAllCaps="false"
+                    android:layout_height="wrap_content"
+                    android:text="@string/cmd_aaps_set_bolus" />
+
+                <Button
+                    android:id="@+id/btnCancelBolus"
+                    android:layout_width="match_parent"
+                    android:onClick="onAAPSCancelBolusButtonClick"
+                    android:textAllCaps="false"
+                    android:layout_height="wrap_content"
+                    android:text="@string/cmd_aaps_cancel_bolus" />
+
+                <Button
+                    android:id="@+id/btnGetBasalProfile"
+                    android:layout_width="match_parent"
+                    android:textAllCaps="false"
+                    android:layout_height="wrap_content"
+                    android:onClick="onAAPSGetBasalProfileButtonClick"
+                    android:text="@string/cmd_aaps_get_basal_profile" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+
+                <Button
+                    android:id="@+id/btnSetBasalProfile"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAllCaps="false"
+                    android:onClick="onAAPSSetBasalProfileButtonClick"
+                    android:text="@string/cmd_aaps_set_basal_profile" />
+
+                <Button
+                    android:id="@+id/btnReadHistory"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAllCaps="false"
+                    android:onClick="onAAPSReadHistoryButtonClick"
+                    android:text="@string/cmd_aaps_read_history" />
+
+                <Button
+                    android:id="@+id/btnSetExtBolus"
+                    android:layout_width="match_parent"
+                    android:textAllCaps="false"
+                    android:layout_height="wrap_content"
+                    android:onClick="onAAPSSetExtBolusButtonClick"
+                    android:text="@string/cmd_aaps_set_ext_bolus" />
+
+                <Button
+                    android:id="@+id/btnCancelExtBolus"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAllCaps="false"
+                    android:onClick="onAAPSCancelExtBolusButtonClick"
+                    android:text="@string/cmd_aaps_cancel_ext_bolus" />
+
+                <Button
+                    android:id="@+id/btnLoadTDD"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAllCaps="false"
+                    android:onClick="onAAPSLoadTDDButtonClick"
+                    android:text="@string/cmd_aaps_load_tdd" />
+
+            </LinearLayout>
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="280dp"
+        android:orientation="vertical">
+
+        <ScrollView
+            android:id="@+id/scrollViewComm"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp">
+
+            <TextView
+                android:id="@+id/textViewComm"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="" />
+        </ScrollView>
+
+    </LinearLayout>
+
+
+</LinearLayout>

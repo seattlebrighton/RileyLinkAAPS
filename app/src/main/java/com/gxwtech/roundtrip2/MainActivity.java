@@ -60,6 +60,9 @@ import com.gxwtech.roundtrip2.ServiceData.ServiceTransport;
 import com.gxwtech.roundtrip2.ServiceMessageViewActivity.ServiceMessageViewListActivity;
 import com.gxwtech.roundtrip2.util.tools;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -68,6 +71,8 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_ENABLE_BT = 2177; // just something unique.
     private RoundtripServiceClientConnection roundtripServiceClientConnection;
     private BroadcastReceiver mBroadcastReceiver;
+
+    private static final Logger LOG = LoggerFactory.getLogger(MainActivity.class);
 
     BroadcastReceiver apsAppConnected;
     Bundle storeForHistoryViewer;
@@ -371,6 +376,17 @@ public class MainActivity extends AppCompatActivity {
 
     public void onUpdateAllStatusButtonClicked(View view) {
         MainApp.getServiceClientConnection().updateAllStatus();
+    }
+
+    public void onShowAAPSButtonClicked(View view)
+    {
+        try {
+            startActivity(new Intent(getApplicationContext(), ShowAAPSActivity.class));
+        }
+        catch(Exception ex)
+        {
+            LOG.error("Error loading activity: " + ex.getMessage(), ex);
+        }
     }
 
     public void onGetCarbProfileButtonClicked(View view) {

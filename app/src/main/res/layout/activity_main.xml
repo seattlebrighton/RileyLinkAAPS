@@ -204,6 +204,16 @@
                 android:id="@+id/buttonUpdateAllStatus"
                 android:onClick="onUpdateAllStatusButtonClicked"/>
 
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/aaps_icon"
+                android:text="@string/cmd_aaps_show_apps_cmd"
+                android:textAllCaps="false"
+                android:id="@+id/buttonShowAAPS"
+                android:onClick="onShowAAPSButtonClicked"/>
+
+
         </LinearLayout>
 
     </android.support.design.widget.CoordinatorLayout>
