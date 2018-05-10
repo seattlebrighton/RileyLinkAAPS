@@ -2,6 +2,8 @@ package com.gxwtech.roundtrip2.RoundtripService.medtronic.PumpData;
 
 import android.util.Log;
 
+import com.gxwtech.roundtrip2.util.MedtronicUtil;
+
 import org.joda.time.Instant;
 
 import java.util.ArrayList;
@@ -9,18 +11,18 @@ import java.util.List;
 
 /**
  * Created by geoff on 6/1/15.
- *
+ * <p>
  * There are three basal profiles stored on the pump. (722 only?)
  * They are all parsed the same, the user just has 3 to choose from:
  * Standard, A, and B
- *
+ * <p>
  * The byte array seems to be 21 three byte entries long, plus a zero?
  * If the profile is completely empty, it should have one entry: [0,0,0x3F] (?)
  * The first entry of [0,0,0] marks the end of the used entries.
- *
+ * <p>
  * Each entry is assumed to span from the specified start time to the start time of the
  * next entry, or to midnight if there are no more entries.
- *
+ * <p>
  * Individual entries are of the form [r,z,m] where
  * r is the rate (in 0.025 U increments)
  * z is zero (?)
@@ -31,6 +33,7 @@ public class BasalProfile {
     private static final boolean DEBUG_BASALPROFILE = false;
     protected static final int MAX_RAW_DATA_SIZE = (21 * 3) + 1;
     protected byte[] mRawData; // store as byte array to make transport (via parcel) easier
+
     public BasalProfile() {
         init();
     }
@@ -46,11 +49,15 @@ public class BasalProfile {
         mRawData[1] = 0;
         mRawData[2] = 0x3f;
     }
+
     // this asUINT8 should be combined with Record.asUINT8, and placed in a new util class.
-    protected static int readUnsignedByte(byte b) { return (b<0)?b+256:b; }
+    protected static int readUnsignedByte(byte b) {
+        return (b < 0) ? b + 256 : b;
+    }
+
     public boolean setRawData(byte[] data) {
         if (data == null) {
-            Log.e(TAG,"setRawData: buffer is null!");
+            Log.e(TAG, "setRawData: buffer is null!");
             return false;
         }
         int len = Math.min(MAX_RAW_DATA_SIZE, data.length);
@@ -63,12 +70,12 @@ public class BasalProfile {
 
     public void dumpBasalProfile() {
         Log.v(TAG, "Basal Profile entries:");
-        ArrayList<BasalProfileEntry> entries = getEntries();
-        for (int i=0; i< entries.size(); i++) {
+        List<BasalProfileEntry> entries = getEntries();
+        for (int i = 0; i < entries.size(); i++) {
             BasalProfileEntry entry = entries.get(i);
             String startString = entry.startTime.toString("HH:mm");
             Log.v(TAG, String.format("Entry %d, rate=%.3f (0x%02X), start=%s (0x%02X)",
-                    i+1, entry.rate, entry.rate_raw,
+                    i + 1, entry.rate, entry.rate_raw,
                     startString, entry.startTime_raw));
 
         }
@@ -78,7 +85,7 @@ public class BasalProfile {
     // and changes to the profiles themselves.
     public BasalProfileEntry getEntryForTime(Instant when) {
         BasalProfileEntry rval = new BasalProfileEntry();
-        ArrayList<BasalProfileEntry> entries = getEntries();
+        List<BasalProfileEntry> entries = getEntries();
         if (entries.size() == 0) {
             Log.w(TAG, String.format("getEntryForTime(%s): table is empty",
                     when.toDateTime().toLocalTime().toString("HH:mm")));
@@ -87,13 +94,13 @@ public class BasalProfile {
         //Log.w(TAG,"Assuming first entry");
         rval = entries.get(0);
         if (entries.size() == 1) {
-            Log.v(TAG,"getEntryForTime: Only one entry in profile");
+            Log.v(TAG, "getEntryForTime: Only one entry in profile");
             return rval;
         }
 
         int localMillis = when.toDateTime().toLocalTime().getMillisOfDay();
         boolean done = false;
-        int i=1;
+        int i = 1;
         while (!done) {
             BasalProfileEntry entry = entries.get(i);
             if (DEBUG_BASALPROFILE) {
@@ -103,10 +110,10 @@ public class BasalProfile {
             }
             if (localMillis >= entry.startTime.getMillisOfDay()) {
                 rval = entry;
-                if (DEBUG_BASALPROFILE) Log.v(TAG,"Accepted Entry");
+                if (DEBUG_BASALPROFILE) Log.v(TAG, "Accepted Entry");
             } else {
                 // entry at i has later start time, keep older entry
-                if (DEBUG_BASALPROFILE) Log.v(TAG,"Rejected Entry");
+                if (DEBUG_BASALPROFILE) Log.v(TAG, "Rejected Entry");
                 done = true;
             }
             i++;
@@ -123,24 +130,26 @@ public class BasalProfile {
         return rval;
     }
 
-    public ArrayList<BasalProfileEntry> getEntries() {
-        ArrayList<BasalProfileEntry> entries = new ArrayList<>();
+    public List<BasalProfileEntry> getEntries() {
+        List<BasalProfileEntry> entries = new ArrayList<>();
+
         if (mRawData[2] == 0x3f) {
-            Log.w(TAG,"Raw Data is empty.");
+            Log.w(TAG, "Raw Data is empty.");
             return entries; // an empty list
         }
         int i = 0;
         boolean done = false;
-        int r,st;
+        int r, st;
         while (!done) {
-            r = readUnsignedByte(mRawData[i]);
+
+            r = MedtronicUtil.makeUnsignedShort(mRawData[i + 1], mRawData[i]); //readUnsignedByte(mRawData[i]);
             // What is mRawData[i+1]? Not used in decocare.
-            st = readUnsignedByte(mRawData[i+2]);
-            entries.add(new BasalProfileEntry(r,st));
-            i=i+3;
-            if (i>=MAX_RAW_DATA_SIZE) {
-                done=true;
-            } else if ((mRawData[i]==0) && (mRawData[i+1]==0) && (mRawData[i+2]==0)) {
+            st = readUnsignedByte(mRawData[i + 2]);
+            entries.add(new BasalProfileEntry(r, st));
+            i = i + 3;
+            if (i >= MAX_RAW_DATA_SIZE) {
+                done = true;
+            } else if ((mRawData[i] == 0) && (mRawData[i + 1] == 0) && (mRawData[i + 2] == 0)) {
                 done = true;
             }
         }
@@ -151,30 +160,48 @@ public class BasalProfile {
     List<BasalProfileEntry> listEntries;
 
 
-    public void addEntry(BasalProfileEntry entry)
-    {
-        if (listEntries==null)
+    public void addEntry(BasalProfileEntry entry) {
+        if (listEntries == null)
             listEntries = new ArrayList<>();
 
         listEntries.add(entry);
     }
 
 
-    public void generateRawData()
-    {
-        // FIXME
+    public void generateRawData() {
+
+        List<Byte> outData = new ArrayList<>();
+
+        for (BasalProfileEntry profileEntry : listEntries) {
+
+            byte[] strokes = MedtronicUtil.getBasalStrokes(profileEntry.rate, true);
+
+            // TODO check if this is correct
+            outData.add(strokes[0]);
+            outData.add(strokes[1]);
+
+            int time = profileEntry.startTime.getHourOfDay();
+
+            if (profileEntry.startTime.getMinuteOfHour() == 30) {
+                time++;
+            }
+
+            outData.add((byte) time);
+        }
+
+        this.setRawData(MedtronicUtil.createByteArray(outData));
     }
 
 
     public static void testParser() {
-    byte[] testData = new byte[] {
-            32, 0, 0,
-            38, 0, 13,
-            44, 0, 19,
-            38, 0, 28,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0 };
+        byte[] testData = new byte[]{
+                32, 0, 0,
+                38, 0, 13,
+                44, 0, 19,
+                38, 0, 28,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0};
   /* from decocare:
   _test_schedule = {'total': 22.50, 'schedule': [
     { 'start': '12:00A', 'rate': 0.80 },
@@ -185,14 +212,14 @@ public class BasalProfile {
   */
         BasalProfile profile = new BasalProfile();
         profile.setRawData(testData);
-        ArrayList<BasalProfileEntry> entries = profile.getEntries();
+        List<BasalProfileEntry> entries = profile.getEntries();
         if (entries.isEmpty()) {
-            Log.e(TAG,"testParser: failed");
+            Log.e(TAG, "testParser: failed");
         } else {
-            for (int i=0; i<entries.size(); i++) {
+            for (int i = 0; i < entries.size(); i++) {
                 BasalProfileEntry e = entries.get(i);
                 Log.d(TAG, String.format("testParser entry #%d: rate: %.2f, start %d:%d",
-                        i,e.rate,e.startTime.getHourOfDay(),
+                        i, e.rate, e.startTime.getHourOfDay(),
                         e.startTime.getMinuteOfHour()));
             }
         }
