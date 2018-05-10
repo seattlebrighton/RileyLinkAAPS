@@ -2,7 +2,7 @@ package com.gxwtech.roundtrip2.RoundtripService.Tasks;
 
 import android.os.Bundle;
 
-import com.gxwtech.roundtrip2.RoundtripService.RoundtripService;
+import com.gxwtech.roundtrip2.RoundtripService.RileyLinkServiceMedtronic;
 import com.gxwtech.roundtrip2.RoundtripService.medtronic.PumpData.ISFTable;
 import com.gxwtech.roundtrip2.RoundtripService.medtronic.TimeFormat;
 import com.gxwtech.roundtrip2.ServiceData.ServiceResult;
@@ -20,7 +20,7 @@ public class ReadISFProfileTask extends PumpTask {
 
     @Override
     public void run() {
-        ISFTable table = RoundtripService.getInstance().pumpManager.getPumpISFProfile();
+        ISFTable table = RileyLinkServiceMedtronic.getCommunicationManager().getPumpISFProfile();
         ServiceResult result = getServiceTransport().getServiceResult();
         if (table.isValid()) {
             // convert from ISFTable to ISFProfile

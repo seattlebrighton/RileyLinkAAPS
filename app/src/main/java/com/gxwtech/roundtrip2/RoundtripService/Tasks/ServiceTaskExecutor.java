@@ -2,7 +2,7 @@ package com.gxwtech.roundtrip2.RoundtripService.Tasks;
 
 import android.util.Log;
 
-import com.gxwtech.roundtrip2.RoundtripService.RoundtripService;
+import com.gxwtech.roundtrip2.RoundtripService.RileyLinkServiceMedtronic;
 
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -29,7 +29,7 @@ public class ServiceTaskExecutor extends ThreadPoolExecutor {
         // This is run on either caller UI thread or Service UI thread.
         ServiceTask task = (ServiceTask) r;
         Log.v(TAG,"About to run task " + task.getClass().getSimpleName());
-        RoundtripService.getInstance().setCurrentTask(task);
+        RileyLinkServiceMedtronic.getInstance().setCurrentTask(task);
         task.preOp();
     }
     protected void afterExecute(Runnable r, Throwable t) {
@@ -37,6 +37,6 @@ public class ServiceTaskExecutor extends ThreadPoolExecutor {
         ServiceTask task = (ServiceTask) r;
         task.postOp();
         Log.v(TAG,"Finishing task " + task.getClass().getSimpleName());
-        RoundtripService.getInstance().finishCurrentTask(task);
+        RileyLinkServiceMedtronic.getInstance().finishCurrentTask(task);
     }
 }

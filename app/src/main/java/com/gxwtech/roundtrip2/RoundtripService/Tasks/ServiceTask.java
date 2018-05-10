@@ -1,10 +1,5 @@
 package com.gxwtech.roundtrip2.RoundtripService.Tasks;
 
-import android.os.AsyncTask;
-import android.util.Log;
-
-import com.gxwtech.roundtrip2.RoundtripService.RoundtripService;
-import com.gxwtech.roundtrip2.ServiceData.ServiceResult;
 import com.gxwtech.roundtrip2.ServiceData.ServiceTransport;
 
 /**
@@ -43,7 +38,7 @@ public class ServiceTask implements Runnable {
 
     /*
     protected void sendResponse(ServiceResult result) {
-        RoundtripService.getInstance().sendServiceTransportResponse(mTransport,result);
+        RileyLinkServiceMedtronic.getInstance().sendServiceTransportResponse(mTransport,result);
     }
     */
 }

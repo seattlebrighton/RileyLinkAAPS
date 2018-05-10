@@ -5,8 +5,7 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.gxwtech.roundtrip2.RT2Const;
-import com.gxwtech.roundtrip2.RoundtripService.RileyLink.PumpManager;
-import com.gxwtech.roundtrip2.RoundtripService.RoundtripService;
+import com.gxwtech.roundtrip2.RoundtripService.RileyLinkServiceMedtronic;
 import com.gxwtech.roundtrip2.RoundtripService.medtronic.PumpModel;
 import com.gxwtech.roundtrip2.ServiceData.ServiceNotification;
 import com.gxwtech.roundtrip2.ServiceData.ServiceTransport;
@@ -24,19 +23,19 @@ public class InitializePumpManagerTask extends ServiceTask {
 
     @Override
     public void run() {
-        SharedPreferences sharedPref = RoundtripService.getInstance().getApplicationContext().getSharedPreferences(RT2Const.serviceLocal.sharedPreferencesKey, Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = RileyLinkServiceMedtronic.getInstance().getApplicationContext().getSharedPreferences(RT2Const.serviceLocal.sharedPreferencesKey, Context.MODE_PRIVATE);
         double lastGoodFrequency = sharedPref.getFloat(RT2Const.serviceLocal.prefsLastGoodPumpFrequency,(float)0.0);
         if (lastGoodFrequency != 0) {
             Log.i(TAG,String.format("Setting radio frequency to %.2fMHz",lastGoodFrequency));
-            RoundtripService.getInstance().pumpManager.setRadioFrequencyForPump(lastGoodFrequency);
+            RileyLinkServiceMedtronic.getInstance().pumpCommunicationManager.setRadioFrequencyForPump(lastGoodFrequency);
         }
 
-        PumpModel reportedPumpModel = RoundtripService.getInstance().pumpManager.getPumpModel();
+        PumpModel reportedPumpModel = RileyLinkServiceMedtronic.getCommunicationManager().getPumpModel();
         if (!reportedPumpModel.equals(PumpModel.UNSET)) {
-            RoundtripService.getInstance().sendNotification(new ServiceNotification(RT2Const.IPC.MSG_PUMP_pumpFound),null);
+            RileyLinkServiceMedtronic.getInstance().sendNotification(new ServiceNotification(RT2Const.IPC.MSG_PUMP_pumpFound),null);
         } else {
-            RoundtripService.getInstance().sendNotification(new ServiceNotification(RT2Const.IPC.MSG_PUMP_pumpLost),null);
+            RileyLinkServiceMedtronic.getInstance().sendNotification(new ServiceNotification(RT2Const.IPC.MSG_PUMP_pumpLost),null);
         }
-        RoundtripService.getInstance().sendNotification(new ServiceNotification(RT2Const.IPC.MSG_note_Idle),null);
+        RileyLinkServiceMedtronic.getInstance().sendNotification(new ServiceNotification(RT2Const.IPC.MSG_note_Idle),null);
     }
 }

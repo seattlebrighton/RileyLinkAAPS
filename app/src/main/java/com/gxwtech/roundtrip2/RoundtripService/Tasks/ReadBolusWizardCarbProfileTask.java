@@ -1,6 +1,6 @@
 package com.gxwtech.roundtrip2.RoundtripService.Tasks;
 
-import com.gxwtech.roundtrip2.RoundtripService.RoundtripService;
+import com.gxwtech.roundtrip2.RoundtripService.RileyLinkServiceMedtronic;
 import com.gxwtech.roundtrip2.RoundtripService.medtronic.PumpMessage;
 import com.gxwtech.roundtrip2.ServiceData.ServiceResult;
 import com.gxwtech.roundtrip2.ServiceData.ServiceTransport;
@@ -16,7 +16,7 @@ public class ReadBolusWizardCarbProfileTask extends PumpTask {
 
     @Override
     public void run() {
-        PumpMessage msg = RoundtripService.getInstance().pumpManager.getBolusWizardCarbProfile();
+        PumpMessage msg = RileyLinkServiceMedtronic.getCommunicationManager().getBolusWizardCarbProfile();
         ServiceResult result = getServiceTransport().getServiceResult();
         // interpret msg here.
         getServiceTransport().setServiceResult(result);

@@ -3,15 +3,16 @@ package com.gxwtech.roundtrip2;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.os.Bundle;
 import android.util.Log;
 
-import com.gxwtech.roundtrip2.MainApp;
-import com.gxwtech.roundtrip2.RT2Const;
-import com.gxwtech.roundtrip2.RoundtripService.RoundtripService;
-import com.gxwtech.roundtrip2.RoundtripServiceClientConnection;
+import com.gxwtech.roundtrip2.RoundtripService.RileyLinkServiceMedtronic;
 import com.gxwtech.roundtrip2.ServiceData.ServiceClientActions;
 import com.gxwtech.roundtrip2.ServiceData.ServiceCommand;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RFSpy;
 
 /**
  * Created by Tim on 27/06/2016.
@@ -20,6 +21,9 @@ import com.gxwtech.roundtrip2.ServiceData.ServiceCommand;
 public class ServiceClientConnection {
 
     private static String TAG = "ServiceClientConnection";
+    private static final Logger LOG = LoggerFactory.getLogger(ServiceClientConnection.class);
+
+
     private RoundtripServiceClientConnection roundtripServiceClientConnection;
     private Context context = MainApp.instance();
 
@@ -36,10 +40,11 @@ public class ServiceClientConnection {
     *
     */
     private void doBindService() {
-        context.bindService(new Intent(context,RoundtripService.class),
+        context.bindService(new Intent(context,RileyLinkServiceMedtronic.class),
                 roundtripServiceClientConnection.getServiceConnection(),
                 Context.BIND_AUTO_CREATE);
         Log.d(TAG,"doBindService: binding.");
+        LOG.debug("doBindService Logger: binding.");
     }
     private void doUnbindService() {
         ServiceConnection conn = roundtripServiceClientConnection.getServiceConnection();
@@ -48,7 +53,7 @@ public class ServiceClientConnection {
         Log.d(TAG,"doUnbindService: unbinding.");
     }
 
-    // send one-liner message to RoundtripService
+    // send one-liner message to RileyLinkServiceMedtronic
     //private void sendIPCMessage(String ipcMsgType) {
         // Create a bundle with the data
     //    Bundle bundle = new Bundle();

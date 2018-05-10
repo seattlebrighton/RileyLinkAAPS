@@ -103,7 +103,7 @@ public class RT2Const {
         // The the key to identify the hashCode() of the msg.replyTo, when the bundle is moved to an intent.
         public static final String IPCReplyTo_hashCodeKey = Prefix + "IPCReplyTo_hashCodeKey";
 
-        // This is sent from the PumpManager to RoundtripService at the completion of a pump command session.
+        // This is sent from the MedtronicCommManager to RileyLinkServiceMedtronic at the completion of a pump command session.
         public static final String INTENT_sessionCompleted = Prefix + "INTENT_sessionCompleted";
 
     }

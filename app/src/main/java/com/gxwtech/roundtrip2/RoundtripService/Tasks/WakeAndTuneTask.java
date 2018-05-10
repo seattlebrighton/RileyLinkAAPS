@@ -1,6 +1,6 @@
 package com.gxwtech.roundtrip2.RoundtripService.Tasks;
 
-import com.gxwtech.roundtrip2.RoundtripService.RoundtripService;
+import com.gxwtech.roundtrip2.RoundtripService.RileyLinkServiceMedtronic;
 import com.gxwtech.roundtrip2.ServiceData.ServiceTransport;
 
 /**
@@ -15,8 +15,8 @@ public class WakeAndTuneTask extends PumpTask {
 
     @Override
     public void run() {
-        RoundtripService.getInstance().pumpManager.wakeup(6);
-        RoundtripService.getInstance().pumpManager.tuneForPump();
+        RileyLinkServiceMedtronic.getInstance().pumpCommunicationManager.wakeup(6);
+        RileyLinkServiceMedtronic.getInstance().pumpCommunicationManager.tuneForPump();
     }
 
 }

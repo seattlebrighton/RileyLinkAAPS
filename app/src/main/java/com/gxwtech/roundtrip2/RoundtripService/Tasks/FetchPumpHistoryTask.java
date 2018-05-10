@@ -1,13 +1,10 @@
 package com.gxwtech.roundtrip2.RoundtripService.Tasks;
 
-import com.gxwtech.roundtrip2.MainApp;
-import com.gxwtech.roundtrip2.RoundtripService.RoundtripService;
+import com.gxwtech.roundtrip2.RoundtripService.RileyLinkServiceMedtronic;
 import com.gxwtech.roundtrip2.RoundtripService.medtronic.PumpData.Page;
 import com.gxwtech.roundtrip2.ServiceData.FetchPumpHistoryResult;
-import com.gxwtech.roundtrip2.ServiceData.RetrieveHistoryPageResult;
 import com.gxwtech.roundtrip2.ServiceData.ServiceTransport;
 
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 
 /**
@@ -24,10 +21,10 @@ public class FetchPumpHistoryTask extends PumpTask {
     public void run() {
         ArrayList<Page> ra = new ArrayList<>();
         for (int i=0; i<16; i++) {
-            Page page = RoundtripService.getInstance().pumpManager.getPumpHistoryPage(i);
+            Page page = RileyLinkServiceMedtronic.getCommunicationManager().getPumpHistoryPage(i);
             if (page != null) {
                 ra.add(page);
-                RoundtripService.getInstance().saveHistoryPage(i,page);
+                RileyLinkServiceMedtronic.getInstance().saveHistoryPage(i,page);
             }
         }
 

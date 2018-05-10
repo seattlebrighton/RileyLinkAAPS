@@ -42,7 +42,7 @@
         </activity>
 
         <service
-            android:name=".RoundtripService.RoundtripService"
+            android:name=".RoundtripService.RileyLinkServiceMedtronic"
             android:exported="false"
             android:label="@string/roundtrip_service_name">
             <intent-filter>

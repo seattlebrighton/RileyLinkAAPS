@@ -2,6 +2,8 @@ package com.gxwtech.roundtrip2;
 
 import android.app.Application;
 
+import com.gxwtech.roundtrip2.RoundtripService.medtronic.Messages.MessageType;
+
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 
@@ -27,6 +29,8 @@ public class MainApp extends Application {
                 .deleteRealmIfMigrationNeeded() // TODO: 03/08/2016 @TIM remove
                 .build();
         Realm.setDefaultConfiguration(realmConfiguration);
+
+        byte c = MessageType.Alert.getValue();
     }
 
 

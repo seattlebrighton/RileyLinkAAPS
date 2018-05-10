@@ -1,11 +1,9 @@
 package com.gxwtech.roundtrip2.RoundtripService.Tasks;
 
-import android.util.Log;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.PumpStatus;
 
-import com.gxwtech.roundtrip2.RoundtripService.RileyLink.PumpManagerStatus;
-import com.gxwtech.roundtrip2.RoundtripService.RoundtripService;
+import com.gxwtech.roundtrip2.RoundtripService.RileyLinkServiceMedtronic;
 import com.gxwtech.roundtrip2.ServiceData.PumpStatusResult;
-import com.gxwtech.roundtrip2.ServiceData.ServiceResult;
 import com.gxwtech.roundtrip2.ServiceData.ServiceTransport;
 
 /**
@@ -21,9 +19,9 @@ public class UpdatePumpStatusTask extends PumpTask {
     @Override
     public void run() {
         // force pump to update everything it can
-        RoundtripService.getInstance().pumpManager.updatePumpManagerStatus();
+        RileyLinkServiceMedtronic.getCommunicationManager().updatePumpManagerStatus();
         // get the newly cached status
-        PumpManagerStatus status = RoundtripService.getInstance().pumpManager.getPumpManagerStatus();
+        PumpStatus status = RileyLinkServiceMedtronic.getCommunicationManager().getPumpStatus();
         // fill a PumpStatusResult message with the goods
         PumpStatusResult result = new PumpStatusResult();
   /*

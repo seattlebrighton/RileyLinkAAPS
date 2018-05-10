@@ -1,6 +1,5 @@
 package com.gxwtech.roundtrip2;
 
-import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -41,21 +40,16 @@ import android.preference.PreferenceManager;
 import android.content.SharedPreferences;
 
 import com.gxwtech.roundtrip2.HistoryActivity.HistoryPageListActivity;
-import android.view.LayoutInflater;
-import android.view.ViewGroup;
-import android.widget.ListView;
 
 
-import com.gxwtech.roundtrip2.RoundtripService.RoundtripService;
+import com.gxwtech.roundtrip2.RoundtripService.RileyLinkServiceMedtronic;
 import com.gxwtech.roundtrip2.ServiceData.BasalProfile;
 import com.gxwtech.roundtrip2.ServiceData.BolusWizardCarbProfile;
 import com.gxwtech.roundtrip2.ServiceData.ISFProfile;
 import com.gxwtech.roundtrip2.ServiceData.PumpModelResult;
 import com.gxwtech.roundtrip2.ServiceData.ReadPumpClockResult;
 import com.gxwtech.roundtrip2.ServiceData.ServiceClientActions;
-import com.gxwtech.roundtrip2.ServiceData.ServiceCommand;
 import com.gxwtech.roundtrip2.ServiceData.ServiceNotification;
-import com.gxwtech.roundtrip2.ServiceData.ServiceResult;
 import com.gxwtech.roundtrip2.ServiceData.ServiceTransport;
 import com.gxwtech.roundtrip2.ServiceMessageViewActivity.ServiceMessageViewListActivity;
 import com.gxwtech.roundtrip2.util.tools;
@@ -103,13 +97,13 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        /* start the RoundtripService */
+        /* start the RileyLinkServiceMedtronic */
         /* using startService() will keep the service running until it is explicitly stopped
-         * with stopService() or by RoundtripService calling stopSelf().
-         * Note that calling startService repeatedly has no ill effects on RoundtripService
+         * with stopService() or by RileyLinkServiceMedtronic calling stopSelf().
+         * Note that calling startService repeatedly has no ill effects on RileyLinkServiceMedtronic
          */
         // explicitly call startService to keep it running even when the GUI goes away.
-        Intent bindIntent = new Intent(this,RoundtripService.class);
+        Intent bindIntent = new Intent(this,RileyLinkServiceMedtronic.class);
         startService(bindIntent);
 
         linearProgressBar = (ProgressBar)findViewById(R.id.progressBarCommandActivity);

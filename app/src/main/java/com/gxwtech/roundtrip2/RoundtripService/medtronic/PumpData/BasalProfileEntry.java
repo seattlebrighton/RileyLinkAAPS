@@ -11,6 +11,8 @@ public class BasalProfileEntry {
     public double rate;
     public byte startTime_raw;
     public LocalTime startTime; // Just a "time of day"
+
+    // FIXME rate is two bits not one -- Andy see MedtronicUtil
     public BasalProfileEntry() {
         rate = -9.999E6;
         rate_raw = (byte)0xFF;

@@ -1,6 +1,6 @@
 package com.gxwtech.roundtrip2.RoundtripService.Tasks;
 
-import com.gxwtech.roundtrip2.RoundtripService.RoundtripService;
+import com.gxwtech.roundtrip2.RoundtripService.RileyLinkServiceMedtronic;
 import com.gxwtech.roundtrip2.RoundtripService.medtronic.PumpData.Page;
 import com.gxwtech.roundtrip2.ServiceData.RetrieveHistoryPageResult;
 import com.gxwtech.roundtrip2.ServiceData.ServiceTransport;
@@ -27,7 +27,7 @@ public class RetrieveHistoryPageTask extends PumpTask {
     @Override
     public void run() {
         pageNumber = mTransport.getServiceCommand().getMap().getInt("pageNumber");
-        page = RoundtripService.getInstance().pumpManager.getPumpHistoryPage(pageNumber);
+        page = RileyLinkServiceMedtronic.getCommunicationManager().getPumpHistoryPage(pageNumber);
         result = (RetrieveHistoryPageResult) getServiceTransport().getServiceResult();
         result.setResultOK();
         result.setPageNumber(pageNumber);

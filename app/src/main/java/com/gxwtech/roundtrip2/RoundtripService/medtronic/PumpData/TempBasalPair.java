@@ -41,4 +41,10 @@ public class TempBasalPair {
         mIsPercent = isPercent;
         mDurationMinutes = durationMinutes;
     }
+
+    public TempBasalPair(byte[] response)
+    {
+        // FIXME
+    }
+
 }

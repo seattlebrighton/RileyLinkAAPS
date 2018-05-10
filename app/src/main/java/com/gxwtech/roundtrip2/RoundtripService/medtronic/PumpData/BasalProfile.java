@@ -5,6 +5,7 @@ import android.util.Log;
 import org.joda.time.Instant;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by geoff on 6/1/15.
@@ -33,6 +34,12 @@ public class BasalProfile {
     public BasalProfile() {
         init();
     }
+
+    public BasalProfile(byte[] data) {
+        setRawData(data);
+    }
+
+
     public void init() {
         mRawData = new byte[MAX_RAW_DATA_SIZE];
         mRawData[0] = 0;
@@ -140,6 +147,25 @@ public class BasalProfile {
         return entries;
     }
 
+
+    List<BasalProfileEntry> listEntries;
+
+
+    public void addEntry(BasalProfileEntry entry)
+    {
+        if (listEntries==null)
+            listEntries = new ArrayList<>();
+
+        listEntries.add(entry);
+    }
+
+
+    public void generateRawData()
+    {
+        // FIXME
+    }
+
+
     public static void testParser() {
     byte[] testData = new byte[] {
             32, 0, 0,
@@ -171,5 +197,9 @@ public class BasalProfile {
             }
         }
 
+    }
+
+    public byte[] getRawData() {
+        return this.mRawData;
     }
 }

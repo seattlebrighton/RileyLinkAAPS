@@ -1,7 +1,5 @@
 package com.gxwtech.roundtrip2.ServiceData;
 
-import com.gxwtech.roundtrip2.RoundtripService.RileyLink.PumpManagerStatus;
-
 /**
  * Created by geoff on 7/16/16.
  */
