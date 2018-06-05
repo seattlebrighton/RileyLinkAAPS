@@ -1,6 +1,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <LinearLayout
@@ -115,6 +115,14 @@
                     android:textAllCaps="false"
                     android:onClick="onAAPSLoadTDDButtonClick"
                     android:text="@string/cmd_aaps_load_tdd" />
+
+                <Button
+                    android:id="@+id/btnGetModel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="onAAPSGetModelButtonClick"
+                    android:textAllCaps="false"
+                    android:text="@string/cmd_aaps_get_model" />
 
             </LinearLayout>
         </LinearLayout>

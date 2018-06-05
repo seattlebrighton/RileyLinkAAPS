@@ -1,9 +1,9 @@
 package com.gxwtech.roundtrip2;
 
 import android.app.Application;
+import android.content.res.Resources;
 
-import com.gxwtech.roundtrip2.RoundtripService.medtronic.Messages.MessageType;
-
+import info.nightscout.androidaps.plugins.PumpMedtronic.comm.message.MessageType;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 
@@ -14,6 +14,8 @@ public class MainApp extends Application {
 
     private static MainApp sInstance;
     private static ServiceClientConnection serviceClientConnection;
+    public static Resources sResources;
+
 
     @Override
     public void onCreate() {
@@ -23,24 +25,27 @@ public class MainApp extends Application {
         serviceClientConnection = new ServiceClientConnection();
 
         //initialize Realm
-        RealmConfiguration realmConfiguration = new RealmConfiguration.Builder(instance())
-                .name("rt2.realm")
-                .schemaVersion(0)
-                .deleteRealmIfMigrationNeeded() // TODO: 03/08/2016 @TIM remove
+        RealmConfiguration realmConfiguration = new RealmConfiguration.Builder(instance()).name("rt2.realm").schemaVersion(0).deleteRealmIfMigrationNeeded() // TODO: 03/08/2016 @TIM remove
                 .build();
         Realm.setDefaultConfiguration(realmConfiguration);
 
         byte c = MessageType.Alert.getValue();
+
+        sResources = getResources();
+
+        //MedtronicRileyLinkService rileyLinkService = new MedtronicRileyLinkService(this.getApplicationContext());
+        //rileyLinkService.startNewState(RileyLinkServiceState.Initializing);
+
+        //SP.putString(MedtronicConst.Prefs.RileyLinkAddress, "CD:72:E1:4C:D5:9D");
     }
-
-
 
 
     public static MainApp instance() {
         return sInstance;
     }
 
-    public static ServiceClientConnection getServiceClientConnection(){
+
+    public static ServiceClientConnection getServiceClientConnection() {
         if (serviceClientConnection == null) {
             serviceClientConnection = new ServiceClientConnection();
         }
@@ -48,5 +53,11 @@ public class MainApp extends Application {
     }
 
     // TODO: 09/07/2016 @TIM uncomment ServiceClientConnection once class is added
+
+
+    public static String gs(int id) {
+        return sResources.getString(id);
+    }
+
 
 }

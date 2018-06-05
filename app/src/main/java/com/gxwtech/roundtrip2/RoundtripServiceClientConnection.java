@@ -13,11 +13,8 @@ import android.os.RemoteException;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import com.gxwtech.roundtrip2.ServiceData.ServiceCommand;
-import com.gxwtech.roundtrip2.ServiceData.ServiceTransport;
-
-import org.joda.time.DateTime;
-import org.joda.time.Instant;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.ServiceCommand;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.ServiceTransport;
 
 /**
  * Created by geoff on 6/11/16.
@@ -27,10 +24,19 @@ public class RoundtripServiceClientConnection {
     private Context context;
     private Messenger mService = null;
     private boolean mBound = false;
+    static RoundtripServiceClientConnection instance;
+
 
     public RoundtripServiceClientConnection(Context context) {
         this.context = context;
+        instance = this;
     }
+
+
+    public static RoundtripServiceClientConnection getInstance() {
+        return instance;
+    }
+
 
     class IncomingHandler extends Handler {
         @Override
@@ -47,13 +53,13 @@ public class RoundtripServiceClientConnection {
                 case RT2Const.IPC.MSG_IPC:
                     // broadcast contents of message as an intent
                     ServiceTransport transport = new ServiceTransport(msg.getData());
-                    Log.d(TAG,"Client received IPC message, bouncing to local: " + transport.describeContentsShort());
+                    Log.d(TAG, "Client received IPC message, bouncing to local: " + transport.describeContentsShort());
                     intent = new Intent(transport.getTransportType());
-                    intent.putExtra(RT2Const.IPC.bundleKey,transport.getMap());
+                    intent.putExtra(RT2Const.IPC.bundleKey, transport.getMap());
                     LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
                     break;
                 default:
-                    Log.e(TAG,"handleMessage: unknown 'what' in message: "+msg.what);
+                    Log.e(TAG, "handleMessage: unknown 'what' in message: " + msg.what);
                     super.handleMessage(msg);
             }
         }
@@ -66,7 +72,7 @@ public class RoundtripServiceClientConnection {
         public void onServiceConnected(ComponentName className, IBinder service) {
             mService = new Messenger(service);
             try {
-                Message msg = Message.obtain(null,RT2Const.IPC.MSG_registerClient);
+                Message msg = Message.obtain(null, RT2Const.IPC.MSG_registerClient);
                 msg.replyTo = mMessenger;
                 mService.send(msg);
             } catch (RemoteException e) {
@@ -75,25 +81,28 @@ public class RoundtripServiceClientConnection {
                 // disconnected (and then reconnected if it can be restarted)
                 // so there is no need to do anything here.
             }
-            Log.d(TAG,"Sent registration message to service");
+            Log.d(TAG, "Sent registration message to service");
         }
+
 
         @Override
         public void onServiceDisconnected(ComponentName className) {
             mService = null;
-            Log.d(TAG,"Disconnected from service.");
+            Log.d(TAG, "Disconnected from service.");
         }
     };
+
 
     public ServiceConnection getServiceConnection() {
         return mConnection;
     }
 
+
     public void unbind() {
         if (mBound) {
-            if (mService!=null) {
+            if (mService != null) {
                 try {
-                    Message msg = Message.obtain(null,RT2Const.IPC.MSG_unregisterClient);
+                    Message msg = Message.obtain(null, RT2Const.IPC.MSG_unregisterClient);
                     msg.replyTo = mMessenger;
                     mService.send(msg);
                 } catch (RemoteException e) {
@@ -104,14 +113,15 @@ public class RoundtripServiceClientConnection {
         }
     }
 
+
     public boolean sendServiceCommand(ServiceCommand command) {
         if (!mBound) {
-            Log.e(TAG,"sendServiceCommand: cannot send command -- not yet bound to service");
+            Log.e(TAG, "sendServiceCommand: cannot send command -- not yet bound to service");
             return false;
         }
 
         ServiceTransport transport = new ServiceTransport();
-        Log.d(TAG,"client sending message: " + transport.describeContentsShort());
+        Log.d(TAG, "client sending message: " + transport.describeContentsShort());
 
         // can't set sender hashcode -- Service will do that.
         transport.setServiceCommand(command);
@@ -124,7 +134,7 @@ public class RoundtripServiceClientConnection {
         try {
             mService.send(msg);
         } catch (RemoteException e) {
-            Log.e(TAG,"sendServiceCommand: failed to send message");
+            Log.e(TAG, "sendServiceCommand: failed to send message");
             e.printStackTrace();
             return false;
         }

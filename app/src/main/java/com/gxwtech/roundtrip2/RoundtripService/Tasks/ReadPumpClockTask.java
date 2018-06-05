@@ -2,28 +2,42 @@ package com.gxwtech.roundtrip2.RoundtripService.Tasks;
 
 import android.util.Log;
 
-import com.gxwtech.roundtrip2.RoundtripService.RileyLinkServiceMedtronic;
 import com.gxwtech.roundtrip2.ServiceData.ReadPumpClockResult;
-import com.gxwtech.roundtrip2.ServiceData.ServiceTransport;
+
+import org.joda.time.LocalDateTime;
+
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.ServiceTransport;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.tasks.PumpTask;
+import info.nightscout.androidaps.plugins.PumpMedtronic.service.RileyLinkMedtronicService;
 
 /**
  * Created by geoff on 7/9/16.
  */
 public class ReadPumpClockTask extends PumpTask {
     private static final String TAG = "ReadPumpClockTask";
-    public ReadPumpClockTask() { }
+
+
+    public ReadPumpClockTask() {
+    }
+
+
     public ReadPumpClockTask(ServiceTransport transport) {
         super(transport);
     }
 
+
     @Override
     public void run() {
-        ReadPumpClockResult pumpResponse = RileyLinkServiceMedtronic.getCommunicationManager().getPumpRTC();
+        LocalDateTime pumpResponse = RileyLinkMedtronicService.getCommunicationManager().getPumpRTC();
         if (pumpResponse != null) {
-            Log.i(TAG, "ReadPumpClock: " + pumpResponse.getTimeString());
+            Log.i(TAG, "ReadPumpClock: " + pumpResponse.toString("HH:mm:ss"));
         } else {
             Log.e(TAG, "handleServiceCommand(" + mTransport.getOriginalCommandName() + ") pumpResponse is null");
         }
-        getServiceTransport().setServiceResult(pumpResponse);
+
+        ReadPumpClockResult res = new ReadPumpClockResult();
+        res.setTime(pumpResponse);
+
+        getServiceTransport().setServiceResult(res);
     }
 }

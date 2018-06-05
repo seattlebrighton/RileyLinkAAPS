@@ -5,14 +5,13 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.util.Log;
 
-import com.gxwtech.roundtrip2.RoundtripService.RileyLinkServiceMedtronic;
 import com.gxwtech.roundtrip2.ServiceData.ServiceClientActions;
-import com.gxwtech.roundtrip2.ServiceData.ServiceCommand;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RFSpy;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.ServiceCommand;
+import info.nightscout.androidaps.plugins.PumpMedtronic.service.RileyLinkMedtronicService;
 
 /**
  * Created by Tim on 27/06/2016.
@@ -27,6 +26,7 @@ public class ServiceClientConnection {
     private RoundtripServiceClientConnection roundtripServiceClientConnection;
     private Context context = MainApp.instance();
 
+
     public ServiceClientConnection() {
         roundtripServiceClientConnection = new RoundtripServiceClientConnection(context);
 
@@ -34,28 +34,29 @@ public class ServiceClientConnection {
         doBindService();
     }
 
+
     /*
     *
     *  Functions to work with the RT2 Service
     *
     */
     private void doBindService() {
-        context.bindService(new Intent(context,RileyLinkServiceMedtronic.class),
-                roundtripServiceClientConnection.getServiceConnection(),
-                Context.BIND_AUTO_CREATE);
-        Log.d(TAG,"doBindService: binding.");
+        context.bindService(new Intent(context, RileyLinkMedtronicService.class), roundtripServiceClientConnection.getServiceConnection(), Context.BIND_AUTO_CREATE);
+        Log.d(TAG, "doBindService: binding.");
         LOG.debug("doBindService Logger: binding.");
     }
+
+
     private void doUnbindService() {
         ServiceConnection conn = roundtripServiceClientConnection.getServiceConnection();
         roundtripServiceClientConnection.unbind();
         context.unbindService(conn);
-        Log.d(TAG,"doUnbindService: unbinding.");
+        Log.d(TAG, "doUnbindService: unbinding.");
     }
 
-    // send one-liner message to RileyLinkServiceMedtronic
+    // send one-liner message to RileyLinkMedtronicService
     //private void sendIPCMessage(String ipcMsgType) {
-        // Create a bundle with the data
+    // Create a bundle with the data
     //    Bundle bundle = new Bundle();
     //    bundle.putString(RT2Const.IPC.messageKey, ipcMsgType);
     //    if (sendMessage(bundle)) {
@@ -66,7 +67,7 @@ public class ServiceClientConnection {
     //}
 
     //private boolean sendMessage(Bundle bundle) {
-        //return roundtripServiceClientConnection.sendMessage(bundle);
+    //return roundtripServiceClientConnection.sendMessage(bundle);
     //}
 
     /*
@@ -78,6 +79,7 @@ public class ServiceClientConnection {
 
     //public void sendBLEaccessDenied() { sendIPCMessage(RT2Const.IPC.MSG_BLE_accessDenied); }
 
+
     public void setThisRileylink(String address) {
         //Bundle bundle = new Bundle();
         //bundle.putString(RT2Const.IPC.messageKey, RT2Const.IPC.MSG_BLE_useThisDevice);
@@ -85,8 +87,9 @@ public class ServiceClientConnection {
         //sendMessage(bundle);
         ServiceCommand command = ServiceClientActions.makeUseThisRileylinkCommand(address);
         roundtripServiceClientConnection.sendServiceCommand(command);
-        Log.d(TAG,"sendIPCMessage: (use this address) "+address);
+        Log.d(TAG, "sendIPCMessage: (use this address) " + address);
     }
+
 
     public void sendPUMP_useThisDevice(String pumpIDString) {
         //Bundle bundle = new Bundle();
@@ -95,46 +98,55 @@ public class ServiceClientConnection {
         //sendMessage(bundle);
         ServiceCommand command = ServiceClientActions.makeSetPumpIDCommand(pumpIDString);
         roundtripServiceClientConnection.sendServiceCommand(command);
-        Log.d(TAG,"sendPUMP_useThisDevice: " + pumpIDString);
+        Log.d(TAG, "sendPUMP_useThisDevice: " + pumpIDString);
     }
+
 
     public void doTunePump() {
         ServiceCommand command = ServiceClientActions.makeTunePumpCommand();
         roundtripServiceClientConnection.sendServiceCommand(command);
     }
 
+
     public void getHistory() {
         //sendIPCMessage(RT2Const.IPC.MSG_PUMP_fetchHistory);
     }
 
-    public void getSavedHistory(){
+
+    public void getSavedHistory() {
         //sendIPCMessage(RT2Const.IPC.MSG_PUMP_fetchSavedHistory);
     }
 
-    public void setTempBasal(double amountUnitsPerHour, int durationMinutes, int uid) {
-        ServiceCommand command = ServiceClientActions.makeSetTempBasalCommand(amountUnitsPerHour,durationMinutes);
+
+    public void setTempBasal(double amountUnitsPerHour, int durationMinutes) {
+        ServiceCommand command = ServiceClientActions.makeSetTempBasalCommand(amountUnitsPerHour, durationMinutes);
         roundtripServiceClientConnection.sendServiceCommand(command);
     }
+
 
     public void readPumpClock() {
         ServiceCommand command = ServiceClientActions.makeReadPumpClockCommand();
         roundtripServiceClientConnection.sendServiceCommand(command);
     }
 
+
     public void readISFProfile() {
         ServiceCommand getISFProfileCommand = ServiceClientActions.makeReadISFProfileCommand();
         roundtripServiceClientConnection.sendServiceCommand(getISFProfileCommand);
     }
+
 
     public void updateAllStatus() {
         ServiceCommand command = ServiceClientActions.makeUpdateAllStatusCommand();
         roundtripServiceClientConnection.sendServiceCommand(command);
     }
 
+
     public void doFetchPumpHistory() {
         ServiceCommand retrievePageCommand = ServiceClientActions.makeFetchPumpHistoryCommand();
         roundtripServiceClientConnection.sendServiceCommand(retrievePageCommand);
     }
+
 
     public void doFetchSavedHistory() {
         // Does not (at the moment) fetch saved history :(

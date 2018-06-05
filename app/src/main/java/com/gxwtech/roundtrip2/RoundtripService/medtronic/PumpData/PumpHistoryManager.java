@@ -7,15 +7,12 @@ import android.os.Environment;
 import android.util.Log;
 
 import com.gxwtech.roundtrip2.RT2Const;
-import com.gxwtech.roundtrip2.RoundtripService.medtronic.PumpData.records.Record;
-import com.gxwtech.roundtrip2.util.StringUtil;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 /**
@@ -27,6 +24,7 @@ public class PumpHistoryManager {
     private PumpHistoryDatabaseHandler phdb;
     ArrayList<ContentValues> dbContentValues = new ArrayList<>();
     ArrayList<Bundle> packedPages = null;
+
     public PumpHistoryManager(Context context) {
         this.context = context;
         phdb = new PumpHistoryDatabaseHandler(context);
@@ -34,7 +32,7 @@ public class PumpHistoryManager {
 
     public void initFromPages(Bundle historyBundle) {
         packedPages = historyBundle.getParcelableArrayList(RT2Const.IPC.MSG_PUMP_history_key);
-        for (int i=0; i<packedPages.size(); i++) {
+        for (int i = 0; i < packedPages.size(); i++) {
             Bundle pageBundle = packedPages.get(i);
             if (pageBundle != null) {
                 ArrayList<Bundle> recordBundleList = pageBundle.getParcelableArrayList("mRecordList");
@@ -73,10 +71,10 @@ public class PumpHistoryManager {
         if (timestamp.length() < 4) {
             return false;
         }
-        if ("2015".equals(timestamp.substring(0,4))) {
+        if ("2015".equals(timestamp.substring(0, 4))) {
             return true;
         }
-        if ("2016".equals(timestamp.substring(0,4))) {
+        if ("2016".equals(timestamp.substring(0, 4))) {
             return true;
         }
         return false;
@@ -93,8 +91,8 @@ public class PumpHistoryManager {
             int offset = b.getInt("foundAtOffset");
             titleBuilder.append(String.format("[%s%s %s l=%d o=%d]",
                     timestampOK(timestamp) ? "" : "BAD ",
-                    name==null?"(null)":name,
-                    timestamp == null?"(null)":timestamp,
+                    name == null ? "(null)" : name,
+                    timestamp == null ? "(null)" : timestamp,
                     length, offset));
         }
         String colorString = null;
@@ -115,13 +113,13 @@ public class PumpHistoryManager {
                 colorString = "#b3b300";
             }
         }
-        return new HtmlCodeTagStart(titleBuilder.toString(),colorString);
+        return new HtmlCodeTagStart(titleBuilder.toString(), colorString);
     }
 
     public ArrayList<Bundle> findRelevantBundles(int pageNum, int pageOffset) {
         ArrayList<Bundle> relevantBundles = new ArrayList<>();
         ArrayList<Bundle> recordBundleList = packedPages.get(pageNum).getParcelableArrayList("mRecordList");
-        for (int i=0; i< recordBundleList.size(); i++) {
+        for (int i = 0; i < recordBundleList.size(); i++) {
             Bundle recordBundle = recordBundleList.get(i);
             int offset = recordBundle.getInt("foundAtOffset");
             int length = recordBundle.getInt("length");
@@ -192,7 +190,7 @@ public class PumpHistoryManager {
     public ArrayList<HtmlElement> makeDom() {
         ArrayList<HtmlElement> rval = new ArrayList<>();
         for (int pageNum = 0; pageNum < packedPages.size(); pageNum++) {
-            Log.i(TAG,"Rendering page " + pageNum);
+            Log.i(TAG, "Rendering page " + pageNum);
             rval.add(new HtmlHistoryPageStart(pageNum));
             byte[] pageData = packedPages.get(pageNum).getByteArray("data");
             if (pageData == null) {
@@ -270,20 +268,20 @@ public class PumpHistoryManager {
         int length;
 */
         if (!isExternalStorageWritable()) {
-            Log.e(TAG,"External storage not writable.");
+            Log.e(TAG, "External storage not writable.");
             return;
         }
 
         String filename = "PumpHistoryBytes.html";
 
         File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC);
-        File pageFile = new File(path,filename);
+        File pageFile = new File(path, filename);
 
         OutputStream os = null;
         try {
             os = new FileOutputStream(pageFile);
         } catch (FileNotFoundException fnf) {
-            Log.e(TAG,"Failed to open " + filename + " for writing");
+            Log.e(TAG, "Failed to open " + filename + " for writing");
         }
         if (os == null) {
             return;
@@ -302,11 +300,11 @@ public class PumpHistoryManager {
             int pageSize = pageData.length;
             //byte[] crc = packedPages.get(0).getByteArray("crc");
             if (pageSize != 1022) {
-                Log.e(TAG,"Page size is not 1022, it is " + pageSize);
+                Log.e(TAG, "Page size is not 1022, it is " + pageSize);
             }
 
             ArrayList<HtmlElement> dom = makeDom();
-            Log.i(TAG,"There are " + dom.size() + " elements to render.");
+            Log.i(TAG, "There are " + dom.size() + " elements to render.");
             for (HtmlElement e : dom) {
                 if (e != null) {
                     String elementString = e.toString();
@@ -315,13 +313,13 @@ public class PumpHistoryManager {
                         if (bytes != null) {
                             os.write(bytes);
                         } else {
-                            Log.e(TAG,"WriteHtmlPage: bytes is null");
+                            Log.e(TAG, "WriteHtmlPage: bytes is null");
                         }
                     } else {
-                        Log.e(TAG,"WriteHtmlPage: elementString is null");
+                        Log.e(TAG, "WriteHtmlPage: elementString is null");
                     }
                 } else {
-                    Log.e(TAG,"WriteHtmlPage: element is null");
+                    Log.e(TAG, "WriteHtmlPage: element is null");
                 }
             }
 

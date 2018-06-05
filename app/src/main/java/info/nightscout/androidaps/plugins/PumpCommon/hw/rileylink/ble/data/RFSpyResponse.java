@@ -10,6 +10,7 @@ public class RFSpyResponse {
     protected byte[] raw;
     protected RadioResponse radioResponse;
 
+
     public RFSpyResponse() {
         init(new byte[0]);
     }
@@ -36,8 +37,8 @@ public class RFSpyResponse {
     }
 
     public boolean wasTimeout() {
-        if ((raw.length == 1)||(raw.length==2)) {
-            if (raw[0] == (byte)0xaa) {
+        if ((raw.length == 1) || (raw.length == 2)) {
+            if (raw[0] == (byte) 0xaa) {
                 return true;
             }
         }
@@ -45,8 +46,8 @@ public class RFSpyResponse {
     }
 
     public boolean wasInterrupted() {
-        if ((raw.length == 1)||(raw.length==2)) {
-            if (raw[0] == (byte)0xbb) {
+        if ((raw.length == 1) || (raw.length == 2)) {
+            if (raw[0] == (byte) 0xbb) {
                 return true;
             }
         }
@@ -54,8 +55,8 @@ public class RFSpyResponse {
     }
 
     public boolean isOK() {
-        if ((raw.length == 1)||(raw.length==2)) {
-            if (raw[0] == (byte)0x01) {
+        if ((raw.length == 1) || (raw.length == 2)) {
+            if (raw[0] == (byte) 0x01) {
                 return true;
             }
         }

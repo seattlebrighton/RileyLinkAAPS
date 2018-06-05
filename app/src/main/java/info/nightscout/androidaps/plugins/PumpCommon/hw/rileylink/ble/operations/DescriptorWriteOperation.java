@@ -3,16 +3,14 @@ package info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.operation
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.os.SystemClock;
-import android.util.Log;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RileyLinkBLE;
-
 import java.util.UUID;
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RileyLinkBLE;
 
 /**
  * Created by geoff on 5/26/16.
@@ -22,6 +20,7 @@ public class DescriptorWriteOperation extends BLECommOperation {
     private static final Logger LOG = LoggerFactory.getLogger(DescriptorWriteOperation.class);
 
     private BluetoothGattDescriptor descr;
+
 
     public DescriptorWriteOperation(BluetoothGatt gatt, BluetoothGattDescriptor descr, byte[] value) {
         this.gatt = gatt;

@@ -7,27 +7,35 @@ import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.ServiceResult;
+
 /**
  * Created by geoff on 6/25/16.
  */
 public class ReadPumpClockResult extends ServiceResult {
-    private static final String TAG="ReadPumpClockResult";
-    public ReadPumpClockResult() {}
+    private static final String TAG = "ReadPumpClockResult";
+
+
+    public ReadPumpClockResult() {
+    }
+
 
     @Override
     public void init() {
-        map.putString("ServiceMessageType","ReadPumpClockResult");
+        map.putString("ServiceMessageType", "ReadPumpClockResult");
     }
+
 
     public void setTime(LocalDateTime pumpTime) {
         Bundle map = getMap();
         DateTimeFormatter fmt = DateTimeFormat.forStyle("FF");
-        map.putString("PumpTime",fmt.print(pumpTime));
+        map.putString("PumpTime", fmt.print(pumpTime));
         setMap(map);
     }
 
+
     public LocalDateTime getTime() {
-        LocalDateTime rval = new LocalDateTime(1900,1,1,1,1);
+        LocalDateTime rval = new LocalDateTime(1900, 1, 1, 1, 1);
         Bundle map = getMap();
         if (map != null) {
             String timeString = map.getString("PumpTime");
@@ -36,12 +44,13 @@ public class ReadPumpClockResult extends ServiceResult {
                 try {
                     rval = fmt.parseLocalDateTime(timeString);
                 } catch (IllegalArgumentException e) {
-                    Log.e(TAG,"getTime: failed to parse time from '"+timeString+"'");
+                    Log.e(TAG, "getTime: failed to parse time from '" + timeString + "'");
                 }
             }
         }
         return rval;
     }
+
 
     public String getTimeString() {
         Bundle map = getMap();
@@ -53,6 +62,7 @@ public class ReadPumpClockResult extends ServiceResult {
         }
         return "";
     }
+
 
     // This can be overridden by subclasses -- essentially it allows
     // casting from the base class to the subclass.

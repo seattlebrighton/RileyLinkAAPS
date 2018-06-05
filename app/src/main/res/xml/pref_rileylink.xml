@@ -3,6 +3,6 @@
 
     <Preference
         android:title="@string/pref_rileylink_ble_id"
-        android:key="com.gxwtech.roundtrip2.serviceLocal.rileylinkAddressKey"/>
+        android:key="pref_medtronic_rileylink_mac" />
 
 </PreferenceScreen>

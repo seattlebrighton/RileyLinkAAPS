@@ -9,13 +9,14 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.ActionBar;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
 
 import java.util.List;
+
+import info.nightscout.androidaps.plugins.PumpMedtronic.util.MedtronicConst;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
@@ -38,7 +39,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         public boolean onPreferenceChange(Preference preference, Object value) {
             String stringValue = value.toString();
 
-            switch (preference.getKey()){
+            switch (preference.getKey()) {
                 case "pref_user_max_bolus":
                     preference.setSummary(stringValue + "U");
                     break;
@@ -48,7 +49,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 case "pref_user_max_basal_duration":
                     preference.setSummary(stringValue + "mins");
                     break;
-                case RT2Const.serviceLocal.pumpIDKey:
+                case MedtronicConst.Prefs.PumpSerial:
                     preference.setSummary(stringValue);
                     break;
                 default:
@@ -129,6 +130,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
      * This method stops fragment injection in malicious applications.
      * Make sure to deny any unknown fragments here.
      */
+    @Override
     protected boolean isValidFragment(String fragmentName) {
         return PreferenceFragment.class.getName().equals(fragmentName)
                 || PumpPreferenceFragment.class.getName().equals(fragmentName)
@@ -151,7 +153,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             // to their values. When their values change, their summaries are
             // updated to reflect the new value, per the Android Design
             // guidelines.
-            bindPreferenceSummaryToValue(findPreference(RT2Const.serviceLocal.pumpIDKey));
+            bindPreferenceSummaryToValue(findPreference(MedtronicConst.Prefs.PumpSerial));
             bindPreferenceSummaryToValue(findPreference("pref_user_max_bolus"));
             bindPreferenceSummaryToValue(findPreference("pref_user_max_basal_rate"));
             bindPreferenceSummaryToValue(findPreference("pref_user_max_basal_duration"));
@@ -181,8 +183,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             // to their values. When their values change, their summaries are
             // updated to reflect the new value, per the Android Design
             // guidelines.
-            bindPreferenceSummaryToValue(findPreference(RT2Const.serviceLocal.rileylinkAddressKey));
-            Preference rileylink_ble = findPreference(RT2Const.serviceLocal.rileylinkAddressKey);
+            bindPreferenceSummaryToValue(findPreference(MedtronicConst.Prefs.RileyLinkAddress));
+            Preference rileylink_ble = findPreference(MedtronicConst.Prefs.RileyLinkAddress);
             rileylink_ble.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
@@ -202,7 +204,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             return super.onOptionsItemSelected(item);
         }
     }
-
 
 
 }

@@ -1,14 +1,12 @@
 package info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble;
 
-import android.util.Log;
-
-import com.gxwtech.roundtrip2.util.ByteUtil;
-import com.gxwtech.roundtrip2.util.CRC;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+
+import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
+import info.nightscout.androidaps.plugins.PumpCommon.utils.CRC;
 
 /**
  * Created by geoff on 7/31/15.
@@ -25,24 +23,8 @@ public class RFTools {
      to communicate with a Medtronic pump.
 
      */
-    public static byte[] CodeSymbols = {
-            0x15,
-            0x31,
-            0x32,
-            0x23,
-            0x34,
-            0x25,
-            0x26,
-            0x16,
-            0x1a,
-            0x19,
-            0x2a,
-            0x0b,
-            0x2c,
-            0x0d,
-            0x0e,
-            0x1c
-    };
+    public static byte[] CodeSymbols = {0x15, 0x31, 0x32, 0x23, 0x34, 0x25, 0x26, 0x16, 0x1a, 0x19, 0x2a, 0x0b, 0x2c, 0x0d, 0x0e, 0x1c};
+
 
     public static byte[] appendChecksum(final byte[] input) {
         if (input == null) {
@@ -51,25 +33,27 @@ public class RFTools {
         if (input.length == 0) {
             return null;
         }
-        byte[] rval = new byte[input.length+1];
+        byte[] rval = new byte[input.length + 1];
         System.arraycopy(input, 0, rval, 0, input.length);
         byte mycrc = CRC.crc8(input);
-        LOG.debug(String.format("Adding checksum 0x%02X to %d byte array from 0x%02X to 0x%02X",mycrc,input.length,input[0],input[input.length-1]));
+        LOG.debug(String.format("Adding checksum 0x%02X to %d byte array from 0x%02X to 0x%02X", mycrc, input.length, input[0], input[input.length - 1]));
         rval[input.length] = mycrc;
         return rval;
     }
 
+
     public static ArrayList<Byte> fromBytes(byte[] data) {
         ArrayList<Byte> rval = new ArrayList<>();
-        for (int i=0; i<data.length; i++) {
+        for(int i = 0; i < data.length; i++) {
             rval.add(data[i]);
         }
         return rval;
     }
 
+
     public static byte[] toBytes(ArrayList<Byte> data) {
         byte[] rval = new byte[data.size()];
-        for (int i = 0; i < data.size(); i++) {
+        for(int i = 0; i < data.size(); i++) {
             rval[i] = data.get(i);
         }
         return rval;
@@ -110,11 +94,12 @@ public class RFTools {
     }
 */
 
-    public static final byte[] codes = new byte[] {21,49,50,35,52,37,38,22,26,25,42,11,44,13,14,28 };
+    public static final byte[] codes = new byte[]{21, 49, 50, 35, 52, 37, 38, 22, 26, 25, 42, 11, 44, 13, 14, 28};
+
 
     /* O(n) lookup.  Run on an O(n) translation of a byte-stream, gives O(n**2) performance. Sigh. */
     public static int codeIndex(byte b) {
-        for (int i=0; i< codes.length; i++) {
+        for(int i = 0; i < codes.length; i++) {
             if (b == codes[i]) {
                 return i;
             }
@@ -122,9 +107,10 @@ public class RFTools {
         return -1;
     }
 
+
     public static byte[] encode4b6b(byte[] data) {
-        if ((data.length % 2)!=0) {
-           // LOG.error("Warning: data is odd number of bytes");
+        if ((data.length % 2) != 0) {
+            // LOG.error("Warning: data is odd number of bytes");
         }
         // use arraylists because byte[] is annoying.
         ArrayList<Byte> inData = fromBytes(data);
@@ -133,7 +119,7 @@ public class RFTools {
         int acc = 0;
         int bitcount = 0;
         int i;
-        for (i=0; i<inData.size(); i++) {
+        for(i = 0; i < inData.size(); i++) {
             acc <<= 6;
             acc |= codes[(inData.get(i) >> 4) & 0x0f];
             bitcount += 6;
@@ -143,7 +129,7 @@ public class RFTools {
             bitcount += 6;
 
             while (bitcount >= 8) {
-                byte outByte = (byte)(acc >> (bitcount-8) & 0xff);
+                byte outByte = (byte) (acc >> (bitcount - 8) & 0xff);
                 outData.add(outByte);
                 bitcount -= 8;
                 acc &= (0xffff >> (16 - bitcount));
@@ -154,13 +140,13 @@ public class RFTools {
             acc |= 0x14; // marks uneven packet boundary.
             bitcount += 6;
             if (bitcount >= 8) {
-                byte outByte = (byte)((acc >> (bitcount - 8)) & 0xff);
+                byte outByte = (byte) ((acc >> (bitcount - 8)) & 0xff);
                 outData.add(outByte);
-                bitcount -=8;
+                bitcount -= 8;
                 // acc &= (0xffff >> (16 - bitcount));
             }
-            while(bitcount >=8) {
-                outData.add((byte)0);
+            while (bitcount >= 8) {
+                outData.add((byte) 0);
                 bitcount -= 8;
             }
         }
@@ -173,6 +159,7 @@ public class RFTools {
 
     }
 
+
     public static void test() {
         /*
         {0xa7} -> {0xa9, 0x60}
@@ -180,39 +167,40 @@ public class RFTools {
         {0xa7, 0x12, 0xa7} -> {0xa9, 0x6c, 0x72, 0xa9, 0x60}
         */
         /* test compare */
-        byte[] s1 = {0,1,2};
-        byte[] s2 = {2,1,0,3};
-        byte[] s3 = {0,1,2,3};
-        if (ByteUtil.compare(s1,s1)!=0) {
+        byte[] s1 = {0, 1, 2};
+        byte[] s2 = {2, 1, 0, 3};
+        byte[] s3 = {0, 1, 2, 3};
+        if (ByteUtil.compare(s1, s1) != 0) {
             LOG.error("test: compare failed.");
         }
-        if (ByteUtil.compare(s1,s2)>=0) {
+        if (ByteUtil.compare(s1, s2) >= 0) {
             LOG.error("test: compare failed.");
         }
-        if (ByteUtil.compare(s2,s1)<=0) {
+        if (ByteUtil.compare(s2, s1) <= 0) {
             LOG.error("test: compare failed.");
         }
-        if (ByteUtil.compare(s1,s3)>=0) {
+        if (ByteUtil.compare(s1, s3) >= 0) {
             LOG.error("test: compare failed.");
         }
         //testCompose(new byte[] {(byte)0xa7, (byte)0xa7});
         byte[] bs = encode4b6b(new byte[]{(byte) 0xa7});
-        byte[] out = new byte[] {(byte)(0xa9),0x65};
-        if (ByteUtil.compare(bs,out)!=0) {
-            LOG.error("encode Data failed: expected "+ByteUtil.shortHexString(out)+" but got "+ByteUtil.shortHexString(bs));
+        byte[] out = new byte[]{(byte) (0xa9), 0x65};
+        if (ByteUtil.compare(bs, out) != 0) {
+            LOG.error("encode Data failed: expected " + ByteUtil.shortHexString(out) + " but got " + ByteUtil.shortHexString(bs));
         }
         bs = encode4b6b(new byte[]{(byte) 0xa7, 0x12});
-        out = new byte[] {(byte)(0xa9),0x6c,0x72};
-        if (ByteUtil.compare(bs,out)!=0) {
-            LOG.error("encode Data failed: expected "+ByteUtil.shortHexString(out)+" but got "+ByteUtil.shortHexString(bs));
+        out = new byte[]{(byte) (0xa9), 0x6c, 0x72};
+        if (ByteUtil.compare(bs, out) != 0) {
+            LOG.error("encode Data failed: expected " + ByteUtil.shortHexString(out) + " but got " + ByteUtil.shortHexString(bs));
         }
         bs = encode4b6b(new byte[]{(byte) 0xa7, 0x12, (byte) 0xa7});
-        out = new byte[] {(byte)(0xa9),0x6c,0x72,(byte)0xa9,0x65};
-        if (ByteUtil.compare(bs,out)!=0) {
-            LOG.error("encode Data failed: expected "+ByteUtil.shortHexString(out)+" but got "+ByteUtil.shortHexString(bs));
+        out = new byte[]{(byte) (0xa9), 0x6c, 0x72, (byte) 0xa9, 0x65};
+        if (ByteUtil.compare(bs, out) != 0) {
+            LOG.error("encode Data failed: expected " + ByteUtil.shortHexString(out) + " but got " + ByteUtil.shortHexString(bs));
         }
         return;
     }
+
 
     public static byte[] decode4b6b(byte[] raw) throws NumberFormatException {
         /*
@@ -226,7 +214,7 @@ public class RFTools {
         int x = 0;
         //Log.w(TAG,"decode4b6b: untested code");
         //Log.w(TAG,String.format("Decoding %d bytes: %s",raw.length,ByteUtil.shortHexString(raw)));
-        for (int i=0; i<raw.length; i++) {
+        for(int i = 0; i < raw.length; i++) {
             int unsignedValue = raw[i];
             if (unsignedValue < 0) {
                 unsignedValue += 256;
@@ -259,36 +247,37 @@ public class RFTools {
                 //LOG.debug(String.format("i=%d, skip: x=0x%08X, available bits %d",i,x,availableBits));
             }
         }
-        if (availableBits !=0) {
+        if (availableBits != 0) {
             if ((availableBits == 4) && (x == 0x05)) {
                 // normal end
             } else {
-                LOG.error( "decode4b6b: failed clean decode -- extra bits available (not marker)(" + availableBits + ")");
+                LOG.error("decode4b6b: failed clean decode -- extra bits available (not marker)(" + availableBits + ")");
                 codingErrors++;
             }
         } else {
             // also normal end.
         }
-        if (codingErrors>0) {
-            LOG.error( "decode4b6b: "+codingErrors+" coding errors encountered.");
+        if (codingErrors > 0) {
+            LOG.error("decode4b6b: " + codingErrors + " coding errors encountered.");
             throw new NumberFormatException();
         }
         return rval;
     }
 
+
     public static String toHexString(byte[] array) {
         return toHexString(array, 0, array.length);
     }
 
-    private final static char[] HEX_DIGITS = {
-            '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
-    };
+
+    private final static char[] HEX_DIGITS = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+
 
     public static String toHexString(byte[] array, int offset, int length) {
         char[] buf = new char[length * 2];
 
         int bufIndex = 0;
-        for (int i = offset; i < offset + length; i++) {
+        for(int i = offset; i < offset + length; i++) {
             byte b = array[i];
             buf[bufIndex++] = HEX_DIGITS[(b >>> 4) & 0x0F];
             buf[bufIndex++] = HEX_DIGITS[b & 0x0F];

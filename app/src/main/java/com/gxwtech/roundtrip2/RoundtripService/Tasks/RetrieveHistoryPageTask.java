@@ -1,21 +1,29 @@
 package com.gxwtech.roundtrip2.RoundtripService.Tasks;
 
-import com.gxwtech.roundtrip2.RoundtripService.RileyLinkServiceMedtronic;
-import com.gxwtech.roundtrip2.RoundtripService.medtronic.PumpData.Page;
 import com.gxwtech.roundtrip2.ServiceData.RetrieveHistoryPageResult;
-import com.gxwtech.roundtrip2.ServiceData.ServiceTransport;
+
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.ServiceTransport;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.tasks.PumpTask;
+import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.Page;
+import info.nightscout.androidaps.plugins.PumpMedtronic.service.RileyLinkMedtronicService;
 
 /**
  * Created by geoff on 7/9/16.
  */
 public class RetrieveHistoryPageTask extends PumpTask {
-    public RetrieveHistoryPageTask() { }
+    public RetrieveHistoryPageTask() {
+    }
+
+
     public RetrieveHistoryPageTask(ServiceTransport transport) {
         super(transport);
     }
+
+
     private Page page;
     private RetrieveHistoryPageResult result;
     private int pageNumber;
+
 
     @Override
     public void preOp() {
@@ -24,10 +32,11 @@ public class RetrieveHistoryPageTask extends PumpTask {
         getServiceTransport().setServiceResult(result);
     }
 
+
     @Override
     public void run() {
         pageNumber = mTransport.getServiceCommand().getMap().getInt("pageNumber");
-        page = RileyLinkServiceMedtronic.getCommunicationManager().getPumpHistoryPage(pageNumber);
+        page = RileyLinkMedtronicService.getCommunicationManager().getPumpHistoryPage(pageNumber);
         result = (RetrieveHistoryPageResult) getServiceTransport().getServiceResult();
         result.setResultOK();
         result.setPageNumber(pageNumber);

@@ -2,8 +2,8 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <EditTextPreference
-        android:defaultValue="0000"
-        android:key="com.gxwtech.roundtrip2.serviceLocal.PumpIDKey"
+        android:defaultValue="000000"
+        android:key="pref_medtronic_serial"
         android:maxLines="1"
         android:selectAllOnFocus="true"
         android:singleLine="true"
@@ -14,18 +14,18 @@
         android:title="@string/pref_user_max_bolus"
         android:key="pref_user_max_bolus"
         android:numeric="integer"
-        android:summary=""/>
+        android:summary="" />
 
     <EditTextPreference
         android:title="@string/pref_user_max_basal_rate"
         android:key="pref_user_max_basal_rate"
         android:numeric="decimal"
-        android:summary=""/>
+        android:summary="" />
 
     <EditTextPreference
         android:title="@string/pref_user_max_basal_duration"
         android:key="pref_user_max_basal_duration"
         android:numeric="integer"
-        android:summary=""/>
+        android:summary="" />
 
 </PreferenceScreen>

@@ -1,12 +1,11 @@
 package info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data;
 
-import com.gxwtech.roundtrip2.util.ByteUtil;
-import com.gxwtech.roundtrip2.util.CRC;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RFTools;
+import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
+import info.nightscout.androidaps.plugins.PumpCommon.utils.CRC;
 
 /**
  * Created by geoff on 5/30/16.
@@ -21,12 +20,15 @@ public class RadioResponse {
     public byte[] decodedPayload = new byte[0];
     public byte receivedCRC;
 
+
     public RadioResponse() {
     }
+
 
     public RadioResponse(byte[] rxData) {
         init(rxData);
     }
+
 
     public boolean isValid() {
         if (!decodedOK) {
@@ -39,6 +41,7 @@ public class RadioResponse {
         }
         return false;
     }
+
 
     public void init(byte[] rxData) {
         if (rxData == null) {
@@ -65,6 +68,7 @@ public class RadioResponse {
             LOG.error("Failed to decode radio data: " + ByteUtil.shortHexString(encodedPayload));
         }
     }
+
 
     public byte[] getPayload() {
         return decodedPayload;

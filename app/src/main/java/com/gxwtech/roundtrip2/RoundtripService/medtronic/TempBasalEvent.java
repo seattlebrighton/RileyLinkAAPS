@@ -1,9 +1,9 @@
 package com.gxwtech.roundtrip2.RoundtripService.medtronic;
 
 
-import com.gxwtech.roundtrip2.RoundtripService.medtronic.PumpData.TempBasalPair;
-
 import org.joda.time.LocalDateTime;
+
+import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.TempBasalPair;
 
 /**
  * Created by geoff on 6/8/15.

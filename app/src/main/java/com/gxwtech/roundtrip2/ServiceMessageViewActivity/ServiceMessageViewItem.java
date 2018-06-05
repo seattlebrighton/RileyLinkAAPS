@@ -1,7 +1,5 @@
 package com.gxwtech.roundtrip2.ServiceMessageViewActivity;
 
-import com.gxwtech.roundtrip2.ServiceData.ServiceMessage;
-
 /**
  * Created by geoff on 7/4/16.
  */

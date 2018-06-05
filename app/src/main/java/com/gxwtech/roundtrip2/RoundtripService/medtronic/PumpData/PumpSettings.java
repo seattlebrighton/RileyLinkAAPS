@@ -18,6 +18,7 @@ package com.gxwtech.roundtrip2.RoundtripService.medtronic.PumpData;
  */
 
 // FIXME this one needs to be refactored (decoding, since it is 522 specific)
+@Deprecated
 public class PumpSettings {
     private static final String TAG = "PumpSettings";
 

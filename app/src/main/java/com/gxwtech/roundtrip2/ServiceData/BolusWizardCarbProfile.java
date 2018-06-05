@@ -2,12 +2,15 @@ package com.gxwtech.roundtrip2.ServiceData;
 
 import org.joda.time.LocalTime;
 
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.ServiceResult;
+
 /**
  * Created by geoff on 6/25/16.
  */
 public class BolusWizardCarbProfile extends TimeValueProfile {
     public BolusWizardCarbProfile() {
     }
+
 
     public double getCarbRatioForTime(LocalTime atTime) {
         Double rval = -999999999.0; // clearly invalid
@@ -20,6 +23,7 @@ public class BolusWizardCarbProfile extends TimeValueProfile {
         }
         return rval;
     }
+
 
     public boolean initFromServiceResult(ServiceResult serviceResult) {
         return initFromServiceResult(serviceResult, "BolusWizardCarbProfile");

@@ -3,17 +3,15 @@ package info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.operation
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.os.SystemClock;
-import android.util.Log;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.GattAttributes;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RileyLinkBLE;
-
 import java.util.UUID;
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RileyLinkBLE;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.GattAttributes;
 
 /**
  * Created by geoff on 5/26/16.
@@ -29,6 +27,7 @@ public class CharacteristicWriteOperation extends BLECommOperation {
         this.characteristic = chara;
         this.value = value;
     }
+
     @Override
     public void execute(RileyLinkBLE comm) {
 
@@ -56,7 +55,7 @@ public class CharacteristicWriteOperation extends BLECommOperation {
     public void gattOperationCompletionCallback(UUID uuid, byte[] value) {
         if (!characteristic.getUuid().equals(uuid)) {
             LOG.error(String.format("Completion callback: UUID does not match! out of sequence? Found: %s, should be %s",
-                    GattAttributes.lookup(characteristic.getUuid()),GattAttributes.lookup(uuid)));
+                    GattAttributes.lookup(characteristic.getUuid()), GattAttributes.lookup(uuid)));
         }
         operationComplete.release();
     }

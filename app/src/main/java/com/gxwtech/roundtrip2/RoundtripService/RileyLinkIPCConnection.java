@@ -12,10 +12,11 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.gxwtech.roundtrip2.RT2Const;
-import com.gxwtech.roundtrip2.ServiceData.ServiceNotification;
-import com.gxwtech.roundtrip2.ServiceData.ServiceTransport;
 
 import java.util.HashMap;
+
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.ServiceNotification;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.ServiceTransport;
 
 /**
  * Created by geoff on 6/11/16.
@@ -24,36 +25,38 @@ public class RileyLinkIPCConnection {
     private static final String TAG = "RTServiceIPC";
     private Context context;
     //private ArrayList<Messenger> mClients = new ArrayList<>();
-    private HashMap<Integer,Messenger> mClients = new HashMap<>();
+    private HashMap<Integer, Messenger> mClients = new HashMap<>();
 
     private final Messenger mMessenger = new Messenger(new IncomingHandler());
+
 
     public RileyLinkIPCConnection(Context context) {
         this.context = context;
     }
+
 
     class IncomingHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
             Log.d(TAG, "handleMessage: Received message " + msg);
             Bundle bundle = msg.getData();
-            switch(msg.what) {
+            switch (msg.what) {
                 // This just helps sub-divide the message processing
                 case RT2Const.IPC.MSG_registerClient:
                     // send a reply, to let them know we're listening.
-                    Message myReply = Message.obtain(null, RT2Const.IPC.MSG_clientRegistered,0,0);
+                    Message myReply = Message.obtain(null, RT2Const.IPC.MSG_clientRegistered, 0, 0);
                     try {
                         msg.replyTo.send(myReply);
-                        mClients.put(mClients.hashCode(),msg.replyTo);
-                        Log.v(TAG,"handleMessage: Registered client");
+                        mClients.put(mClients.hashCode(), msg.replyTo);
+                        Log.v(TAG, "handleMessage: Registered client");
                     } catch (RemoteException e) {
                         // I guess they aren't registered after all...
-                        Log.e(TAG,"handleMessage: failed to send acknowledgement of registration");
+                        Log.e(TAG, "handleMessage: failed to send acknowledgement of registration");
                     }
 
                     break;
                 case RT2Const.IPC.MSG_unregisterClient:
-                    Log.v(TAG,"Unregistered client");
+                    Log.v(TAG, "Unregistered client");
                     mClients.remove(msg.replyTo.hashCode());
                     break;
                 case RT2Const.IPC.MSG_IPC:
@@ -70,7 +73,7 @@ public class RileyLinkIPCConnection {
                             LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
                         } catch (IllegalArgumentException e) {
                             // This can happen on screen tilts... what else is wrong?
-                            Log.e(TAG,"Malformed service bundle: " + bundle.toString());
+                            Log.e(TAG, "Malformed service bundle: " + bundle.toString());
                         }
                     }
                     break;
@@ -81,11 +84,12 @@ public class RileyLinkIPCConnection {
                     break;
                     */
                 default:
-                    Log.e(TAG,"handleMessage: unknown 'what' in message: "+msg.what);
+                    Log.e(TAG, "handleMessage: unknown 'what' in message: " + msg.what);
                     super.handleMessage(msg);
             }
         }
     }
+
 
     public IBinder doOnBind(Intent intent) {
         Log.d(TAG, "onBind");
@@ -93,12 +97,14 @@ public class RileyLinkIPCConnection {
         return mMessenger.getBinder();
     }
 
+
     public boolean sendNotification(ServiceNotification notification, Integer clientHashcode) {
         ServiceTransport transport = new ServiceTransport();
         transport.setServiceNotification(notification);
         transport.setTransportType(RT2Const.IPC.MSG_ServiceNotification);
-        return sendTransport(transport,clientHashcode);
+        return sendTransport(transport, clientHashcode);
     }
+
 
     // if clientHashcode is null, broadcast to all clients
     public boolean sendMessage(Message msg, Integer clientHashcode) {
@@ -120,7 +126,7 @@ public class RileyLinkIPCConnection {
                     clientMessenger.send(msg);
                 } else {
                     // send to all clients
-                    for (Integer clientHash : mClients.keySet()) {
+                    for(Integer clientHash : mClients.keySet()) {
                         Message m2 = Message.obtain(msg);
                         mClients.get(clientHash).send(m2);
                     }
@@ -152,11 +158,12 @@ public class RileyLinkIPCConnection {
     }
     */
 
+
     public boolean sendTransport(ServiceTransport transport, Integer clientHashcode) {
-        Message msg = Message.obtain(null, RT2Const.IPC.MSG_IPC,0,0);
+        Message msg = Message.obtain(null, RT2Const.IPC.MSG_IPC, 0, 0);
         // Set payload
         msg.setData(transport.getMap());
-        Log.d(TAG,"Service sending message to " + String.valueOf(clientHashcode) + ": " + transport.describeContentsShort());
+        Log.d(TAG, "Service sending message to " + String.valueOf(clientHashcode) + ": " + transport.describeContentsShort());
         if ((clientHashcode != null) && (clientHashcode == 0)) {
             return sendMessage(msg, null);
         }

@@ -1,12 +1,12 @@
 package com.gxwtech.roundtrip2.RoundtripService.medtronic.PumpData;
 
-import com.gxwtech.roundtrip2.util.ByteUtil;
-
 import org.joda.time.LocalDateTime;
+
+import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
 
 /**
  * Created by geoff on 7/2/16.
- *
+ * <p>
  * This class exists to map the Minimed byte response to "Get sensitivity factors"
  * into a more usable form.
  */
@@ -17,7 +17,12 @@ public class ISFTable {
     byte[] header;
     int[] times;
     float[] rates;
-    public ISFTable() {}
+
+
+    public ISFTable() {
+    }
+
+
     public boolean parseFrom(byte[] responseBytes) {
         // example format: { 7, 1, 0, 45, 12, 30, 42, 50, 0, 0 }
         // means value pairs: {0, 45}, {12, 30}, {42, 50}
@@ -34,14 +39,14 @@ public class ISFTable {
             return false;
         }
         mIsValid = true;
-        header = ByteUtil.substring(responseBytes,0,2);
+        header = ByteUtil.substring(responseBytes, 0, 2);
         // find end of list
         int index = 2;
         while (true) {
             if (index + 1 > responseBytes.length) {
                 break;
             }
-            if ((responseBytes[index]==0) && (responseBytes[index+1]==0)) {
+            if ((responseBytes[index] == 0) && (responseBytes[index + 1] == 0)) {
                 break;
             }
             index += 2;
@@ -54,46 +59,55 @@ public class ISFTable {
             int numEntries = (index - 2) / 2;
             times = new int[numEntries];
             rates = new float[numEntries];
-            for (int i=0; i<numEntries; i++) {
-                times[i] = responseBytes[i*2+2];
-                rates[i] = responseBytes[i*2+2];
+            for(int i = 0; i < numEntries; i++) {
+                times[i] = responseBytes[i * 2 + 2];
+                rates[i] = responseBytes[i * 2 + 2];
             }
         }
         validDate = new LocalDateTime();
         return true;
     }
 
+
     public byte[] getHeader() {
         return header;
     }
+
 
     public void setHeader(byte[] header) {
         this.header = header;
     }
 
+
     public int[] getTimes() {
         return times;
     }
+
 
     public void setTimes(int[] times) {
         this.times = times;
     }
 
+
     public float[] getRates() {
         return rates;
     }
+
 
     public void setRates(float[] rates) {
         this.rates = rates;
     }
 
+
     public LocalDateTime getValidDate() {
         return validDate;
     }
 
+
     public void setValidDate(LocalDateTime validDate) {
         this.validDate = validDate;
     }
+
 
     public boolean isValid() {
         return mIsValid;

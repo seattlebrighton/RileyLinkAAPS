@@ -55,5 +55,80 @@
     <string name="cmd_aaps_cancel_ext_bolus">Cancel Ext Bolus</string>
     <string name="cmd_aaps_load_tdd">Load TDD</string>
     <string name="cmd_aaps_show_apps_cmd">Show AAPS Cmd</string>
+    <string name="cmd_aaps_get_model">Get Model</string>
+    <string name="cmd_aaps_status_bolus">Status - Bolus</string>
+    <string name="cmd_aaps_status_tbr">Status - TBR</string>
+    <string name="cmd_aaps_status_ext_bolus">Status - Ext. Bolus</string>
+    <string name="cmd_aaps_status_settings">Status - Settings</string>
+    <string name="cmd_aaps_status_time">Status - Get Time</string>
+    <string name="cmd_aaps_status_insulin">Status - Remaining Insulin</string>
+    <string name="cmd_aaps_status_power">Status - Remaining Power</string>
+
+    <!-- AAPS Just for compiling issues -->
+    <string name="enacted">Enacted</string>
+    <string name="comment">Comment</string>
+    <string name="success">Success</string>
+    <string name="percent">Percent</string>
+    <string name="absolute">Absolute</string>
+    <string name="canceltemp">Cancel temp basal</string>
+    <string name="rate">Rate</string>
+    <string name="duration">Duration</string>
+    <string name="reason">Reason</string>
+    <string name="glucose">Glucose</string>
+    <string name="delta">Delta</string>
+    <string name="sms_delta">Delta:</string>
+    <string name="smb_shortname">SMB</string>
+    <string name="insulin_unit_shortname">U</string>
+
+
+    <!-- Pump Abstract -->
+    <string name="pump_operation_not_supported_by_pump">Operation not supported by pump.</string>
+    <string name="pump_operation_not_yet_supported_by_pump">Operation not YET supported by pump.</string>
+
+    <!-- Medtronic -->
+    <string name="medtronic_name" translatable="false">Medtronic</string>
+    <string name="medtronic_name_short" translatable="false">MDT</string>
+    <string name="medtronic_serial_number">Pump Serial Number</string>
+    <string name="medtronic_pump_type">Pump Type</string>
+    <string name="medtronic_pump_frequency">Pump Frequency</string>
+    <string name="medtronic_pump_max_bolus">Max Bolus on Pump</string>
+    <string name="medtronic_pump_max_basal">Max Basal on Pump</string>
+
+    <string name="medtronic_errors">Errors</string>
+    <string name="medtronic_error_serial_not_set">Serial # not set.</string>
+    <string name="medtronic_error_serial_invalid">Serial # invalid.</string>
+    <string name="medtronic_error_pump_type_not_set">Pump Type not set.</string>
+    <string name="medtronic_error_pump_type_invalid">Pump Type unsupported.</string>
+    <string name="medtronic_error_pump_frequency_not_set">Pump Frequency not set.</string>
+    <string name="medtronic_error_pump_frequency_invalid">Pump Frequency unsupported.</string>
+    <string name="medtronic_error_rileylink_address_invalid">RileyLink Address invalid.</string>
+    <string name="medtronic_pump_frequency_us">US (916 MHz)</string>
+    <string name="medtronic_pump_frequency_worldwide">Worldwide (868 Mhz)</string>
+
+    <string name="rileylink_mac_address">RileyLink MAC Address</string>
+    <string name="rileylink_scanner_selected_device">Selected</string>
+    <string name="rileylink_scanner_scan">Scan</string>
+    <string name="rileylink_scanner_title">RileyLink BLE Scan</string>
+    <string name="rileylink_scanner_scan_menu">Scan for RileyLink</string>
+
+    <string name="rileylink_settings_title">RileyLink Settings</string>
+    <string name="title_activity_rileylink_settings">RileyLink Settings</string>
+    <string name="rileylink_title">Riley Link</string>
+
+    <string name="rileylink_configured_address">Configured Address</string>
+    <string name="rileylink_connected_device">Connected Device</string>
+    <string name="rileylink_connection_status">Connection Status</string>
+    <string name="rileylink_connection_error">Connection Error</string>
+
+    <string name="rileylink_device">Device</string>
+    <string name="rileylink_device_type">Device Type</string>
+    <string name="rileylink_device_model">Device Model</string>
+    <string name="rileylink_last_used_frequency">Last used frequency</string>
+    <string name="rileylink_last_device_contact">Last device contact</string>
+
+
+    <string name="rileylink_settings_tab1">Settings</string>
+    <string name="rileylink_settings_tab2">History</string>
+
 
 </resources>

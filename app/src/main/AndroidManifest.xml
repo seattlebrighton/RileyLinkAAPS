@@ -42,7 +42,7 @@
         </activity>
 
         <service
-            android:name=".RoundtripService.RileyLinkServiceMedtronic"
+            android:name="info.nightscout.androidaps.plugins.PumpMedtronic.service.RileyLinkMedtronicService"
             android:exported="false"
             android:label="@string/roundtrip_service_name">
             <intent-filter>
@@ -110,7 +110,8 @@
         <activity
             android:name=".ShowAAPSActivity"
             android:label="@string/title_activity_show_aaps"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme" />
+        <activity android:name=".ShowAAPS2Activity"></activity>
     </application>
 
 </manifest>
