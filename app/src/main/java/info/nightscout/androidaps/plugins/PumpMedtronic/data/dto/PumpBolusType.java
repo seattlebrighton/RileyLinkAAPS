@@ -1,4 +1,4 @@
-package info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.dto;
+package info.nightscout.androidaps.plugins.PumpMedtronic.data.dto;
 
 import java.util.HashMap;
 
@@ -48,27 +48,27 @@ public enum PumpBolusType //implements CodeEnumWithTranslation
     }
 
 
-//    public static void translateKeywords(I18nControlAbstract ic)
-//    {
-//        if (translated)
-//            return;
-//
-//        for (PumpBolusType pbt : values())
-//        {
-//            pbt.setTranslation(ic.getMessage(pbt.i18nKey));
-//            translationMapping.put(pbt.getTranslation(), pbt);
-//        }
-//
-//        String[] bolusDescriptions = { ic.getMessage("SELECT_BOLUS_TYPE"), //
-//                                      ic.getMessage("BOLUS_STANDARD"), //
-//                                      ic.getMessage("BOLUS_AUDIO"), //
-//                                      ic.getMessage("BOLUS_SQUARE"), //
-//                                      ic.getMessage("BOLUS_MULTIWAVE"), };
-//
-//        descriptions = bolusDescriptions;
-//
-//        translated = true;
-//    }
+    //    public static void translateKeywords(I18nControlAbstract ic)
+    //    {
+    //        if (translated)
+    //            return;
+    //
+    //        for (PumpBolusType pbt : values())
+    //        {
+    //            pbt.setTranslation(ic.getMessage(pbt.i18nKey));
+    //            translationMapping.put(pbt.getTranslation(), pbt);
+    //        }
+    //
+    //        String[] bolusDescriptions = { ic.getMessage("SELECT_BOLUS_TYPE"), //
+    //                                      ic.getMessage("BOLUS_STANDARD"), //
+    //                                      ic.getMessage("BOLUS_AUDIO"), //
+    //                                      ic.getMessage("BOLUS_SQUARE"), //
+    //                                      ic.getMessage("BOLUS_MULTIWAVE"), };
+    //
+    //        descriptions = bolusDescriptions;
+    //
+    //        translated = true;
+    //    }
 
     int code;
     String i18nKey;

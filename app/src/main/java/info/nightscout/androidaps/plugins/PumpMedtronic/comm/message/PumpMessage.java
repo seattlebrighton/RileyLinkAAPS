@@ -9,6 +9,7 @@ import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicCommandTyp
 /**
  * Created by geoff on 5/29/16.
  */
+// FIXME: Andy Message body problem, see comment in MessageBody
 public class PumpMessage implements RLMessage {
 
     public PacketType packetType = PacketType.Carelink;
@@ -84,9 +85,11 @@ public class PumpMessage implements RLMessage {
         byte[] data = messageBody.getTxData();
 
         int length = ByteUtil.asUINT8(data[0]); // length is not always correct so, we check whole array if we have data, after length
+        int originalLength = length;
+
         boolean oldWay = false;
 
-        for(int i = (length); i < data.length; i++) {
+        for(int i = (length + 1); i < data.length; i++) {
             if (data[i] != 0x00) {
                 oldWay = true;
             }
@@ -100,7 +103,7 @@ public class PumpMessage implements RLMessage {
 
         System.arraycopy(messageBody.getTxData(), 1, arrayOut, 0, length);
 
-        Log.d("PumpMessage", "Length: " + length + ", CommandType: " + commandType);
+        Log.d("PumpMessage", "Length: " + length + ", Original Length: " + originalLength + ", CommandType: " + commandType);
 
         return arrayOut;
     }

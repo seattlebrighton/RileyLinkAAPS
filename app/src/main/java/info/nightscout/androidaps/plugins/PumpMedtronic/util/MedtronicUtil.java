@@ -105,8 +105,10 @@ public class MedtronicUtil {
             length = 2;
 
             // 40-stroke pumps scroll faster for higher unit values
-            if (amount > 10) scrollRate = 4;
-            else if (amount > 1) scrollRate = 2;
+            if (amount > 10)
+                scrollRate = 4;
+            else if (amount > 1)
+                scrollRate = 2;
         }
 
         int strokes = (int) (amount * (strokesPerUnit / (scrollRate * 1.0d)));
@@ -162,7 +164,7 @@ public class MedtronicUtil {
 
         byte[] payload = sendPayloadBuffer.array();
 
-        LOG.info(HexDump.dumpHexString(payload));
+        LOG.info(HexDump.toHexStringDisplayable(payload));
 
         //int crc = computeCRC8WithPolynomial(payload, 0, payload.length - 1);
 

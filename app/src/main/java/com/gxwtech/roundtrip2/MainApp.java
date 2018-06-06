@@ -3,7 +3,8 @@ package com.gxwtech.roundtrip2;
 import android.app.Application;
 import android.content.res.Resources;
 
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.message.MessageType;
+import info.nightscout.androidaps.plugins.PumpMedtronic.util.MedtronicConst;
+import info.nightscout.utils.SP;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 
@@ -29,12 +30,10 @@ public class MainApp extends Application {
                 .build();
         Realm.setDefaultConfiguration(realmConfiguration);
 
-        byte c = MessageType.Alert.getValue();
-
         sResources = getResources();
 
-        //MedtronicRileyLinkService rileyLinkService = new MedtronicRileyLinkService(this.getApplicationContext());
-        //rileyLinkService.startNewState(RileyLinkServiceState.Initializing);
+        // you need to set frequency here (US = R.string.medtronic_pump_frequency_us, WW = R.string.medtronic_pump_frequency_worldwide)
+        SP.putString(MedtronicConst.Prefs.PumpFrequency, gs(R.string.medtronic_pump_frequency_us));
 
         //SP.putString(MedtronicConst.Prefs.RileyLinkAddress, "CD:72:E1:4C:D5:9D");
     }

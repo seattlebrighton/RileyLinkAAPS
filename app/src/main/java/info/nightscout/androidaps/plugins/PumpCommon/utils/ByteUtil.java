@@ -225,4 +225,9 @@ public class ByteUtil {
     }
 
 
+    public static int makeUnsignedShort(int i, int j) {
+        int k = (i & 0xff) << 8 | j & 0xff;
+        return k;
+    }
+
 }

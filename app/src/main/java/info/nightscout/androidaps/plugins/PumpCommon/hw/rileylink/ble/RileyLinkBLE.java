@@ -337,7 +337,7 @@ public class RileyLinkBLE {
 
 
     public void findRileyLink(String RileyLinkAddress) {
-        LOG.debug("Rileylink address: " + RileyLinkAddress);
+        LOG.debug("RileyLink address: " + RileyLinkAddress);
         // Must verify that this is a valid MAC, or crash.
 
         rileyLinkDevice = bluetoothAdapter.getRemoteDevice(RileyLinkAddress);

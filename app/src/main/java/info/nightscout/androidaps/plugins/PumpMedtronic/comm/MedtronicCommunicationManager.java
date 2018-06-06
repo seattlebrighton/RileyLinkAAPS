@@ -1,6 +1,7 @@
 package info.nightscout.androidaps.plugins.PumpMedtronic.comm;
 
 import android.content.Context;
+import android.os.SystemClock;
 
 import com.gxwtech.roundtrip2.RoundtripService.medtronic.PumpData.ISFTable;
 
@@ -10,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkCommunicationManager;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkUtil;
@@ -29,10 +31,10 @@ import info.nightscout.androidaps.plugins.PumpMedtronic.comm.message.GetHistoryP
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.message.GetPumpModelCarelinkMessageBody;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.message.MedtronicConverter;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.message.MessageBody;
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.message.MessageType;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.message.PacketType;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.message.PumpAckMessageBody;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.message.PumpMessage;
+import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.PumpSettingDTO;
 import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicCommandType;
 import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicDeviceType;
 import info.nightscout.androidaps.plugins.PumpMedtronic.service.RileyLinkMedtronicService;
@@ -75,9 +77,19 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
     @Override
     public boolean tryToConnectToDevice() {
 
+        wakeup(2);
+
         MedtronicDeviceType pumpModel = getPumpModel();
 
-        return pumpModel != MedtronicDeviceType.Unknown_Device;
+        // Andy (4.6.2018): we do retry if no data returned. We might need to do that everywhere, but that might require little bit of rewrite of RF Code.
+        if (pumpModel == MedtronicDeviceType.Unknown_Device) {
+
+            SystemClock.sleep(1000);
+
+            pumpModel = getPumpModel();
+        }
+
+        return (pumpModel != MedtronicDeviceType.Unknown_Device);
     }
 
 
@@ -240,44 +252,19 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
     public byte[] createPumpMessageContent(RLMessageType type) {
         switch (type) {
             case PowerOn:
-                return MedtronicUtil.buildCommandPayload(MessageType.PowerOn, //
+                return MedtronicUtil.buildCommandPayload(MedtronicCommandType.RFPowerOn, //
                         new byte[]{1, (byte) receiverDeviceAwakeForMinutes});
 
             case ReadSimpleData:
-                return MedtronicUtil.buildCommandPayload(MessageType.GetPumpModel, null);
+                return MedtronicUtil.buildCommandPayload(MedtronicCommandType.PumpModel, null);
         }
         return new byte[0];
     }
 
 
-    //    @Deprecated
-    //    protected PumpMessage makePumpMessage(MessageType messageType, MessageBody messageBody) {
-    //        PumpMessage msg = new PumpMessage();
-    //        msg.init(PacketType.Carelink, rileyLinkServiceData.pumpIDBytes, messageType, messageBody);
-    //        return msg;
-    //    }
-
-
-    //    protected PumpMessage makePumpMessage(byte msgType, MessageBody body) {
-    //        return makePumpMessage(MessageType.getByValue(msgType), body);
-    //    }
-
-
-    //    @Deprecated
-    //    protected PumpMessage makePumpMessage(MessageType messageType, byte[] body) {
-    //        return makePumpMessage(messageType, body == null ? new CarelinkShortMessageBody() : new CarelinkShortMessageBody(body));
-    //    }
-
-
     protected PumpMessage makePumpMessage(MedtronicCommandType messageType, byte[] body) {
         return makePumpMessage(messageType, body == null ? new CarelinkShortMessageBody() : new CarelinkShortMessageBody(body));
     }
-
-
-    //    @Deprecated
-    //    protected PumpMessage makePumpMessage(MessageType messageType) {
-    //        return makePumpMessage(messageType, (byte[]) null);
-    //    }
 
 
     protected PumpMessage makePumpMessage(MedtronicCommandType messageType) {
@@ -297,30 +284,6 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
         msg.init(ByteUtil.concat(ByteUtil.concat(new byte[]{PacketType.Carelink.getValue()}, rileyLinkServiceData.pumpIDBytes), typeAndBody));
         return msg;
     }
-
-
-    //    private PumpMessage sendAndGetResponse(MessageType messageType) {
-    //        return sendAndGetResponse(messageType, null);
-    //    }
-
-
-    //    @Deprecated
-    //    private PumpMessage sendAndGetResponse(MessageType messageType, byte[] bodyData) {
-    //        // wakeUp
-    //        wakeup(receiverDeviceAwakeForMinutes);
-    //
-    //        // create message
-    //        PumpMessage msg;
-    //
-    //        if (bodyData == null)
-    //            msg = makePumpMessage(messageType);
-    //        else
-    //            msg = makePumpMessage(messageType, bodyData);
-    //
-    //        // send and wait for response
-    //        PumpMessage response = sendAndListen(msg);
-    //        return response;
-    //    }
 
 
     private PumpMessage sendAndGetResponse(MedtronicCommandType commandType) {
@@ -424,6 +387,10 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
 
         Object responseObject = sendAndGetResponseWithCheck(MedtronicCommandType.PumpModel);
 
+        if (!RileyLinkUtil.isModelSet()) {
+            RileyLinkUtil.setMedtronicPumpModel((MedtronicDeviceType) responseObject);
+        }
+
         return responseObject == null ? null : (MedtronicDeviceType) responseObject;
     }
 
@@ -444,49 +411,13 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
     }
 
 
-    //    // Get Medtronic specific data
-    //    private LocalDateTime parsePumpRTCBytes(byte[] bytes) {
-    //        if (bytes == null)
-    //            return null;
-    //        if (bytes.length < 7)
-    //            return null;
-    //        int hours = ByteUtil.asUINT8(bytes[0]);
-    //        int minutes = ByteUtil.asUINT8(bytes[1]);
-    //        int seconds = ByteUtil.asUINT8(bytes[2]);
-    //        int year = (ByteUtil.asUINT8(bytes[4]) & 0x3f) + 1984;
-    //        int month = ByteUtil.asUINT8(bytes[5]);
-    //        int day = ByteUtil.asUINT8(bytes[6]);
-    //        try {
-    //            LocalDateTime pumpTime = new LocalDateTime(year, month, day, hours, minutes, seconds);
-    //            return pumpTime;
-    //        } catch (IllegalFieldValueException e) {
-    //            LOG.error("parsePumpRTCBytes: Failed to parse pump time value: year=%d, month=%d, hours=%d, minutes=%d, seconds=%d", year, month, day, hours, minutes, seconds);
-    //            return null;
-    //        }
-    //    }
-    //
-    //
-    //    @Deprecated
-    //    public LocalDateTime getPumpRTC() {
-    //        //ReadPumpClockResult rval = new ReadPumpClockResult();
-    //        wakeup(receiverDeviceAwakeForMinutes);
-    //        PumpMessage getRTCMsg = makePumpMessage(MedtronicCommandType.RealTimeClock, new byte[]{0});
-    //        LOG.info("getPumpRTC: " + ByteUtil.shortHexString(getRTCMsg.getTxData()));
-    //        PumpMessage response = sendAndListen(getRTCMsg);
-    //        if (response.isValid()) {
-    //            byte[] receivedData = response.getContents();
-    //            if (receivedData != null) {
-    //                if (receivedData.length >= 9) {
-    //                    LocalDateTime pumpTime = parsePumpRTCBytes(ByteUtil.substring(receivedData, 2, 7));
-    //                }
-    //            }
-    //        } else {
-    //            LOG.error("Invalid response: {}", ByteUtil.showPrintable(response.getContents()));
-    //        }
-    //
-    //        return null;
-    //        //return rval;
-    //    }
+    // FIXME:
+    public Integer getRemainingBattery() {
+
+        Object responseObject = sendAndGetResponseWithCheck(MedtronicCommandType.GetBatteryStatus);
+
+        return responseObject == null ? null : (Integer) responseObject;
+    }
 
 
     // TODO remove for AAPS
@@ -508,42 +439,8 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
     }
 
 
-    // TODO check
-    public Integer getRemainingBattery() {
-        //PumpMessage response = sendAndGetResponse(MedtronicCommandType.GetBatteryStatus);
-
-        // TODO decode here
-
-        //String check = checkResponseContent(response, "getRemainingBattery", 3);
-
-        Object responseObject = sendAndGetResponseWithCheck(MedtronicCommandType.GetBatteryStatus);
-
-        return responseObject == null ? null : (Integer) responseObject;
-
-        //        if (response.isValid()) {
-        //            byte[] remainingBatteryBytes = response.getContents();
-        //            if (remainingBatteryBytes != null) {
-        //                if (remainingBatteryBytes.length == 5) {
-        //                    /**
-        //                     * 0x72 0x03, 0x00, 0x00, 0x82
-        //                     * meaning what ????
-        //                     */
-        //
-        //                    // FIXME use RawData and decoding is not correct
-        //                    // TODO review this !!! Andy
-        //
-        //                    return ByteUtil.asUINT8(remainingBatteryBytes[5]);
-        //                }
-        //            }
-        //        }
-
-
-        //return null;
-    }
-
-
     // FIXME check
-    public TempBasalPair getStatus_CurrentTBR() {
+    public TempBasalPair getTemporaryBasal() {
         PumpMessage response = sendAndGetResponse(MedtronicCommandType.ReadTemporaryBasal);
 
         byte[] data = response.getRawContent();
@@ -557,7 +454,44 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
     }
 
 
+    // TODO check
+    public List<PumpSettingDTO> getPumpSettings() {
+
+        Object responseObject = sendAndGetResponseWithCheck(MedtronicCommandType.getSettings(RileyLinkUtil.getMedtronicPumpModel()));
+
+
+        return responseObject == null ? null : (List<PumpSettingDTO>) responseObject;
+
+    }
+
+
     // TODO test
+
+
+    public PumpMessage getPumpState() {
+        PumpMessage response = sendAndGetResponse(MedtronicCommandType.PumpState);
+
+        byte[] data = response.getRawContent();
+
+        LOG.debug("Pump State: {}", HexDump.toHexStringDisplayable(data));
+
+        // 3 TBR running ?
+
+        return null;
+    }
+
+
+    public PumpMessage getBolusStatus() {
+        PumpMessage response = sendAndGetResponse(MedtronicCommandType.SetBolus, new byte[]{0x03, 0x00, 0x00, 0x00});
+
+        byte[] data = response.getRawContent();
+
+        LOG.debug("Detect bolus: {}", HexDump.toHexStringDisplayable(data));
+
+        // 3 TBR running ?
+
+        return null;
+    }
 
 
     // TODO generateRawData (check if it works correctly) and test
@@ -567,8 +501,12 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
 
         PumpMessage response = sendAndGetResponse(MedtronicCommandType.SetBasalProfileSTD, basalProfile.getRawData());
 
+        byte[] data = response.getRawContent();
+
+        LOG.debug("Set Basal Profile: {}", HexDump.toHexStringDisplayable(data));
+
         // what kind of response are we expecting when set it sent
-        return response;
+        return null;
     }
 
 
@@ -579,7 +517,11 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
         // .ChangeTempBasal
         PumpMessage response = sendAndGetResponse(MedtronicCommandType.SetTemporaryBasal, tbr.getAsRawData());
 
-        return response;
+        byte[] data = response.getRawContent();
+
+        LOG.debug("Set TBR: {}", HexDump.toHexStringDisplayable(data));
+
+        return null;
 
     }
 
@@ -594,7 +536,14 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
     public PumpMessage setBolus(double units) {
         PumpMessage response = sendAndGetResponse(MedtronicCommandType.SetBolus, MedtronicUtil.getBolusStrokes(units));
 
-        return response;
+
+        //PumpMessage response = sendAndGetResponse(MedtronicCommandType.SetTemporaryBasal, tbr.getAsRawData());
+
+        byte[] data = response.getRawContent();
+
+        LOG.debug("Set Bolus: {}", HexDump.toHexStringDisplayable(data));
+
+        return null;
     }
 
 

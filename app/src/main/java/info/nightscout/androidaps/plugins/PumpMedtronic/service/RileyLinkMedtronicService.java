@@ -10,6 +10,7 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 
 import com.gxwtech.roundtrip2.MainApp;
+import com.gxwtech.roundtrip2.R;
 import com.gxwtech.roundtrip2.RT2Const;
 import com.gxwtech.roundtrip2.RoundtripService.Tasks.FetchPumpHistoryTask;
 import com.gxwtech.roundtrip2.RoundtripService.Tasks.ReadBolusWizardCarbProfileTask;
@@ -240,8 +241,10 @@ public class RileyLinkMedtronicService extends RileyLinkService {
 
         RileyLinkUtil.setRileyLinkBLE(rileyLinkBLE);
 
+        boolean hasUSFrequency = SP.getString(MedtronicConst.Prefs.PumpFrequency, MainApp.gs(R.string.medtronic_pump_frequency_us)).equals(MainApp.gs(R.string.medtronic_pump_frequency_us));
+
         // init rileyLinkCommunicationManager
-        pumpCommunicationManager = new MedtronicCommunicationManager(context, rfspy, false);
+        pumpCommunicationManager = new MedtronicCommunicationManager(context, rfspy, hasUSFrequency);
         medtronicCommunicationManager = (MedtronicCommunicationManager) pumpCommunicationManager;
 
         // FIXME remove

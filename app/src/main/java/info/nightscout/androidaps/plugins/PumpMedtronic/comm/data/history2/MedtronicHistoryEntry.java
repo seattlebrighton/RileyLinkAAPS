@@ -7,7 +7,7 @@ import java.util.List;
 
 import info.nightscout.androidaps.plugins.PumpCommon.utils.HexDump;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.StringUtil;
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.dto.PumpTimeStampedRecord;
+import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.PumpTimeStampedRecord;
 
 /**
  * Application:   GGC - GNU Gluco Control
@@ -55,7 +55,8 @@ public abstract class MedtronicHistoryEntry {
         // System.out.println("Head: " + sizes[0] + ", dates: " + sizes[1] +
         // ", body=" + sizes[2]);
 
-        if (doNotProcess) return;
+        if (doNotProcess)
+            return;
 
         head = new byte[getHeadLength() - 1];
         for(int i = 1; i < (getHeadLength()); i++) {

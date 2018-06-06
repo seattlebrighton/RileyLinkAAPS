@@ -15,6 +15,7 @@ import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.RFSpy
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.RadioPacket;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.RadioResponse;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.CC111XRegister;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RFSpyCommand;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RXFilterMode;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.operations.BLECommOperationResult;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
@@ -38,17 +39,17 @@ public class RFSpy {
     public static final long RILEYLINK_FREQ_XTAL = 24000000;
 
 
-    public static final int EXPECTED_MAX_BLUETOOTH_LATENCY_MS = 7500; // 1000
+    public static final int EXPECTED_MAX_BLUETOOTH_LATENCY_MS = 7500; // 1500
 
     private RileyLinkBLE rileyLinkBle;
     private RFSpyReader reader;
     //private Context context;
     private int previousRegion = 0;
 
-    UUID radioServiceUUID = UUID.fromString(GattAttributes.SERVICE_RADIO);
-    UUID radioDataUUID = UUID.fromString(GattAttributes.CHARA_RADIO_DATA);
-    UUID radioVersionUUID = UUID.fromString(GattAttributes.CHARA_RADIO_VERSION);
-    UUID responseCountUUID = UUID.fromString(GattAttributes.CHARA_RADIO_RESPONSE_COUNT);
+    private UUID radioServiceUUID = UUID.fromString(GattAttributes.SERVICE_RADIO);
+    private UUID radioDataUUID = UUID.fromString(GattAttributes.CHARA_RADIO_DATA);
+    private UUID radioVersionUUID = UUID.fromString(GattAttributes.CHARA_RADIO_VERSION);
+    private UUID responseCountUUID = UUID.fromString(GattAttributes.CHARA_RADIO_RESPONSE_COUNT);
 
 
     public RFSpy(Context context, RileyLinkBLE rileyLinkBle) {
@@ -137,7 +138,7 @@ public class RFSpy {
 
 
     public RFSpyResponse getRadioVersion() {
-        RFSpyResponse resp = writeToData(new byte[]{RFSPY_GET_VERSION}, 1000);
+        RFSpyResponse resp = writeToData(getCommandArray(RFSpyCommand.GetVersion, null), 1000);
         if (resp == null) {
             LOG.error("getRadioVersion returned null");
         }
@@ -156,7 +157,7 @@ public class RFSpy {
 
     public RFSpyResponse transmit(RadioPacket radioPacket, byte sendChannel, byte repeatCount, byte delay_ms) {
         // append checksum, encode data, send it.
-        byte[] fullPacket = ByteUtil.concat(new byte[]{RFSPY_SEND, sendChannel, repeatCount, delay_ms}, radioPacket.getEncoded());
+        byte[] fullPacket = ByteUtil.concat(getCommandArray(RFSpyCommand.Send, getByteArray(sendChannel, repeatCount, delay_ms)), radioPacket.getEncoded());
         RFSpyResponse response = writeToData(fullPacket, repeatCount * delay_ms);
         return response;
     }
@@ -164,7 +165,7 @@ public class RFSpy {
 
     public RFSpyResponse receive(byte listenChannel, int timeout_ms, byte retryCount) {
         int receiveDelay = timeout_ms * (retryCount + 1);
-        byte[] listen = {RFSPY_GET_PACKET, listenChannel, (byte) ((timeout_ms >> 24) & 0x0FF), (byte) ((timeout_ms >> 16) & 0x0FF), (byte) ((timeout_ms >> 8) & 0x0FF), (byte) (timeout_ms & 0x0FF), retryCount};
+        byte[] listen = getCommandArray(RFSpyCommand.GetPacket, getByteArray(listenChannel, (byte) ((timeout_ms >> 24) & 0x0FF), (byte) ((timeout_ms >> 16) & 0x0FF), (byte) ((timeout_ms >> 8) & 0x0FF), (byte) (timeout_ms & 0x0FF), retryCount));
         return writeToData(listen, receiveDelay);
     }
 
@@ -178,14 +179,14 @@ public class RFSpy {
 
         int sendDelay = repeatCount * delay_ms;
         int receiveDelay = timeout_ms * (retryCount + 1);
-        byte[] sendAndListen = {RFSPY_SEND_AND_LISTEN, sendChannel, repeatCount, delay_ms, listenChannel, (byte) ((timeout_ms >> 24) & 0x0FF), (byte) ((timeout_ms >> 16) & 0x0FF), (byte) ((timeout_ms >> 8) & 0x0FF), (byte) (timeout_ms & 0x0FF), retryCount};
+        byte[] sendAndListen = getCommandArray(RFSpyCommand.SendAndListen, getByteArray(sendChannel, repeatCount, delay_ms, listenChannel, (byte) ((timeout_ms >> 24) & 0x0FF), (byte) ((timeout_ms >> 16) & 0x0FF), (byte) ((timeout_ms >> 8) & 0x0FF), (byte) (timeout_ms & 0x0FF), (byte) retryCount));
         byte[] fullPacket = ByteUtil.concat(sendAndListen, pkt.getEncoded());
         return writeToData(fullPacket, sendDelay + receiveDelay + EXPECTED_MAX_BLUETOOTH_LATENCY_MS);
     }
 
 
     public RFSpyResponse updateRegister(CC111XRegister reg, int val) {
-        byte[] updateRegisterPkt = new byte[]{RFSPY_UPDATE_REGISTER, reg.value, (byte) val};
+        byte[] updateRegisterPkt = getCommandArray(RFSpyCommand.UpdateRegister, getByteArray(reg.value, (byte) val));
         RFSpyResponse resp = writeToData(updateRegisterPkt, EXPECTED_MAX_BLUETOOTH_LATENCY_MS);
         return resp;
     }
@@ -199,6 +200,28 @@ public class RFSpy {
         LOG.warn("Set frequency to {}", freqMHz);
 
         configureRadioForRegion(determineRegion(freqMHz));
+    }
+
+
+    private byte[] getByteArray(byte... input) {
+        return input;
+    }
+
+
+    private byte[] getCommandArray(RFSpyCommand command, byte[] body) {
+        int bodyLength = body == null ? 0 : body.length;
+
+        byte[] output = new byte[bodyLength + 1];
+
+        output[0] = command.code;
+
+        if (body != null) {
+            for(int i = 0; i < body.length; i++) {
+                output[i + 1] = body[i];
+            }
+        }
+
+        return output;
     }
 
 
@@ -216,7 +239,7 @@ public class RFSpy {
                 //updateRegister(CC111X_MDMCFG2, (byte) 0x33);
                 updateRegister(CC111XRegister.mdmcfg1, 0x62);
                 updateRegister(CC111XRegister.mdmcfg0, 0x1A);
-                updateRegister(CC111XRegister.deviatn, (byte) 0x13);
+                updateRegister(CC111XRegister.deviatn, 0x13);
             }
             break;
 
@@ -254,12 +277,14 @@ public class RFSpy {
 
 
     private int determineRegion(double freqMHz) {
-        int region = 0; // 1 - MDT Worldwide, 2 - MDT US, 0 - Undefined
+        int region = 0; // 1 - MDT Worldwide, 2 - MDT US, 3 - Omnipod, 0 - Undefined
 
         if ((freqMHz >= 916.45) && (freqMHz <= 916.80)) {
             region = 1;
         } else if ((freqMHz >= 868.25) && (freqMHz <= 868.65)) {
             region = 2;
+        } else if ((freqMHz >= 443.45) && (freqMHz <= 444.25)) { // 433.92 (exact frequencies will be added later
+
         } else {
             region = 0;
         }

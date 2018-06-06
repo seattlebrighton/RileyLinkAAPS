@@ -63,7 +63,7 @@ public class MedtronicPumpTask extends PumpTask {
             break;
 
             case RealTimeClock: {
-                LocalDateTime pumpResponse = communicationManager.getPumpRTC();
+                LocalDateTime pumpResponse = communicationManager.getPumpTime();
                 if (pumpResponse != null) {
                     LOG.info("ReadPumpClock: " + pumpResponse.toString("HH:mm:ss"));
                     medtronicPumpResult.addParameter("PumpTime", pumpResponse);

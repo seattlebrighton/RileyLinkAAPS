@@ -24,6 +24,7 @@ import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.S
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.ServiceResult;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.ServiceTransport;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.tasks.ServiceTask;
+import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicDeviceType;
 import info.nightscout.androidaps.plugins.PumpMedtronic.driver.MedtronicPumpStatus;
 
 
@@ -44,6 +45,7 @@ public class RileyLinkUtil {
     private static RileyLinkService rileyLinkService;
     private static RileyLinkCommunicationManager rileyLinkCommunicationManager;
     private static RileyLinkIPCConnection rileyLinkIPCConnection;
+    private static MedtronicDeviceType medtronicPumpModel;
     // BAD dependencies in Classes: RileyLinkService
 
     // Broadcasts: RileyLinkBLE, RileyLinkService,
@@ -81,6 +83,8 @@ public class RileyLinkUtil {
         if (errorCode != null) {
             rileyLinkServiceData.errorCode = errorCode;
         }
+
+        historyRileyLink.add(new RLHistoryItem(rileyLinkServiceData.serviceState, rileyLinkServiceData.errorCode));
     }
 
 
@@ -114,9 +118,9 @@ public class RileyLinkUtil {
         RileyLinkUtil.medtronicPumpStatus = medtronicPumpStatus;
     }
 
-//    public static void addHistoryEntry(RLHistoryItem rlHistoryItem) {
-//        historyRileyLink.add(rlHistoryItem);
-//    }
+    //    public static void addHistoryEntry(RLHistoryItem rlHistoryItem) {
+    //        historyRileyLink.add(rlHistoryItem);
+    //    }
 
 
     public static MedtronicPumpStatus getMedtronicPumpStatus() {
@@ -199,5 +203,22 @@ public class RileyLinkUtil {
 
     public static void setRileyLinkIPCConnection(RileyLinkIPCConnection rileyLinkIPCConnection) {
         RileyLinkUtil.rileyLinkIPCConnection = rileyLinkIPCConnection;
+    }
+
+
+    public static boolean isModelSet() {
+        return RileyLinkUtil.medtronicPumpModel != null;
+    }
+
+
+    public static void setMedtronicPumpModel(MedtronicDeviceType medtronicPumpModel) {
+        if (medtronicPumpModel != null && medtronicPumpModel != MedtronicDeviceType.Unknown_Device) {
+            RileyLinkUtil.medtronicPumpModel = medtronicPumpModel;
+        }
+    }
+
+
+    public static MedtronicDeviceType getMedtronicPumpModel() {
+        return medtronicPumpModel;
     }
 }

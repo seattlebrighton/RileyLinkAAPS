@@ -19,11 +19,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkUtil;
+import info.nightscout.androidaps.plugins.PumpCommon.utils.HexDump;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.MedtronicCommunicationManager;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.BasalProfile;
+import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.TempBasalPair;
+import info.nightscout.androidaps.plugins.PumpMedtronic.comm.message.PumpMessage;
+import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.PumpSettingDTO;
 import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicDeviceType;
 
 public class ShowAAPS2Activity extends AppCompatActivity {
@@ -42,20 +47,24 @@ public class ShowAAPS2Activity extends AppCompatActivity {
 
 
     public ShowAAPS2Activity() {
+
+        // SET MODEL WHEN FIRST READ
+
         // FIXME
-        addCommandAction("Set TBR", ImplementationStatus.NotStarted, null);
+        addCommandAction("Set TBR", ImplementationStatus.WorkInProgress, "RefreshData.SetTBR"); // not working
         addCommandAction("Cancel TBR", ImplementationStatus.NotStarted, null);
         addCommandAction("Set Bolus", ImplementationStatus.NotStarted, null);
         addCommandAction("Set Basal Profile", ImplementationStatus.NotStarted, null);
-        addCommandAction("Status - Bolus", ImplementationStatus.NotStarted, null);
-        addCommandAction("Status - TBR", ImplementationStatus.NotStarted, null);
-        addCommandAction("Status - Ext. Bolus", ImplementationStatus.NotStarted, null);
-        addCommandAction("Status - Settings", ImplementationStatus.NotStarted, null);
+        addCommandAction("Status - Bolus", ImplementationStatus.WorkInProgress, "RefreshData.GetStatus"); // weird on 512?
+        addCommandAction("Status - Settings", ImplementationStatus.WorkInProgress, "RefreshData.GetSettings");
+
+        // WORK IN PROGRESS - waiting for something
         addCommandAction("Status - Remaining Power", ImplementationStatus.WorkInProgress, "RefreshData.RemainingPower");
 
         // LOW PRIORITY
         addCommandAction("Read History", ImplementationStatus.NotStarted, null);
         addCommandAction("Set Ext Bolus", ImplementationStatus.NotStarted, null);
+        addCommandAction("Status - Ext. Bolus", ImplementationStatus.WorkInProgress, "RefreshData.GetBolus");
         addCommandAction("Load TDD", ImplementationStatus.NotStarted, null);
 
 
@@ -63,8 +72,8 @@ public class ShowAAPS2Activity extends AppCompatActivity {
         addCommandAction("Get Model", ImplementationStatus.Done, "RefreshData.PumpModel");
         addCommandAction("Get Basal Profile", ImplementationStatus.Done, "RefreshData.BasalProfile");
         addCommandAction("Status - Remaining Insulin", ImplementationStatus.Done, "RefreshData.RemainingInsulin");
-        addCommandAction("Status - Get Time", ImplementationStatus.Done, "RefreshData.GeTime");
-
+        addCommandAction("Status - Get Time", ImplementationStatus.Done, "RefreshData.GetTime");
+        addCommandAction("Status - TBR", ImplementationStatus.Done, "RefreshData.GetTBR");
 
         // NOT SUPPORTED
         addCommandAction("Cancel Ext Bolus", ImplementationStatus.NotSupportedByDevice, null);
@@ -162,10 +171,26 @@ public class ShowAAPS2Activity extends AppCompatActivity {
 
             this.selectedCommandAction = allCommands.get((String) id);
             tvCommandStatusText.setText(selectedCommandAction.implementationStatus.text);
-            enableFields(false, false);
+            enableFields(isAmountEnabled(), isDurationEnabled());
             this.btnStart.setEnabled(selectedCommandAction.intentString != null);
         }
 
+    }
+
+
+    private boolean isAmountEnabled() {
+        String action = this.selectedCommandAction.action;
+
+        return (action.equals("Set TBR") || //
+                action.equals("Set Bolus") || //
+                action.equals("Set Basal Profile"));
+    }
+
+
+    private boolean isDurationEnabled() {
+        String action = this.selectedCommandAction.action;
+
+        return (action.equals("Set TBR"));
     }
 
 
@@ -173,9 +198,15 @@ public class ShowAAPS2Activity extends AppCompatActivity {
 
         tfDuration.setEnabled(duration);
         tvDuration.setEnabled(duration);
+        if (!duration)
+            tfDuration.setText("");
 
         tvAmount.setEnabled(amount);
         tfAmount.setEnabled(amount);
+
+        if (!amount)
+            tfAmount.setText("");
+
     }
 
 
@@ -216,6 +247,17 @@ public class ShowAAPS2Activity extends AppCompatActivity {
 
     }
 
+    MedtronicCommunicationManager mcmInstance = null;
+
+
+    private MedtronicCommunicationManager getCommunicationManager() {
+        if (mcmInstance == null) {
+            mcmInstance = MedtronicCommunicationManager.getInstance();
+        }
+
+        return mcmInstance;
+    }
+
 
     Object data;
     String errorCode;
@@ -249,13 +291,46 @@ public class ShowAAPS2Activity extends AppCompatActivity {
             }
             break;
 
-            case "RefreshData.GeTime": {
+            case "RefreshData.GetTime": {
                 LocalDateTime ldt = (LocalDateTime) data;
                 putOnDisplay("Pump Time: " + ldt.toString("dd.MM.yyyy HH:mm:ss"));
             }
+            break;
 
             case "RefreshData.ErrorCode": {
                 putOnDisplay("Error: " + errorCode);
+            }
+            break;
+
+            case "RefreshData.SetTBR": {
+                PumpMessage result = (PumpMessage) data;
+                // FIXME
+                putOnDisplay("Response after action: " + HexDump.toHexStringDisplayable(result.getRawContent()));
+            }
+            break;
+
+            case "RefreshData.GetTBR": {
+                TempBasalPair tbr = (TempBasalPair) data;
+
+                putOnDisplay(String.format("TBR: Amount: %s, Duration: %s", "" + tbr.getInsulinRate(), "" + tbr.getDurationMinutes()));
+            }
+            break;
+
+            case "RefreshData.GetStatus": {
+                // FIXME
+                putOnDisplay("Status undefined ?");
+            }
+            break;
+
+
+            case "RefreshData.GetSettings": {
+                List<PumpSettingDTO> settings = (List<PumpSettingDTO>) data;
+
+                putOnDisplay("Settings on pump:");
+                LOG.debug("Settings on front: " + settings);
+                for(PumpSettingDTO entry : settings) {
+                    putOnDisplay(entry.key + " = " + entry.value);
+                }
             }
             break;
 
@@ -269,6 +344,8 @@ public class ShowAAPS2Activity extends AppCompatActivity {
 
     private void startAction() {
 
+        putOnDisplay("Start Action: " + selectedCommandAction.action);
+
         // FIXME
         new Thread(new Runnable() {
             @Override
@@ -280,29 +357,58 @@ public class ShowAAPS2Activity extends AppCompatActivity {
 
                 switch (selectedCommandAction.intentString) {
                     case "RefreshData.PumpModel": {
-                        returnData = MedtronicCommunicationManager.getInstance().getPumpModel();
+                        returnData = getCommunicationManager().getPumpModel();
                     }
                     break;
 
                     case "RefreshData.BasalProfile": {
-                        returnData = MedtronicCommunicationManager.getInstance().getBasalProfile();
+                        returnData = getCommunicationManager().getBasalProfile();
                     }
                     break;
 
                     case "RefreshData.RemainingInsulin": {
-                        returnData = MedtronicCommunicationManager.getInstance().getRemainingInsulin();
+                        returnData = getCommunicationManager().getRemainingInsulin();
                     }
                     break;
 
-                    case "RefreshData.GeTime": {
-                        returnData = MedtronicCommunicationManager.getInstance().getPumpTime();
+                    case "RefreshData.GetTime": {
+                        returnData = getCommunicationManager().getPumpTime();
                     }
                     break;
 
                     case "RefreshData.RemainingPower": {
-                        returnData = MedtronicCommunicationManager.getInstance().getRemainingBattery();
+                        returnData = getCommunicationManager().getRemainingBattery();
                     }
                     break;
+
+                    case "RefreshData.SetTBR": {
+                        TempBasalPair tbr = getTBRSettings();
+                        if (tbr != null) {
+                            returnData = getCommunicationManager().setTBR(tbr);
+                        }
+                    }
+                    break;
+
+                    case "RefreshData.GetTBR": {
+                        returnData = getCommunicationManager().getTemporaryBasal();
+                    }
+                    break;
+
+                    case "RefreshData.GetStatus": {
+                        returnData = getCommunicationManager().getPumpState();
+                    }
+                    break;
+
+                    case "RefreshData.GetBolus": {
+                        returnData = getCommunicationManager().getBolusStatus();
+                    }
+                    break;
+
+                    case "RefreshData.GetSettings": {
+                        returnData = getCommunicationManager().getPumpSettings();
+                    }
+                    break;
+
 
                     default:
                         LOG.warn("Action is not supported {}.", selectedCommandAction);
@@ -326,5 +432,77 @@ public class ShowAAPS2Activity extends AppCompatActivity {
 
     }
 
+
+    private TempBasalPair getTBRSettings() {
+
+        Float valAmount = getAmount();
+
+        TempBasalPair tbp = new TempBasalPair();
+
+        if (valAmount != null) {
+            tbp.setInsulinRate(valAmount);
+        } else
+            return null;
+
+        Integer dur = getDuration();
+
+        if (dur != null) {
+            tbp.setDurationMinutes(dur);
+            return tbp;
+        }
+
+        return null;
+    }
+
+
+    private Float getAmount() {
+        CharSequence am = tfAmount.getText();
+        String amount = am.toString().replaceAll(",", ".");
+
+        try {
+            return Float.parseFloat(amount);
+        } catch (Exception ex) {
+            putOnDisplay("Error parsing amount: " + ex.getMessage());
+            return null;
+        }
+
+    }
+
+
+    private Integer getDuration() {
+        CharSequence am = tfDuration.getText();
+        String duration = am.toString();
+
+        int timeMin = 0;
+
+        if (duration.contains(".") || duration.contains(",")) {
+            putOnDisplay("Invalid duration: duration must be in minutes or as HH:mm (only 30 min intervals are valid).");
+            return null;
+        }
+
+        if (duration.contains(":")) {
+            String[] time = duration.split(":");
+
+            if ((!time[1].equals("00")) && (!time[1].equals("30"))) {
+                putOnDisplay("Invalid duration: duration must be in minutes or as HH:mm (only 30 min intervals are valid).");
+                return null;
+            }
+
+            try {
+                timeMin += Integer.parseInt(time[0]);
+            } catch (Exception ex) {
+                putOnDisplay("Invalid duration: duration must be in minutes or as HH:mm (only 30 min intervals are valid).");
+                return null;
+            }
+
+            if (time[1].equals("30")) {
+                timeMin += 30;
+            }
+
+
+        }
+
+        return timeMin;
+    }
 
 }

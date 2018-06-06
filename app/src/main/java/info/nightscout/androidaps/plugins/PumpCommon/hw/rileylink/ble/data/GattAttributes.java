@@ -39,6 +39,7 @@ public class GattAttributes {
         attributes.put(CHARA_GAP_NAME, "Name"); //
         attributes.put(CHARA_GAP_NUM, "Number"); //
 
+
         attributes.put(SERVICE_BATTERY, "Battery Service");
 
         attributes.put(SERVICE_RADIO, "Radio Interface"); // a
@@ -69,7 +70,8 @@ public class GattAttributes {
 
     // TODO check if service is rileylink
     public static boolean isRileyLink(UUID uuid) {
-        return true;
+        return attributes.containsKey(uuid.toString());
+        //return true;
     }
 
 

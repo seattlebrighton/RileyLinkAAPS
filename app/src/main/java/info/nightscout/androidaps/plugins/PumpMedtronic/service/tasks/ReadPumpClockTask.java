@@ -13,6 +13,7 @@ import info.nightscout.androidaps.plugins.PumpMedtronic.service.RileyLinkMedtron
 /**
  * Created by geoff on 7/9/16.
  */
+@Deprecated
 public class ReadPumpClockTask extends PumpTask {
     private static final String TAG = "ReadPumpClockTask";
 
@@ -28,7 +29,7 @@ public class ReadPumpClockTask extends PumpTask {
 
     @Override
     public void run() {
-        LocalDateTime pumpResponse = RileyLinkMedtronicService.getCommunicationManager().getPumpRTC();
+        LocalDateTime pumpResponse = RileyLinkMedtronicService.getCommunicationManager().getPumpTime();
         if (pumpResponse != null) {
             Log.i(TAG, "ReadPumpClock: " + pumpResponse.toString("HH:mm:ss"));
         } else {

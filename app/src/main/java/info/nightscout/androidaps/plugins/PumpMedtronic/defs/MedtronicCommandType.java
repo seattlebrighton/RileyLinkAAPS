@@ -410,6 +410,16 @@ public enum MedtronicCommandType implements Serializable //, MinimedCommandTypeI
     }
 
 
+    public static MedtronicCommandType getSettings(MedtronicDeviceType medtronicPumpModel) {
+        if (medtronicPumpModel == MedtronicDeviceType.Medtronic_511)
+            return MedtronicCommandType.Settings_511;
+        else if (MedtronicDeviceType.isSameDevice(medtronicPumpModel, MedtronicDeviceType.Medtronic_512_712))
+            return MedtronicCommandType.Settings_512;
+        else
+            return MedtronicCommandType.Settings;
+    }
+
+
     public enum MinimedCommandParameterType {
         NoParameters, //
         FixedParameters, //

@@ -1,7 +1,7 @@
 package info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history2;
 
 import info.nightscout.androidaps.plugins.PumpCommon.utils.HexDump;
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.dto.PumpTimeStampedRecord;
+import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.PumpTimeStampedRecord;
 
 /**
  * Application:   GGC - GNU Gluco Control

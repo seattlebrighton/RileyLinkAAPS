@@ -65,6 +65,7 @@ public abstract class RileyLinkCommunicationManager {
 
 
     // All pump communications go through this function.
+    // FIXME Andy (4.6.2018): add retry here
     protected PumpMessage sendAndListen(RLMessage msg, int timeout_ms) {
 
         if (showPumpMessages) {
@@ -76,7 +77,10 @@ public abstract class RileyLinkCommunicationManager {
         if (rval.isValid()) {
             // Mark this as the last time we heard from the pump.
             rememberLastGoodPumpCommunicationTime();
+        } else {
+            LOG.warn("Response is invalid. !!!");
         }
+
         if (showPumpMessages) {
             LOG.info("Received:" + ByteUtil.shortHexString(resp.getRadioResponse().getPayload()));
         }
@@ -120,6 +124,23 @@ public abstract class RileyLinkCommunicationManager {
     }
 
 
+    /**
+     * If user changes pump and one pump is running in US freq, and other in WW, then previously set frequency would be invalid,
+     * so we would need to retune. This checks that saved frequency is corrent range.
+     *
+     * @param frequency
+     * @return
+     */
+    public boolean isValidFrequency(double frequency) {
+        return (this.scanFrequencies[0] <= frequency && this.scanFrequencies[scanFrequencies.length - 1] >= frequency);
+    }
+
+
+    /**
+     * Do device connection, with wakeup
+     *
+     * @return
+     */
     public abstract boolean tryToConnectToDevice();
 
 

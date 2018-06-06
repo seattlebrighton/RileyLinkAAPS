@@ -39,13 +39,13 @@ public enum MedtronicDeviceType {
     //Minimed_640G(MedtronicConverterType.Pump523Converter, MedtronicConverterType.CGMS523Converter, "640G", null),
 
     Medtronic_512andHigher(Medtronic_512, Medtronic_712, Medtronic_515, Medtronic_715, Medtronic_522, Medtronic_722, //
-            Medtronic_553_Revel, Medtronic_753_Revel, Medtronic_554_Veo, Medtronic_754_Veo), //
+            Medtronic_523, Medtronic_723, Medtronic_553_Revel, Medtronic_753_Revel, Medtronic_554_Veo, Medtronic_754_Veo), //
 
     Medtronic_515andHigher(Medtronic_515, Medtronic_715, Medtronic_522, Medtronic_722, Medtronic_523, Medtronic_723, //
             Medtronic_553_Revel, Medtronic_753_Revel, Medtronic_554_Veo, Medtronic_754_Veo), //
     Medtronic_522andHigher(Medtronic_522, Medtronic_722, Medtronic_523, Medtronic_723, Medtronic_553_Revel, Medtronic_753_Revel, //
             Medtronic_554_Veo, Medtronic_754_Veo), //
-    Medtronic_523andHigher(Medtronic_522, Medtronic_722, Medtronic_553_Revel, Medtronic_753_Revel, Medtronic_554_Veo, //
+    Medtronic_523andHigher(Medtronic_523, Medtronic_723, Medtronic_553_Revel, Medtronic_753_Revel, Medtronic_554_Veo, //
             Medtronic_754_Veo), //
 
     Medtronic_553andHigher(Medtronic_553_Revel, Medtronic_753_Revel, Medtronic_554_Veo, Medtronic_754_Veo), //
@@ -105,7 +105,8 @@ public enum MedtronicDeviceType {
     public static boolean isSameDevice(MedtronicDeviceType deviceWeCheck, MedtronicDeviceType deviceSources) {
         if (deviceSources.isFamily) {
             for(MedtronicDeviceType mdt : deviceSources.familyMembers) {
-                if (mdt == deviceWeCheck) return true;
+                if (mdt == deviceWeCheck)
+                    return true;
             }
         } else {
             return (deviceWeCheck == deviceSources);

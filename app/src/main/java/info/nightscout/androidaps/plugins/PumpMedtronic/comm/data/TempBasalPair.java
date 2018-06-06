@@ -15,32 +15,40 @@ public class TempBasalPair {
     private int mDurationMinutes = 0;
     private boolean mIsPercent = false;
 
+
     public double getInsulinRate() {
         return mInsulinRate;
     }
+
 
     public void setInsulinRate(double insulinRate) {
         this.mInsulinRate = insulinRate;
     }
 
+
     public int getDurationMinutes() {
         return mDurationMinutes;
     }
+
 
     public void setDurationMinutes(int durationMinutes) {
         this.mDurationMinutes = durationMinutes;
     }
 
+
     public boolean isPercent() {
         return mIsPercent;
     }
+
 
     public void setIsPercent(boolean yesIsPercent) {
         this.mIsPercent = yesIsPercent;
     }
 
+
     public TempBasalPair() {
     }
+
 
     public TempBasalPair(double insulinRate, boolean isPercent, int durationMinutes) {
         mInsulinRate = insulinRate;
@@ -65,22 +73,28 @@ public class TempBasalPair {
 
     }
 
+
     public byte[] getAsRawData() {
 
         List<Byte> list = new ArrayList<Byte>();
 
+        list.add((byte) 6);
+
+        list.add((byte) 0); // ?
         list.add((byte) 0); // absolute
         list.add((byte) 0); // percent amount
 
         byte[] insulinRate = MedtronicUtil.getBasalStrokes(mInsulinRate, true);
 
         list.add(insulinRate[0]);
-        list.add(insulinRate[1]);
+        if (insulinRate.length == 1)
+            list.add((byte) 0x00);
+        else
+            list.add(insulinRate[1]);
 
         byte[] timeMin = MedtronicUtil.getByteArrayFromUnsignedShort(mDurationMinutes, true);
 
         list.add(timeMin[0]);
-        list.add(timeMin[1]);
 
         return MedtronicUtil.createByteArray(list);
     }

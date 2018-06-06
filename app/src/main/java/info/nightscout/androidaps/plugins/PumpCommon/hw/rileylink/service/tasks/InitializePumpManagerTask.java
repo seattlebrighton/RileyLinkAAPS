@@ -18,7 +18,6 @@ import info.nightscout.utils.SP;
  * This class is intended to be run by the Service, for the Service.
  * Not intended for clients to run.
  */
-@Deprecated
 public class InitializePumpManagerTask extends ServiceTask {
     private static final String TAG = "InitPumpManagerTask";
 
@@ -39,7 +38,7 @@ public class InitializePumpManagerTask extends ServiceTask {
         // FIXME
         double lastGoodFrequency = SP.getFloat(MedtronicConst.Prefs.LastGoodPumpFrequency, (float) 0.0);
 
-        if (lastGoodFrequency > 0.0d) {
+        if ((lastGoodFrequency > 0.0d) && RileyLinkUtil.getRileyLinkCommunicationManager().isValidFrequency(lastGoodFrequency)) {
             Log.i(TAG, String.format("Setting radio frequency to %.2fMHz", lastGoodFrequency));
             RileyLinkUtil.getRileyLinkCommunicationManager().setRadioFrequencyForPump(lastGoodFrequency);
 
@@ -48,7 +47,7 @@ public class InitializePumpManagerTask extends ServiceTask {
             // FIXME maybe remove in AAPS
             if (foundThePump) {
                 RileyLinkUtil.setServiceState(RileyLinkServiceState.PumpConnectorReady);
-                //RileyLinkUtil.sendNotification(new ServiceNotification(RT2Const.IPC.MSG_PUMP_pumpFound), null);
+                RileyLinkUtil.sendNotification(new ServiceNotification(RT2Const.IPC.MSG_PUMP_pumpFound), null);
             } else {
                 RileyLinkUtil.setServiceState(RileyLinkServiceState.PumpConnectorError, RileyLinkError.GattDeviceNotFound);
                 RileyLinkUtil.sendNotification(new ServiceNotification(RT2Const.IPC.MSG_PUMP_pumpLost), null);

@@ -34,6 +34,8 @@ import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.tasks.
 import info.nightscout.androidaps.plugins.PumpMedtronic.util.MedtronicConst;
 import info.nightscout.utils.SP;
 
+import static info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkUtil.getRileyLinkCommunicationManager;
+
 
 /**
  * Created by andy on 5/6/18.
@@ -110,14 +112,14 @@ public abstract class RileyLinkService extends Service {
         rileyLinkIPCConnection = new RileyLinkIPCConnection(context); // We might be able to remove this -- Andy
         RileyLinkUtil.setRileyLinkIPCConnection(rileyLinkIPCConnection);
 
-//        // get most recently used RileyLink address
-//        rileyLinkServiceData.rileylinkAddress = SP.getString(MedtronicConst.Prefs.RileyLinkAddress, "");
-//
-//        rileyLinkBLE = new RileyLinkBLE(this);
-//        rfspy = new RFSpy(context, rileyLinkBLE);
-//        rfspy.startReader();
-//
-//        RileyLinkUtil.setRileyLinkBLE(rileyLinkBLE);
+        //        // get most recently used RileyLink address
+        //        rileyLinkServiceData.rileylinkAddress = SP.getString(MedtronicConst.Prefs.RileyLinkAddress, "");
+        //
+        //        rileyLinkBLE = new RileyLinkBLE(this);
+        //        rfspy = new RFSpy(context, rileyLinkBLE);
+        //        rfspy.startReader();
+        //
+        //        RileyLinkUtil.setRileyLinkBLE(rileyLinkBLE);
 
         loadPumpCommunicationManager();
 
@@ -152,9 +154,9 @@ public abstract class RileyLinkService extends Service {
                         } else if (action.equals(RT2Const.serviceLocal.ipcBound)) {
                             // If we still need permission for bluetooth, ask now.
                             // FIXME removed Andy - doesn't do anything
-//                            if (needBluetoothPermission) {
-//                                sendBLERequestForAccess();
-//                            }
+                            //                            if (needBluetoothPermission) {
+                            //                                sendBLERequestForAccess();
+                            //                            }
 
                         } else if (RT2Const.IPC.MSG_BLE_accessGranted.equals(action)) {
                             //initializeLeAdapter();
@@ -200,7 +202,7 @@ public abstract class RileyLinkService extends Service {
 
         intentFilter.addAction(RT2Const.IPC.MSG_ServiceCommand);
         intentFilter.addAction(RT2Const.serviceLocal.INTENT_sessionCompleted);
-        intentFilter.addAction(RT2Const.local.INTENT_serviceConnected);
+        //intentFilter.addAction(RT2Const.local.INTENT_serviceConnected);
         // after AAPS refactoring
         intentFilter.addAction(RileyLinkConst.Intents.RileyLinkReady);
 
@@ -261,7 +263,7 @@ public abstract class RileyLinkService extends Service {
 
         if (bluetoothAdapter == null) {
             LOG.error("Unable to obtain a BluetoothAdapter.");
-            RileyLinkUtil.setServiceState(RileyLinkServiceState.BluetoothNotAvailable, RileyLinkError.UnableToObtainBluetoothAdapter);
+            RileyLinkUtil.setServiceState(RileyLinkServiceState.BluetoothError, RileyLinkError.UnableToObtainBluetoothAdapter);
         } else {
 
             if (!bluetoothAdapter.isEnabled()) {
@@ -269,7 +271,7 @@ public abstract class RileyLinkService extends Service {
                 sendBLERequestForAccess();
 
                 LOG.error("Bluetooth is not enabled.");
-                RileyLinkUtil.setServiceState(RileyLinkServiceState.BluetoothDisabled, RileyLinkError.BluetoothDisabled);
+                RileyLinkUtil.setServiceState(RileyLinkServiceState.BluetoothError, RileyLinkError.BluetoothDisabled);
             } else {
                 RileyLinkUtil.setServiceState(RileyLinkServiceState.BluetoothReady);
                 return true;
@@ -281,81 +283,81 @@ public abstract class RileyLinkService extends Service {
     }
 
 
-//    void bluetoothInitOld() {
-//
-//        setServiceState(RileyLinkServiceState.EnableBlueTooth);
-//
-////        if (bluetoothManager == null) {
-////            bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-////            if (bluetoothManager == null) {
-////                LOG.error("Unable to initialize BluetoothManager.");
-////                setServiceState(RileyLinkServiceState.BluetoothNotAvailable, RileyLinkError.UnableToObtainBluetoothAdapter);
-////            }
-////        }
-//
-//        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-//
-//
-//        // Ensures Bluetooth is available on the device and it is enabled. If not,
-//        // displays a dialog requesting user permission to enable Bluetooth.
-//        if ((bluetoothAdapter==null) || (!bluetoothAdapter.isEnabled())) {
-//            sendBLERequestForAccess(); // FIXME ??
-//        } else {
-//            needBluetoothPermission = false;
-//            initializeLeAdapter();
-//        }
-//    }
+    //    void bluetoothInitOld() {
+    //
+    //        setServiceState(RileyLinkServiceState.EnableBlueTooth);
+    //
+    ////        if (bluetoothManager == null) {
+    ////            bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+    ////            if (bluetoothManager == null) {
+    ////                LOG.error("Unable to initialize BluetoothManager.");
+    ////                setServiceState(RileyLinkServiceState.BluetoothNotAvailable, RileyLinkError.UnableToObtainBluetoothAdapter);
+    ////            }
+    ////        }
+    //
+    //        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+    //
+    //
+    //        // Ensures Bluetooth is available on the device and it is enabled. If not,
+    //        // displays a dialog requesting user permission to enable Bluetooth.
+    //        if ((bluetoothAdapter==null) || (!bluetoothAdapter.isEnabled())) {
+    //            sendBLERequestForAccess(); // FIXME ??
+    //        } else {
+    //            needBluetoothPermission = false;
+    //            initializeLeAdapter();
+    //        }
+    //    }
 
 
-//    protected void bluetoothInit2() {
-//
-//        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-//
-//        LOG.debug("Bluetooth Adapter: " + bluetoothAdapter);
-//
-//        if (bluetoothAdapter==null)
-//        {
-//            LOG.error("Unable to obtain a BluetoothAdapter."); // FIXME better error here and change to state, and errorMsg
-//            errorCode = RileyLinkError.UnableToObtainBluetoothAdapter;
-//            startNewState(RileyLinkServiceState.BluetoothNotAvailable);
-//            return;
-//        }
-//
-//        if (bluetoothAdapter.isEnabled())
-//        {
-//            LOG.info("Bluetooth is enabled. ");
-//            startNewState(RileyLinkServiceState.BlueToothEnabled);
-//        }
-//        else
-//        {
-//            LOG.error("Bluetooth is not enabled, please enable.");
-//            startNewState(RileyLinkServiceState.BlueToothDisabled);
-//        }
-//
-//
-////        if (bluetoothManager == null) {
-////            bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-////            if (bluetoothManager == null) {
-////                LOG.error("Unable to initialize BluetoothManager.");
-////            }
-////        }
-//
-//        // Ensures Bluetooth is available on the device and it is enabled. If not,
-//        // displays a dialog requesting user permission to enable Bluetooth.
-////        if ((bluetoothAdapter == null) || (!bluetoothAdapter.isEnabled())) {
-////            sendBLERequestForAccess();
-////        } else {
-////            needBluetoothPermission = false;
-////            if (initializeLeAdapter())
-////            {
-////                startNewState(RileyLinkServiceState.BlueToothEnabled);
-////            }
-////            else
-////            {
-////                startNewState(RileyLinkServiceState.Disabled);
-////            }
-////        }
-//    }
+    //    protected void bluetoothInit2() {
+    //
+    //        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+    //
+    //        LOG.debug("Bluetooth Adapter: " + bluetoothAdapter);
+    //
+    //        if (bluetoothAdapter==null)
+    //        {
+    //            LOG.error("Unable to obtain a BluetoothAdapter."); // FIXME better error here and change to state, and errorMsg
+    //            errorCode = RileyLinkError.UnableToObtainBluetoothAdapter;
+    //            startNewState(RileyLinkServiceState.BluetoothNotAvailable);
+    //            return;
+    //        }
+    //
+    //        if (bluetoothAdapter.isEnabled())
+    //        {
+    //            LOG.info("Bluetooth is enabled. ");
+    //            startNewState(RileyLinkServiceState.BlueToothEnabled);
+    //        }
+    //        else
+    //        {
+    //            LOG.error("Bluetooth is not enabled, please enable.");
+    //            startNewState(RileyLinkServiceState.BlueToothDisabled);
+    //        }
+    //
+    //
+    ////        if (bluetoothManager == null) {
+    ////            bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+    ////            if (bluetoothManager == null) {
+    ////                LOG.error("Unable to initialize BluetoothManager.");
+    ////            }
+    ////        }
+    //
+    //        // Ensures Bluetooth is available on the device and it is enabled. If not,
+    //        // displays a dialog requesting user permission to enable Bluetooth.
+    ////        if ((bluetoothAdapter == null) || (!bluetoothAdapter.isEnabled())) {
+    ////            sendBLERequestForAccess();
+    ////        } else {
+    ////            needBluetoothPermission = false;
+    ////            if (initializeLeAdapter())
+    ////            {
+    ////                startNewState(RileyLinkServiceState.BlueToothEnabled);
+    ////            }
+    ////            else
+    ////            {
+    ////                startNewState(RileyLinkServiceState.Disabled);
+    ////            }
+    ////        }
+    //    }
 
 
     /**
@@ -366,31 +368,31 @@ public abstract class RileyLinkService extends Service {
     //public abstract boolean initializeParameters();
 
 
-//    public boolean initializeLeAdapter() {
-//        LOG.debug("initializeLeAdapter: attempting to get an adapter");
-//        bluetoothAdapter = bluetoothManager.getAdapter();
-//        if (bluetoothAdapter == null) {
-//            LOG.error("Unable to obtain a BluetoothAdapter."); // FIXME better error here and change to state, and errorMsg
-//            errorCode = RileyLinkError.UnableToObtainBluetoothAdapter;
-//            serviceState = RileyLinkServiceState.BluetoothNotAvailable;
-//            return false;
-//        } else {
-//
-//            addBluetoothStateListener(); // FIXME probably remove
-//
-//            if (!bluetoothAdapter.isEnabled()) {
-//                // NOTE: This does not work!
-//                LOG.error("Bluetooth is not enabled.");
-//
-//                errorCode = RileyLinkError.BluetoothDisabled;
-//                serviceState = RileyLinkServiceState.BlueToothDisabled;
-//
-//                return false; // Andy
-//            }
-//        }
-//
-//        return true;
-//    }
+    //    public boolean initializeLeAdapter() {
+    //        LOG.debug("initializeLeAdapter: attempting to get an adapter");
+    //        bluetoothAdapter = bluetoothManager.getAdapter();
+    //        if (bluetoothAdapter == null) {
+    //            LOG.error("Unable to obtain a BluetoothAdapter."); // FIXME better error here and change to state, and errorMsg
+    //            errorCode = RileyLinkError.UnableToObtainBluetoothAdapter;
+    //            serviceState = RileyLinkServiceState.BluetoothNotAvailable;
+    //            return false;
+    //        } else {
+    //
+    //            addBluetoothStateListener(); // FIXME probably remove
+    //
+    //            if (!bluetoothAdapter.isEnabled()) {
+    //                // NOTE: This does not work!
+    //                LOG.error("Bluetooth is not enabled.");
+    //
+    //                errorCode = RileyLinkError.BluetoothError;
+    //                serviceState = RileyLinkServiceState.BlueToothDisabled;
+    //
+    //                return false; // Andy
+    //            }
+    //        }
+    //
+    //        return true;
+    //    }
 
 
     /**
@@ -444,7 +446,8 @@ public abstract class RileyLinkService extends Service {
     protected void setServiceState(RileyLinkServiceState newState, RileyLinkError errorCode) {
         this.rileyLinkServiceData.serviceState = newState;
 
-        if (errorCode != null) this.rileyLinkServiceData.errorCode = errorCode;
+        if (errorCode != null)
+            this.rileyLinkServiceData.errorCode = errorCode;
     }
 
 
@@ -498,9 +501,8 @@ public abstract class RileyLinkService extends Service {
             lastGoodFrequency = rileyLinkServiceData.lastGoodFrequency;
         }
 
-        //double lastGoodFrequency = SP.getFloat(MedtronicConst.Prefs.LastGoodPumpFrequency, 0.0f);
         double newFrequency;
-        if (lastGoodFrequency != 0.0) {
+        if ((lastGoodFrequency > 0.0d) && getRileyLinkCommunicationManager().isValidFrequency(lastGoodFrequency)) {
             LOG.info("Checking for pump near last saved frequency of {}MHz", lastGoodFrequency);
             // we have an old frequency, so let's start there.
             newFrequency = pumpCommunicationManager.quickTuneForPump(lastGoodFrequency);
@@ -513,8 +515,8 @@ public abstract class RileyLinkService extends Service {
             LOG.warn("No saved frequency for pump, doing full scan.");
             // we don't have a saved frequency, so do the full scan.
             newFrequency = pumpCommunicationManager.tuneForPump();
-
         }
+
         if ((newFrequency != 0.0) && (newFrequency != lastGoodFrequency)) {
             LOG.info("Saving new pump frequency of {}MHz", newFrequency);
             SP.putFloat(MedtronicConst.Prefs.LastGoodPumpFrequency, (float) newFrequency);
@@ -525,10 +527,8 @@ public abstract class RileyLinkService extends Service {
 
         if (newFrequency == 0.0d) {
             // error tuning pump, pump not present ??
-            //this.errorCode = RileyLinkError.TuneUpOfPumpFailed;
             RileyLinkUtil.setServiceState(RileyLinkServiceState.PumpConnectorError, RileyLinkError.TuneUpOfPumpFailed);
         }
-
     }
 
 
