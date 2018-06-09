@@ -112,9 +112,19 @@ public class HexDump {
     public static String toHexStringDisplayable(byte[] arr) {
         StringBuilder sb = new StringBuilder();
 
-        for(byte element : arr) {
-            sb.append(getCorrectHexValue(element));
-            sb.append(" ");
+        if (arr == null) {
+            sb.append("Null array");
+        } else {
+
+            if (arr.length == 0) {
+                sb.append("Zero-length array");
+            } else {
+
+                for(byte element : arr) {
+                    sb.append(getCorrectHexValue(element));
+                    sb.append(" ");
+                }
+            }
         }
 
         return sb.toString();
@@ -137,10 +147,14 @@ public class HexDump {
         String hx = Integer.toHexString((char) inp);
         hx = hx.toUpperCase();
 
-        if (hx.length() == 0) return "00";
-        else if (hx.length() == 1) return "0" + hx;
-        else if (hx.length() == 2) return hx;
-        else if (hx.length() == 4) return hx.substring(2);
+        if (hx.length() == 0)
+            return "00";
+        else if (hx.length() == 1)
+            return "0" + hx;
+        else if (hx.length() == 2)
+            return hx;
+        else if (hx.length() == 4)
+            return hx.substring(2);
         else {
             System.out.println("HEX ERROR !!!!!!!!!!!!!!!!");
         }
@@ -191,9 +205,12 @@ public class HexDump {
 
 
     private static int toByte(char c) {
-        if (c >= '0' && c <= '9') return (c - '0');
-        if (c >= 'A' && c <= 'F') return (c - 'A' + 10);
-        if (c >= 'a' && c <= 'f') return (c - 'a' + 10);
+        if (c >= '0' && c <= '9')
+            return (c - '0');
+        if (c >= 'A' && c <= 'F')
+            return (c - 'A' + 10);
+        if (c >= 'a' && c <= 'f')
+            return (c - 'a' + 10);
 
         throw new RuntimeException("Invalid hex char '" + c + "'");
     }

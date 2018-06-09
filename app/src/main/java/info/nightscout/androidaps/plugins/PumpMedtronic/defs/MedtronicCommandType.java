@@ -24,9 +24,11 @@ public enum MedtronicCommandType implements Serializable //, MinimedCommandTypeI
 {
     InvalidCommand(0, "Invalid Command", null, null, null), //
 
-    // All (9)
-    CommandAck(6, "Acknowledge", MinimedTargetType.ActionCommand, MedtronicDeviceType.All, MinimedCommandParameterType.NoParameters), //
+    // Pump Responses (9)
+    CommandACK(0x06, "ACK - Acknowledge", MinimedTargetType.ActionCommand, MedtronicDeviceType.All, MinimedCommandParameterType.NoParameters), //
+    CommandNAK(0x15, "NAK - Not Acknowledged", MinimedTargetType.ActionCommand, MedtronicDeviceType.All, MinimedCommandParameterType.NoParameters), //
 
+    // All (8)
     PushAck(91, "Push ACK", MinimedTargetType.ActionCommand, MedtronicDeviceType.All, MinimedCommandParameterType.FixedParameters, getByteArray(2)), //
 
     PushEsc(91, "Push Esc", MinimedTargetType.ActionCommand, MedtronicDeviceType.All, MinimedCommandParameterType.FixedParameters, getByteArray(1)), //
@@ -77,7 +79,7 @@ public enum MedtronicCommandType implements Serializable //, MinimedCommandTypeI
 
 
     // 512
-    ReadTemporaryBasal(0x98, "Read Temporary Basal", MinimedTargetType.InitCommand, MedtronicDeviceType.Medtronic_512andHigher, MinimedCommandParameterType.NoParameters), // 152
+    ReadTemporaryBasal(0x98, "Read Temporary Basal", MinimedTargetType.InitCommand, MedtronicDeviceType.Medtronic_512andHigher, MinimedCommandParameterType.NoParameters, 5), // 152
 
     SetTemporaryBasal(76, "Set Temp Basal Rate (bolus detection only)", MinimedTargetType.InitCommand, MedtronicDeviceType.Medtronic_512andHigher, MinimedCommandParameterType.NoParameters, getByteArray(0, 0, 0)),
     // util.getCommand(MinimedCommand.SET_TEMPORARY_BASAL).allowedRetries
@@ -402,7 +404,7 @@ public enum MedtronicCommandType implements Serializable //, MinimedCommandTypeI
 
     public static MessageBody constructMessageBody(MedtronicCommandType messageType, byte[] bodyData) {
         switch (messageType) {
-            case CommandAck:
+            case CommandACK:
                 return new PumpAckMessageBody(bodyData);
             default:
                 return new UnknownMessageBody(bodyData);

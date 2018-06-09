@@ -31,14 +31,14 @@ public class MedtronicPumpHistoryDecoderTest {
 
         System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "trace");
 
-//        final TestAppender appender = new TestAppender();
-//        final Logger logger = Logger.getRootLogger();
-//        logger.addAppender(appender);
-//        try {
-//            Logger.getLogger(MyTest.class).info("Test");
-//        } finally {
-//            logger.removeAppender(appender);
-//        }
+        //        final TestAppender appender = new TestAppender();
+        //        final Logger logger = Logger.getRootLogger();
+        //        logger.addAppender(appender);
+        //        try {
+        //            Logger.getLogger(MyTest.class).info("Test");
+        //        } finally {
+        //            logger.removeAppender(appender);
+        //        }
     }
 
 
@@ -98,13 +98,13 @@ public class MedtronicPumpHistoryDecoderTest {
         String path = "/home/andy/git/diabetes-aapk/decoding-carelink/analysis/";
 
         // -----------------------------------------
-//        String subPath = "578398/";
-//        int pageNr = 6;
-//        MedtronicUtil.setDeviceType(MedtronicDeviceType.Medtronic_522);
+        //        String subPath = "578398/";
+        //        int pageNr = 6;
+        //        MedtronicUtil.setDeviceType(MedtronicDeviceType.Medtronic_522);
         // -----------------------------------------
-// /home/andy/Dropbox/workspaces/aaps/Roundtrip2RileyLinkAAPS/historyDebugging
+        // /home/andy/Dropbox/workspaces/aaps/Roundtrip2RileyLinkAAPS/historyDebugging
         //String subPath = "../../../Dropbox/workspaces/aaps/Roundtrip2RileyLinkAAPS/historyDebugging/";
-        int pageNr = 2;
+        int pageNr = 11;  // 4 - weird 2byte date
         // pages with weird commands:
         MedtronicUtil.setDeviceType(MedtronicDeviceType.Medtronic_522);
 

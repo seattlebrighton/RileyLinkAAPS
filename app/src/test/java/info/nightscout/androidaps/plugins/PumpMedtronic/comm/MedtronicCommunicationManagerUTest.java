@@ -40,7 +40,7 @@ public class MedtronicCommunicationManagerUTest {
         AAPSMocker.mockSharedPreferences();
         AAPSMocker.mockSP();
 
-        medtronicCommunicationManager = new MedtronicCommunicationManager(MainApp.instance().getApplicationContext(), rFSpy, false);
+        //medtronicCommunicationManager = new MedtronicCommunicationManager(MainApp.instance().getApplicationContext(), rFSpy, false);
     }
 
 

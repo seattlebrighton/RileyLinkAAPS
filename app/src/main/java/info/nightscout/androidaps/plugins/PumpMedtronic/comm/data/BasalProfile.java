@@ -33,7 +33,7 @@ public class BasalProfile {
     private static final Logger LOG = LoggerFactory.getLogger(BasalProfile.class);
 
     private static final boolean DEBUG_BASALPROFILE = false;
-    protected static final int MAX_RAW_DATA_SIZE = (21 * 3) + 1;
+    protected static final int MAX_RAW_DATA_SIZE = (48 * 3) + 1;
     protected byte[] mRawData; // store as byte array to make transport (via parcel) easier
 
 
@@ -128,10 +128,12 @@ public class BasalProfile {
             }
             if (localMillis >= entry.startTime.getMillisOfDay()) {
                 rval = entry;
-                if (DEBUG_BASALPROFILE) LOG.debug("Accepted Entry");
+                if (DEBUG_BASALPROFILE)
+                    LOG.debug("Accepted Entry");
             } else {
                 // entry at i has later start time, keep older entry
-                if (DEBUG_BASALPROFILE) LOG.debug("Rejected Entry");
+                if (DEBUG_BASALPROFILE)
+                    LOG.debug("Rejected Entry");
                 done = true;
             }
             i++;
@@ -176,14 +178,20 @@ public class BasalProfile {
     List<BasalProfileEntry> listEntries;
 
 
+    /**
+     * This is used to prepare new profile
+     *
+     * @param entry
+     */
     public void addEntry(BasalProfileEntry entry) {
-        if (listEntries == null) listEntries = new ArrayList<>();
+        if (listEntries == null)
+            listEntries = new ArrayList<>();
 
         listEntries.add(entry);
     }
 
 
-    public void generateRawData() {
+    public byte[] generateRawData() {
 
         List<Byte> outData = new ArrayList<>();
 
@@ -192,19 +200,21 @@ public class BasalProfile {
             byte[] strokes = MedtronicUtil.getBasalStrokes(profileEntry.rate, true);
 
             // TODO check if this is correct
-            outData.add(strokes[0]);
-            outData.add(strokes[1]);
+            outData.add(profileEntry.rate_raw[0]);
+            outData.add(profileEntry.rate_raw[1]);
 
-            int time = profileEntry.startTime.getHourOfDay();
+            //int time = profileEntry.startTime.getHourOfDay();
 
-            if (profileEntry.startTime.getMinuteOfHour() == 30) {
-                time++;
-            }
+            //if (profileEntry.startTime.getMinuteOfHour() == 30) {
+            //    time++;
+            //}
 
-            outData.add((byte) time);
+            outData.add(profileEntry.startTime_raw);
         }
 
         this.setRawData(MedtronicUtil.createByteArray(outData));
+
+        return this.mRawData;
     }
 
 

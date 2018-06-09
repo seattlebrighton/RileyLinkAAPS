@@ -103,6 +103,7 @@ public abstract class MedtronicHistoryEntry {
         StringBuilder sb = new StringBuilder();
 
         sb.append(getToStringStart());
+        sb.append(", DT: " + ((this.dateTime == null) ? "x" : StringUtil.toDateTimeString(this.dateTime)));
         sb.append(", length=");
         sb.append(getHeadLength());
         sb.append(",");
@@ -112,8 +113,6 @@ public abstract class MedtronicHistoryEntry {
         sb.append("(");
         sb.append((getHeadLength() + getDateTimeLength() + getBodyLength()));
         sb.append(")");
-
-        sb.append(", DT: " + ((this.dateTime == null) ? "x" : StringUtil.toDateTimeString(this.dateTime)));
 
         if (head != null) {
             sb.append(", head=");

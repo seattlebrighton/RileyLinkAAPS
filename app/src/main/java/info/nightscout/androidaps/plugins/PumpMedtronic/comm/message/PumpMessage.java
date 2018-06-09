@@ -4,6 +4,7 @@ import android.util.Log;
 
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RLMessage;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
+import info.nightscout.androidaps.plugins.PumpCommon.utils.HexDump;
 import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicCommandType;
 
 /**
@@ -15,15 +16,28 @@ public class PumpMessage implements RLMessage {
     public PacketType packetType = PacketType.Carelink;
     public byte[] address = new byte[]{0, 0, 0};
     public MedtronicCommandType commandType;
+    public Byte invalidCommandType;
     public MessageBody messageBody = new MessageBody();
+    public String error = null;
 
 
-    public PumpMessage() {
+    public PumpMessage(String error) {
+        this.error = error;
     }
 
 
     public PumpMessage(byte[] rxData) {
         init(rxData);
+    }
+
+
+    public PumpMessage() {
+
+    }
+
+
+    public boolean isErrorResponse() {
+        return (this.error != null);
     }
 
 
@@ -55,6 +69,9 @@ public class PumpMessage implements RLMessage {
         }
         if (rxData.length > 4) {
             this.commandType = MedtronicCommandType.getByCode(rxData[4]);
+            if (this.commandType == MedtronicCommandType.InvalidCommand) {
+                Log.e("PumpMessage", "Unknown commandType " + rxData[4]);
+            }
         }
         if (rxData.length > 5) {
             this.messageBody = MedtronicCommandType.constructMessageBody(commandType, ByteUtil.substring(rxData, 5, rxData.length - 5));
@@ -87,8 +104,13 @@ public class PumpMessage implements RLMessage {
         int length = ByteUtil.asUINT8(data[0]); // length is not always correct so, we check whole array if we have data, after length
         int originalLength = length;
 
-        boolean oldWay = false;
+        // check if displayed length is invalid
+        if (length > data.length - 1) {
+            return data;
+        }
 
+        // check Old Way
+        boolean oldWay = false;
         for(int i = (length + 1); i < data.length; i++) {
             if (data[i] != 0x00) {
                 oldWay = true;
@@ -124,6 +146,62 @@ public class PumpMessage implements RLMessage {
 
     public MessageBody getMessageBody() {
         return messageBody;
+    }
+
+
+    public String getResponseContent() {
+        StringBuilder sb = new StringBuilder("PumpMessage [response=");
+        boolean showData = true;
+
+        if (commandType != null) {
+            if (commandType == MedtronicCommandType.CommandACK) {
+                sb.append("Acknowledged");
+                showData = false;
+            } else if (commandType == MedtronicCommandType.CommandNAK) {
+                sb.append("NOT Acknowledged");
+                showData = false;
+            } else {
+                sb.append(commandType.name());
+            }
+        } else {
+            sb.append("Unknown_Type");
+            sb.append(" (" + invalidCommandType + ")");
+        }
+
+        if (showData) {
+            sb.append(", rawResponse=");
+            sb.append(HexDump.toHexStringDisplayable(getRawContent()));
+        }
+
+        sb.append("]");
+
+        return sb.toString();
+    }
+
+
+    public String toString() {
+        StringBuilder sb = new StringBuilder("PumpMessage [");
+
+        sb.append("packetType=");
+        sb.append(packetType == null ? "null" : packetType.name());
+
+        sb.append(", address=(");
+        sb.append(HexDump.toHexStringDisplayable(this.address));
+
+        sb.append("), commandType=");
+        sb.append(commandType == null ? "null" : commandType.name());
+
+        if (invalidCommandType != null) {
+            sb.append(", invalidCommandType=");
+            sb.append(invalidCommandType);
+        }
+
+        sb.append(", messageBody=(");
+        sb.append(this.messageBody == null ? "null" : this.messageBody);
+
+        sb.append(")]");
+
+        return sb.toString();
     }
 
 }

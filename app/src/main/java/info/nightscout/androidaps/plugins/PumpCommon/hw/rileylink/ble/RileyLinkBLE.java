@@ -9,9 +9,7 @@ import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
-import android.content.Intent;
 import android.os.SystemClock;
-import android.support.v4.content.LocalBroadcastManager;
 import android.widget.Toast;
 
 import com.gxwtech.roundtrip2.RT2Const;
@@ -136,18 +134,24 @@ public class RileyLinkBLE {
                     } else if (newState == BluetoothProfile.STATE_DISCONNECTING) {
                         stateMessage = "DISCONNECTING";
                     } else {
-                        stateMessage = "UNKNOWN (" + newState + ")";
+                        stateMessage = "UNKNOWN newState (" + newState + ")";
                     }
 
                     LOG.warn("onConnectionStateChange " + getGattStatusMessage(status) + " " + stateMessage);
                 }
 
                 if (status == BluetoothGatt.GATT_SUCCESS && newState == BluetoothProfile.STATE_CONNECTED) {
-                    LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(RileyLinkConst.Intents.BluetoothConnected));
+                    RileyLinkUtil.sendBroadcastMessage(RileyLinkConst.Intents.BluetoothConnected);
+                } else if ((newState == BluetoothProfile.STATE_CONNECTING) || //
+                        (newState == BluetoothProfile.STATE_DISCONNECTING)) {
+                    //LOG.debug("We are in {} state.", status == BluetoothProfile.STATE_CONNECTING ? "Connecting" : "Disconnecting");
+                } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
+                    RileyLinkUtil.sendBroadcastMessage(RileyLinkConst.Intents.RileyLinkDisconnected);
+                    if (manualDisconnect)
+                        close();
+                    LOG.warn("RileyLink Disconnected.");
                 } else {
-                    LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(RileyLinkConst.Intents.BluetoothDisconnected));
-                    disconnect();
-                    LOG.warn("Cannot establish Bluetooth connection.");
+                    LOG.warn("Some other state: (status={},newState={})", status, newState);
                 }
             }
 
@@ -226,6 +230,9 @@ public class RileyLinkBLE {
                         LOG.warn("onServicesDiscovered " + getGattStatusMessage(status));
                     }
                     mIsConnected = true;
+
+                    LOG.warn("Gatt device is RileyLink device: " + rileyLinkFound);
+
                     RileyLinkUtil.sendBroadcastMessage(RileyLinkConst.Intents.RileyLinkReady);
                     RileyLinkMedtronicService.getInstance().sendNotification(new ServiceNotification(RT2Const.IPC.MSG_BLE_RileyLinkReady), null);
 
@@ -322,6 +329,8 @@ public class RileyLinkBLE {
             LOG.error("Cannot discover GATT Services.");
             return false;
         }
+
+
     }
 
 
@@ -360,6 +369,9 @@ public class RileyLinkBLE {
     }
 
 
+    boolean manualDisconnect = false;
+
+
     public void disconnect() {
         mIsConnected = false;
         LOG.warn("Closing GATT connection");
@@ -367,6 +379,15 @@ public class RileyLinkBLE {
         if (bluetoothConnectionGatt != null) {
             // Not sure if to disconnect or to close first..
             bluetoothConnectionGatt.disconnect();
+            manualDisconnect = true;
+            //bluetoothConnectionGatt.close();
+            //bluetoothConnectionGatt = null;
+        }
+    }
+
+
+    public void close() {
+        if (bluetoothConnectionGatt != null) {
             bluetoothConnectionGatt.close();
             bluetoothConnectionGatt = null;
         }

@@ -23,13 +23,13 @@ import java.util.List;
 import java.util.Map;
 
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkUtil;
-import info.nightscout.androidaps.plugins.PumpCommon.utils.HexDump;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.MedtronicCommunicationManager;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.BasalProfile;
+import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.BasalProfileEntry;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.TempBasalPair;
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.message.PumpMessage;
 import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.PumpSettingDTO;
 import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicDeviceType;
+import info.nightscout.androidaps.plugins.PumpMedtronic.util.MedtronicUtil;
 
 public class ShowAAPS2Activity extends AppCompatActivity {
 
@@ -48,32 +48,33 @@ public class ShowAAPS2Activity extends AppCompatActivity {
 
     public ShowAAPS2Activity() {
 
-        // SET MODEL WHEN FIRST READ
-
         // FIXME
         addCommandAction("Set TBR", ImplementationStatus.WorkInProgress, "RefreshData.SetTBR"); // not working
-        addCommandAction("Cancel TBR", ImplementationStatus.NotStarted, null);
-        addCommandAction("Set Bolus", ImplementationStatus.NotStarted, null);
-        addCommandAction("Set Basal Profile", ImplementationStatus.NotStarted, null);
+        addCommandAction("Set Basal Profile", ImplementationStatus.WorkInProgress, "RefreshData.SetBasalProfile");
         addCommandAction("Status - Bolus", ImplementationStatus.WorkInProgress, "RefreshData.GetStatus"); // weird on 512?
-        addCommandAction("Status - Settings", ImplementationStatus.WorkInProgress, "RefreshData.GetSettings");
+
+        // STATUS: has Bolus / is running / is beeing primed
 
         // WORK IN PROGRESS - waiting for something
         addCommandAction("Status - Remaining Power", ImplementationStatus.WorkInProgress, "RefreshData.RemainingPower");
+        addCommandAction("Set Bolus", ImplementationStatus.WorkInProgress, "RefreshData.SetBolus"); // works for less <25
 
         // LOW PRIORITY
         addCommandAction("Read History", ImplementationStatus.NotStarted, null);
         addCommandAction("Set Ext Bolus", ImplementationStatus.NotStarted, null);
         addCommandAction("Status - Ext. Bolus", ImplementationStatus.WorkInProgress, "RefreshData.GetBolus");
-        addCommandAction("Load TDD", ImplementationStatus.NotStarted, null);
+        //addCommandAction("Load TDD", ImplementationStatus.NotStarted, null); Not needed, we have good history
 
 
         // DONE
+        addCommandAction("Cancel TBR", ImplementationStatus.WorkInProgress, "RefreshData.CancelTBR");
+
         addCommandAction("Get Model", ImplementationStatus.Done, "RefreshData.PumpModel");
         addCommandAction("Get Basal Profile", ImplementationStatus.Done, "RefreshData.BasalProfile");
         addCommandAction("Status - Remaining Insulin", ImplementationStatus.Done, "RefreshData.RemainingInsulin");
         addCommandAction("Status - Get Time", ImplementationStatus.Done, "RefreshData.GetTime");
         addCommandAction("Status - TBR", ImplementationStatus.Done, "RefreshData.GetTBR");
+        addCommandAction("Status - Settings", ImplementationStatus.Done, "RefreshData.GetSettings");
 
         // NOT SUPPORTED
         addCommandAction("Cancel Ext Bolus", ImplementationStatus.NotSupportedByDevice, null);
@@ -172,7 +173,8 @@ public class ShowAAPS2Activity extends AppCompatActivity {
             this.selectedCommandAction = allCommands.get((String) id);
             tvCommandStatusText.setText(selectedCommandAction.implementationStatus.text);
             enableFields(isAmountEnabled(), isDurationEnabled());
-            this.btnStart.setEnabled(selectedCommandAction.intentString != null);
+            this.btnStart.setEnabled((selectedCommandAction.implementationStatus == ImplementationStatus.Done || //
+                    selectedCommandAction.implementationStatus == ImplementationStatus.WorkInProgress));
         }
 
     }
@@ -303,9 +305,10 @@ public class ShowAAPS2Activity extends AppCompatActivity {
             break;
 
             case "RefreshData.SetTBR": {
-                PumpMessage result = (PumpMessage) data;
-                // FIXME
-                putOnDisplay("Response after action: " + HexDump.toHexStringDisplayable(result.getRawContent()));
+                Boolean response = (Boolean) data;
+                TempBasalPair tbr = getTBRSettings();
+
+                putOnDisplay(String.format("TBR: Amount: %.3f, Duration: %s - %s", tbr.getInsulinRate(), "" + tbr.getDurationMinutes(), (response ? "Was set." : "Was NOT set.")));
             }
             break;
 
@@ -315,6 +318,30 @@ public class ShowAAPS2Activity extends AppCompatActivity {
                 putOnDisplay(String.format("TBR: Amount: %s, Duration: %s", "" + tbr.getInsulinRate(), "" + tbr.getDurationMinutes()));
             }
             break;
+
+            case "RefreshData.SetBolus": {
+                Boolean response = (Boolean) data;
+
+                Float amount = getAmount();
+
+                putOnDisplay(String.format("Bolus: %.2f - %s", amount, (response ? "Was set." : "Was NOT set.")));
+            }
+            break;
+
+            case "RefreshData.CancelTBR": {
+                Boolean response = (Boolean) data;
+
+                putOnDisplay(String.format("TBR %s cancelled.", (response ? "was" : "was NOT")));
+            }
+            break;
+
+            case "RefreshData.SetBasalProfile": {
+                Boolean response = (Boolean) data;
+
+                putOnDisplay(String.format("Basal profile %s set.", (response ? "was" : "was NOT")));
+            }
+            break;
+
 
             case "RefreshData.GetStatus": {
                 // FIXME
@@ -338,7 +365,7 @@ public class ShowAAPS2Activity extends AppCompatActivity {
                 putOnDisplay("Unsupported action: " + action);
         }
 
-
+        this.data = null;
     }
 
 
@@ -409,6 +436,39 @@ public class ShowAAPS2Activity extends AppCompatActivity {
                     }
                     break;
 
+                    case "RefreshData.SetBolus": {
+                        Float amount = getAmount();
+
+                        if (amount != null)
+                            returnData = getCommunicationManager().setBolus(amount);
+                    }
+                    break;
+
+                    case "RefreshData.CancelTBR": {
+                        returnData = getCommunicationManager().cancelTBR();
+                    }
+                    break;
+
+                    case "RefreshData.SetBasalProfile": {
+
+                        Float amount = getAmount();
+
+                        if (amount != null) {
+
+                            BasalProfile profile = new BasalProfile();
+
+                            int basalStrokes1 = MedtronicUtil.getBasalStrokesInt(amount);
+                            int basalStrokes2 = MedtronicUtil.getBasalStrokesInt(amount * 2);
+
+                            for(int i = 0; i < 24; i++) {
+                                profile.addEntry(new BasalProfileEntry(i % 2 == 0 ? basalStrokes1 : basalStrokes2, i * 2));
+                            }
+
+                            returnData = getCommunicationManager().setBasalProfile(profile);
+                        }
+
+                    }
+                    break;
 
                     default:
                         LOG.warn("Action is not supported {}.", selectedCommandAction);
@@ -489,7 +549,7 @@ public class ShowAAPS2Activity extends AppCompatActivity {
             }
 
             try {
-                timeMin += Integer.parseInt(time[0]);
+                timeMin += Integer.parseInt(time[0]) * 60;
             } catch (Exception ex) {
                 putOnDisplay("Invalid duration: duration must be in minutes or as HH:mm (only 30 min intervals are valid).");
                 return null;
@@ -498,8 +558,13 @@ public class ShowAAPS2Activity extends AppCompatActivity {
             if (time[1].equals("30")) {
                 timeMin += 30;
             }
-
-
+        } else {
+            try {
+                timeMin += Integer.parseInt(duration) * 60;
+            } catch (Exception ex) {
+                putOnDisplay("Invalid duration: duration must be in minutes or as HH:mm (only 30 min intervals are valid).");
+                return null;
+            }
         }
 
         return timeMin;

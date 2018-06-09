@@ -21,7 +21,7 @@ public class WakeAndTuneTask extends PumpTask {
 
     @Override
     public void run() {
-        RileyLinkMedtronicService.getInstance().pumpCommunicationManager.wakeup(6);
+        //RileyLinkMedtronicService.getInstance().pumpCommunicationManager.wakeup(6);
         RileyLinkMedtronicService.getInstance().pumpCommunicationManager.tuneForPump();
     }
 

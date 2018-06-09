@@ -9,6 +9,7 @@ import java.nio.ByteOrder;
 import java.util.List;
 
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkUtil;
+import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.HexDump;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.message.MessageType;
 import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicCommandType;
@@ -31,6 +32,11 @@ public class MedtronicUtil {
         } else {
             return new LocalTime((interval - 1) / 2, 30);
         }
+    }
+
+
+    public static int getIntervalFromMinutes(int minutes) {
+        return minutes / 30;
     }
 
 
@@ -91,12 +97,32 @@ public class MedtronicUtil {
     }
 
 
+    public static int getBasalStrokesInt(double amount) {
+        return getStrokesInt(amount, 40);
+    }
+
+
     public static byte[] getBolusStrokes(double amount) {
         return getStrokes(amount, 10, false);
     }
 
 
+    public static byte[] createCommandBody(byte[] input) {
+
+        return ByteUtil.concat((byte) input.length, input);
+    }
+
+
     public static byte[] getStrokes(double amount, int strokesPerUnit, boolean returnFixedSize) {
+
+        int strokes = getStrokesInt(amount, strokesPerUnit);
+
+        return getByteArrayFromUnsignedShort(strokes, false);
+
+    }
+
+
+    public static int getStrokesInt(double amount, int strokesPerUnit) {
 
         int length = 1;
         int scrollRate = 1;
@@ -115,7 +141,7 @@ public class MedtronicUtil {
 
         strokes *= scrollRate;
 
-        return getByteArrayFromUnsignedShort(strokes, false);
+        return strokes;
 
     }
 

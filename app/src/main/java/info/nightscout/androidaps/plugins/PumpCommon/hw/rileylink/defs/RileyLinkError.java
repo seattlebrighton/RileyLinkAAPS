@@ -9,6 +9,6 @@ public enum RileyLinkError {
     ParametersNotSetOrInvalid, //
     GattDiscoveryFailed, //
     TuneUpOfPumpFailed, //
-    UnableToObtainBluetoothAdapter, BluetoothDisabled, GattDeviceNotFound, //
+    UnableToObtainBluetoothAdapter, BluetoothDisabled, GattDeviceNotFound, RileyLinkUnreachable, //
 
 }

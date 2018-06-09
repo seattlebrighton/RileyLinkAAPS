@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
+import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.HexDump;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.BasalProfileEntry;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.RawHistoryPage;
@@ -707,20 +708,34 @@ public class MedtronicPumpHistoryDecoder extends MedtronicHistoryDecoder {
         }
 
         if (entry.getDateTimeLength() == 5) {
+
             int seconds = dt[0] & 0x3F;
-            int month = ((dt[0] & 0xC0) >> 6) | ((dt[1] & 0xC0) >> 4);
             int minutes = dt[1] & 0x3F;
             int hour = dt[2] & 0x1F;
+
+            int month = ((dt[0] >> 4) & 0x0c) + ((dt[1] >> 6) & 0x03);
+            // ((dt[0] & 0xC0) >> 6) | ((dt[1] & 0xC0) >> 4);
+
+
             int dayOfMonth = dt[3] & 0x1F;
-            int year = fix2DigitYear(dt[4] & 0x3F);
+            int year = fix2DigitYear(dt[4] & 0x3F); // Assuming this is correct, need to verify. Otherwise this will be a problem in 2016.
 
             LocalDateTime atdate = new LocalDateTime(year, month, dayOfMonth, hour, minutes, seconds);
 
             entry.setLocalDateTime(atdate);
         } else if (entry.getDateTimeLength() == 2) {
-            int dayOfMonth = dt[0] & 0x1F;
-            int month = (((dt[0] & 0xE0) >> 4) + ((dt[1] & 0x80) >> 7));
-            int year = fix2DigitYear(dt[1] & 0x3F);
+            int low = ByteUtil.asUINT8(dt[0]) & 0x1F;
+            int mhigh = (ByteUtil.asUINT8(dt[0]) & 0xE0) >> 4;
+            int mlow = (ByteUtil.asUINT8(dt[1]) & 0x80) >> 7;
+            int month = mhigh + mlow;
+            int dayOfMonth = low + 1;
+            int year = 2000 + (ByteUtil.asUINT8(dt[1]) & 0x7F);
+
+            //LocalDate rval = new LocalDate(year, month, dayOfMonth);
+
+            //            int dayOfMonth = dt[0] & 0x1F;
+            //            int month = (((dt[0] & 0xE0) >> 4) + ((dt[1] & 0x80) >> 7));
+            //            int year = fix2DigitYear(dt[1] & 0x3F);
 
             LocalDateTime atdate = new LocalDateTime(year, month, dayOfMonth, 0, 0);
 

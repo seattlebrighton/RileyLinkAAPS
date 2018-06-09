@@ -53,6 +53,16 @@ public class ByteUtil {
     }
 
 
+    public static byte[] concat(byte a, byte[] b) {
+        int aLen = b.length;
+        byte[] c = new byte[aLen + 1];
+        c[0] = a;
+        System.arraycopy(b, 0, c, 1, aLen);
+
+        return c;
+    }
+
+
     public static byte[] substring(byte[] a, int start, int len) {
         byte[] rval = new byte[len];
         System.arraycopy(a, start, rval, 0, len);

@@ -1,5 +1,7 @@
 package info.nightscout.androidaps.plugins.PumpMedtronic.comm.message;
 
+import info.nightscout.androidaps.plugins.PumpCommon.utils.HexDump;
+
 /**
  * Created by geoff on 5/29/16.
  */
@@ -20,4 +22,17 @@ public class MessageBody {
     public byte[] getTxData() {
         return new byte[]{};
     }
+
+
+    public String toString() {
+        StringBuilder sb = new StringBuilder(getClass().getSimpleName());
+
+        sb.append(" [txData=");
+        sb.append(HexDump.toHexStringDisplayable(getTxData()));
+        sb.append("]");
+
+        return sb.toString();
+    }
+
+
 }

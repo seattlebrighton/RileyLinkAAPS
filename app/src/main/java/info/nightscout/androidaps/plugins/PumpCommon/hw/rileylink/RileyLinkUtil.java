@@ -15,6 +15,7 @@ import java.util.List;
 
 import info.nightscout.androidaps.plugins.PumpCommon.defs.PumpType;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RileyLinkBLE;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkTargetFrequency;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.data.RLHistoryItem;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.defs.RileyLinkError;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.defs.RileyLinkServiceState;
@@ -46,6 +47,7 @@ public class RileyLinkUtil {
     private static RileyLinkCommunicationManager rileyLinkCommunicationManager;
     private static RileyLinkIPCConnection rileyLinkIPCConnection;
     private static MedtronicDeviceType medtronicPumpModel;
+    private static RileyLinkTargetFrequency rileyLinkTargetFrequency;
     // BAD dependencies in Classes: RileyLinkService
 
     // Broadcasts: RileyLinkBLE, RileyLinkService,
@@ -79,10 +81,9 @@ public class RileyLinkUtil {
 
     public static void setServiceState(RileyLinkServiceState newState, RileyLinkError errorCode) {
         rileyLinkServiceData.serviceState = newState;
+        rileyLinkServiceData.errorCode = errorCode;
 
-        if (errorCode != null) {
-            rileyLinkServiceData.errorCode = errorCode;
-        }
+        LOG.warn("RileyLink State Changed: {} {}", newState, errorCode == null ? "" : " - Error State: " + errorCode.name());
 
         historyRileyLink.add(new RLHistoryItem(rileyLinkServiceData.serviceState, rileyLinkServiceData.errorCode));
     }
@@ -220,5 +221,15 @@ public class RileyLinkUtil {
 
     public static MedtronicDeviceType getMedtronicPumpModel() {
         return medtronicPumpModel;
+    }
+
+
+    public static void setRileyLinkTargetFrequency(RileyLinkTargetFrequency rileyLinkTargetFrequency) {
+        RileyLinkUtil.rileyLinkTargetFrequency = rileyLinkTargetFrequency;
+    }
+
+
+    public static RileyLinkTargetFrequency getRileyLinkTargetFrequency() {
+        return rileyLinkTargetFrequency;
     }
 }

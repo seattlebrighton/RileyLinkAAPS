@@ -15,6 +15,7 @@ public class RileyLinkConst {
 
         public static final String BluetoothConnected = Prefix + "Bluetooth_Connected";
         public static final String BluetoothDisconnected = Prefix + "Bluetooth_Disconnected";
+        public static final String RileyLinkDisconnected = Prefix + "RileyLink_Disconnected";
 
     }
 

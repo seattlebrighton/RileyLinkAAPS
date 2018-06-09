@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RFSpy;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RileyLinkBLE;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkTargetFrequency;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.defs.RileyLinkTargetDevice;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.RileyLinkService;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.RileyLinkServiceData;
@@ -221,6 +222,17 @@ public class RileyLinkMedtronicService extends RileyLinkService {
     }
 
 
+    @Override
+    protected void determineRileyLinkTargetFrequency() {
+        boolean hasUSFrequency = SP.getString(MedtronicConst.Prefs.PumpFrequency, MainApp.gs(R.string.medtronic_pump_frequency_us)).equals(MainApp.gs(R.string.medtronic_pump_frequency_us));
+
+        if (hasUSFrequency)
+            this.rileyLinkTargetFrequency = RileyLinkTargetFrequency.Medtronic_US;
+        else
+            this.rileyLinkTargetFrequency = RileyLinkTargetFrequency.Medtronic_WorldWide;
+    }
+
+
     /**
      * If you have customized RileyLinkServiceData you need to override this
      */
@@ -235,16 +247,15 @@ public class RileyLinkMedtronicService extends RileyLinkService {
         // get most recently used RileyLink address
         rileyLinkServiceData.rileylinkAddress = SP.getString(MedtronicConst.Prefs.RileyLinkAddress, "");
 
-        rileyLinkBLE = new RileyLinkBLE(this);
-        rfspy = new RFSpy(context, rileyLinkBLE);
+        rileyLinkBLE = new RileyLinkBLE(this.context); // or this
+        rfspy = new RFSpy(rileyLinkBLE);
         rfspy.startReader();
 
         RileyLinkUtil.setRileyLinkBLE(rileyLinkBLE);
 
-        boolean hasUSFrequency = SP.getString(MedtronicConst.Prefs.PumpFrequency, MainApp.gs(R.string.medtronic_pump_frequency_us)).equals(MainApp.gs(R.string.medtronic_pump_frequency_us));
 
         // init rileyLinkCommunicationManager
-        pumpCommunicationManager = new MedtronicCommunicationManager(context, rfspy, hasUSFrequency);
+        pumpCommunicationManager = new MedtronicCommunicationManager(context, rfspy, rileyLinkTargetFrequency);
         medtronicCommunicationManager = (MedtronicCommunicationManager) pumpCommunicationManager;
 
         // FIXME remove
@@ -294,11 +305,6 @@ public class RileyLinkMedtronicService extends RileyLinkService {
         }
 
         //LOG.info("setPumpIDString: saved pumpID " + idString);
-    }
-
-
-    private void reportPumpFound() {
-        //rileyLinkIPCConnection.sendMessage(RT2Const.IPC.MSG_PUMP_pumpFound);
     }
 
 

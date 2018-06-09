@@ -39,6 +39,7 @@ public class InitializePumpManagerTask extends ServiceTask {
         double lastGoodFrequency = SP.getFloat(MedtronicConst.Prefs.LastGoodPumpFrequency, (float) 0.0);
 
         if ((lastGoodFrequency > 0.0d) && RileyLinkUtil.getRileyLinkCommunicationManager().isValidFrequency(lastGoodFrequency)) {
+
             Log.i(TAG, String.format("Setting radio frequency to %.2fMHz", lastGoodFrequency));
             RileyLinkUtil.getRileyLinkCommunicationManager().setRadioFrequencyForPump(lastGoodFrequency);
 

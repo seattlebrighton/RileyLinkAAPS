@@ -15,6 +15,7 @@ import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.HexDump;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.BasalProfile;
+import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.TempBasalPair;
 import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.PumpSettingDTO;
 import info.nightscout.androidaps.plugins.PumpMedtronic.defs.BatteryType;
 import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicCommandType;
@@ -61,6 +62,10 @@ public class MedtronicConverter {
                 return new BasalProfile(rawContent);
             }
 
+            case ReadTemporaryBasal: {
+                return new TempBasalPair(rawContent);
+            }
+
             case Settings_512: {
                 return decodeSettings512(rawContent);
             }
@@ -68,6 +73,11 @@ public class MedtronicConverter {
             case Settings: {
                 return decodeSettings(rawContent);
             }
+
+            case SetBolus: {
+                return rawContent;
+            }
+
 
             default: {
                 throw new RuntimeException("Unsupported command Type: " + commandType);
@@ -150,7 +160,9 @@ public class MedtronicConverter {
             LOG.warn("Unknown status: " + rawData[0]);
             LOG.warn("Full result: " + d);
 
-            return (int) d;
+            int percent = (int) (perc * 100.0d);
+
+            return percent;
         }
 
     }
@@ -161,14 +173,12 @@ public class MedtronicConverter {
 
         float value = ByteUtil.toInt(rawData[0], rawData[1]) / 10.0f;
 
-        System.out.println("Remaing insulin: " + value);
+        System.out.println("Remaining insulin: " + value);
         return value;
     }
 
 
     private LocalDateTime decodeTime(byte[] rawContent) {
-        //LocalDateTime pumpTime = parsePumpRTCBytes(ByteUtil.substring(receivedData, 2, 7));
-
 
         int hours = ByteUtil.asUINT8(rawContent[0]);
         int minutes = ByteUtil.asUINT8(rawContent[1]);
@@ -180,7 +190,7 @@ public class MedtronicConverter {
             LocalDateTime pumpTime = new LocalDateTime(year, month, day, hours, minutes, seconds);
             return pumpTime;
         } catch (IllegalFieldValueException e) {
-            LOG.error("parsePumpRTCBytes: Failed to parse pump time value: year=%d, month=%d, hours=%d, minutes=%d, seconds=%d", year, month, day, hours, minutes, seconds);
+            LOG.error("decodeTime: Failed to parse pump time value: year=%d, month=%d, hours=%d, minutes=%d, seconds=%d", year, month, day, hours, minutes, seconds);
             return null;
         }
 
@@ -204,7 +214,7 @@ public class MedtronicConverter {
         outList.add(new PumpSettingDTO("PCFG_AUDIO_BOLUS_ENABLED", parseResultEnable(rd[2]), PumpConfigurationGroup.Bolus));
 
         if (rd[2] == 1) {
-            outList.add(new PumpSettingDTO("PCFG_AUDIO_BOLUS_STEP_SIZE", "" + decodeBolusInsulin(rd[3]), PumpConfigurationGroup.Bolus));
+            outList.add(new PumpSettingDTO("PCFG_AUDIO_BOLUS_STEP_SIZE", "" + decodeBolusInsulin(ByteUtil.asUINT8(rd[3])), PumpConfigurationGroup.Bolus));
         }
 
         outList.add(new PumpSettingDTO("PCFG_VARIABLE_BOLUS_ENABLED", parseResultEnable(rd[4]), PumpConfigurationGroup.Bolus));
@@ -260,17 +270,14 @@ public class MedtronicConverter {
 
         outList.add(new PumpSettingDTO("PCFG_MM_RESERVOIR_WARNING_TYPE_TIME", rd[18] != 0 ? "PCFG_MM_RESERVOIR_WARNING_TYPE_TIME" : "PCFG_MM_RESERVOIR_WARNING_TYPE_UNITS", PumpConfigurationGroup.Other));
 
-        outList.add(new PumpSettingDTO("PCFG_MM_SRESERVOIR_WARNING_POINT", "" + rd[19], PumpConfigurationGroup.Other));
+        outList.add(new PumpSettingDTO("PCFG_MM_SRESERVOIR_WARNING_POINT", "" + ByteUtil.asUINT8(rd[19]), PumpConfigurationGroup.Other));
 
         outList.add(new PumpSettingDTO("CFG_MM_KEYPAD_LOCKED", parseResultEnable(rd[20]), PumpConfigurationGroup.Other));
 
 
-        // 523
-
         if (MedtronicDeviceType.isSameDevice(pumpModel, MedtronicDeviceType.Medtronic_523andHigher)) {
 
             outList.add(new PumpSettingDTO("PCFG_BOLUS_SCROLL_STEP_SIZE", "" + rd[21], PumpConfigurationGroup.Bolus));
-
             outList.add(new PumpSettingDTO("PCFG_CAPTURE_EVENT_ENABLE", parseResultEnable(rd[22]), PumpConfigurationGroup.Other));
             outList.add(new PumpSettingDTO("PCFG_OTHER_DEVICE_ENABLE", parseResultEnable(rd[23]), PumpConfigurationGroup.Other));
             outList.add(new PumpSettingDTO("PCFG_OTHER_DEVICE_PAIRED_STATE", parseResultEnable(rd[24]), PumpConfigurationGroup.Other));
@@ -325,6 +332,7 @@ public class MedtronicConverter {
 
 
     public double decodeBolusInsulin(int i) {
+
         return (double) i / (double) getStrokesPerUnit(false);
     }
 
@@ -340,7 +348,7 @@ public class MedtronicConverter {
 
 
     public double decodeMaxBolus(byte ai[]) {
-        return is523orHigher() ? decodeBolusInsulin(ByteUtil.toInt(ai[5], ai[6])) : decodeBolusInsulin(ai[5]);
+        return is523orHigher() ? decodeBolusInsulin(ByteUtil.toInt(ai[5], ai[6])) : decodeBolusInsulin(ByteUtil.asUINT8(ai[5]));
     }
 
 

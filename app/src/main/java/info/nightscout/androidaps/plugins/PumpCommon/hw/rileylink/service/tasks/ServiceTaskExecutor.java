@@ -11,7 +11,6 @@ import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkUtil;
 /**
  * Created by geoff on 7/9/16.
  */
-@Deprecated
 public class ServiceTaskExecutor extends ThreadPoolExecutor {
     private static final String TAG = "ServiceTaskExecutor";
     private static ServiceTaskExecutor instance;

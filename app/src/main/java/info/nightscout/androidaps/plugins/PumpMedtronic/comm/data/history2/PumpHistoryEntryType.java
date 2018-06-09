@@ -62,7 +62,7 @@ public enum PumpHistoryEntryType //implements CodeEnum
     EventUnknown_MM512_0x10(0x10), // 29, 5, 0
     CalBGForPH(0x0a, "CalBGForPH"), //
     SensorAlert(0x0b, "SensorAlert", 3, 5, 0), // Ian08
-    ClearAlarm(0x0c, "ClearAlarm", 2, 5, 4), //
+    ClearAlarm(0x0c, "ClearAlarm", 2, 5, 0), // 2,5,4
 
     //Andy0d(0x0d, "Unknown", 2, 5, 0),
 
@@ -81,7 +81,7 @@ public enum PumpHistoryEntryType //implements CodeEnum
     ChangeChildBlockEnable(0x23, "ChangeChildBlockEnable"),  // 8?
     ChangeMaxBolus(0x24), // 8?
     EventUnknown_MM522_0x25(0x25), // 8?
-    ToggleRemote(0x26, "EnableDisableRemote", 2, 5, 14), //
+    ToggleRemote(0x26, "EnableDisableRemote", 2, 5, 0), //  2, 5, 14
     ChangeRemoteId(0x27, "ChangeRemoteID"), // ??
 
     ChangeMaxBasal(0x2c), //

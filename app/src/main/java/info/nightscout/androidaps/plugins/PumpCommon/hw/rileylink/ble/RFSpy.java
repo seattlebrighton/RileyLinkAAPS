@@ -1,6 +1,5 @@
 package info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble;
 
-import android.content.Context;
 import android.os.SystemClock;
 
 import com.gxwtech.roundtrip2.util.StringUtil;
@@ -10,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.UUID;
 
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.GattAttributes;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.RFSpyResponse;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.RadioPacket;
@@ -17,6 +17,7 @@ import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.Radio
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.CC111XRegister;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RFSpyCommand;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RXFilterMode;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkTargetFrequency;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.operations.BLECommOperationResult;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ThreadUtil;
@@ -28,13 +29,13 @@ public class RFSpy {
 
     private static final Logger LOG = LoggerFactory.getLogger(RFSpy.class);
 
-    public static final byte RFSPY_GET_STATE = 1;
-    public static final byte RFSPY_GET_VERSION = 2;
-    public static final byte RFSPY_GET_PACKET = 3; // aka Listen, receive
-    public static final byte RFSPY_SEND = 4;
-    public static final byte RFSPY_SEND_AND_LISTEN = 5;
-    public static final byte RFSPY_UPDATE_REGISTER = 6;
-    public static final byte RFSPY_RESET = 7;
+    //    public static final byte RFSPY_GET_STATE = 1;
+    //    public static final byte RFSPY_GET_VERSION = 2;
+    //    public static final byte RFSPY_GET_PACKET = 3; // aka Listen, receive
+    //    public static final byte RFSPY_SEND = 4;
+    //    public static final byte RFSPY_SEND_AND_LISTEN = 5;
+    //    public static final byte RFSPY_UPDATE_REGISTER = 6;
+    //    public static final byte RFSPY_RESET = 7;
 
     public static final long RILEYLINK_FREQ_XTAL = 24000000;
 
@@ -43,8 +44,8 @@ public class RFSpy {
 
     private RileyLinkBLE rileyLinkBle;
     private RFSpyReader reader;
-    //private Context context;
     private int previousRegion = 0;
+    private RileyLinkTargetFrequency selectedTargetFrequency;
 
     private UUID radioServiceUUID = UUID.fromString(GattAttributes.SERVICE_RADIO);
     private UUID radioDataUUID = UUID.fromString(GattAttributes.CHARA_RADIO_DATA);
@@ -52,11 +53,10 @@ public class RFSpy {
     private UUID responseCountUUID = UUID.fromString(GattAttributes.CHARA_RADIO_RESPONSE_COUNT);
 
 
-    public RFSpy(Context context, RileyLinkBLE rileyLinkBle) {
-        //this.context = context;
+    public RFSpy(RileyLinkBLE rileyLinkBle) {
         this.rileyLinkBle = rileyLinkBle;
         this.rileyLinkBle.setRFSpy(this);
-        reader = new RFSpyReader(/*context,*/ rileyLinkBle);
+        reader = new RFSpyReader(rileyLinkBle);
     }
 
 
@@ -155,10 +155,16 @@ public class RFSpy {
     }
 
 
+    public RFSpyResponse transmit(RadioPacket radioPacket) {
+
+        return transmit(radioPacket, (byte) 0, (byte) 0, (byte) 0xFF);
+    }
+
+
     public RFSpyResponse transmit(RadioPacket radioPacket, byte sendChannel, byte repeatCount, byte delay_ms) {
         // append checksum, encode data, send it.
         byte[] fullPacket = ByteUtil.concat(getCommandArray(RFSpyCommand.Send, getByteArray(sendChannel, repeatCount, delay_ms)), radioPacket.getEncoded());
-        RFSpyResponse response = writeToData(fullPacket, repeatCount * delay_ms);
+        RFSpyResponse response = writeToData(fullPacket, delay_ms + EXPECTED_MAX_BLUETOOTH_LATENCY_MS);
         return response;
     }
 
@@ -199,7 +205,7 @@ public class RFSpy {
         updateRegister(CC111XRegister.freq2, (byte) ((value >> 16) & 0xff));
         LOG.warn("Set frequency to {}", freqMHz);
 
-        configureRadioForRegion(determineRegion(freqMHz));
+        configureRadioForRegion(RileyLinkUtil.getRileyLinkTargetFrequency());
     }
 
 
@@ -225,14 +231,14 @@ public class RFSpy {
     }
 
 
-    private void configureRadioForRegion(int region) {
+    private void configureRadioForRegion(RileyLinkTargetFrequency frequency) {
 
         // we update registers only on first run, or if region changed
-        if (previousRegion == region)
+        if (selectedTargetFrequency == frequency)
             return;
 
-        switch (region) {
-            case 1: {
+        switch (frequency) {
+            case Medtronic_WorldWide: {
                 //updateRegister(CC111X_MDMCFG4, (byte) 0x59);
                 setRXFilterMode(RXFilterMode.Wide);
                 //updateRegister(CC111X_MDMCFG3, (byte) 0x66);
@@ -243,7 +249,7 @@ public class RFSpy {
             }
             break;
 
-            case 2: {
+            case Medtronic_US: {
                 //updateRegister(CC111X_MDMCFG4, (byte) 0x99);
                 setRXFilterMode(RXFilterMode.Narrow);
                 //updateRegister(CC111X_MDMCFG3, (byte) 0x66);
@@ -255,15 +261,17 @@ public class RFSpy {
             }
             break;
 
+            case Omnipod: {
+                LOG.debug("No region configuration for RfSpy and {}", frequency.name());
+            }
+
             default:
-            case 0:
                 // no configuration
                 break;
 
         }
 
-        this.previousRegion = region;
-
+        this.selectedTargetFrequency = frequency;
     }
 
 
@@ -276,6 +284,7 @@ public class RFSpy {
     }
 
 
+    @Deprecated
     private int determineRegion(double freqMHz) {
         int region = 0; // 1 - MDT Worldwide, 2 - MDT US, 3 - Omnipod, 0 - Undefined
 
