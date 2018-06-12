@@ -13,16 +13,15 @@ import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.HexDump;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.message.MessageType;
 import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicCommandType;
-import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicDeviceType;
 
 /**
  * Created by andy on 5/9/18.
  */
 
-public class MedtronicUtil {
+public class MedtronicUtil extends RileyLinkUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(MedtronicUtil.class);
-    private static MedtronicDeviceType deviceType;
+    //private static MedtronicDeviceType deviceType;
     private static boolean lowLevelDebug = true;
 
 
@@ -103,7 +102,7 @@ public class MedtronicUtil {
 
 
     public static byte[] getBolusStrokes(double amount) {
-        return getStrokes(amount, 10, false);
+        return getStrokes(amount, getMedtronicPumpModel().getBolusStrokes(), false);
     }
 
 
@@ -199,17 +198,6 @@ public class MedtronicUtil {
         //sendPayloadBuffer.put((byte) crc);
 
         return sendPayloadBuffer.array();
-    }
-
-
-    // FIXME
-    public static MedtronicDeviceType getDeviceType() {
-        return deviceType;
-    }
-
-
-    public static void setDeviceType(MedtronicDeviceType deviceType) {
-        MedtronicUtil.deviceType = deviceType;
     }
 
 

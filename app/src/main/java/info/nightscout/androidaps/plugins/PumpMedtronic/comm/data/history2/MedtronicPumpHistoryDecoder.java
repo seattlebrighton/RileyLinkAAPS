@@ -508,7 +508,7 @@ public class MedtronicPumpHistoryDecoder extends MedtronicHistoryDecoder {
         Float rate = null;
         int index = body[2];
 
-        if (MedtronicDeviceType.isSameDevice(MedtronicUtil.getDeviceType(), MedtronicDeviceType.Medtronic_523andHigher)) {
+        if (MedtronicDeviceType.isSameDevice(MedtronicUtil.getMedtronicPumpModel(), MedtronicDeviceType.Medtronic_523andHigher)) {
             rate = body[1] * 0.025f;
         }
 
@@ -530,7 +530,7 @@ public class MedtronicPumpHistoryDecoder extends MedtronicHistoryDecoder {
 
         float bolus_strokes = 10.0f;
 
-        if (MedtronicDeviceType.isSameDevice(MedtronicUtil.getDeviceType(), MedtronicDeviceType.Medtronic_523andHigher)) {
+        if (MedtronicDeviceType.isSameDevice(MedtronicUtil.getMedtronicPumpModel(), MedtronicDeviceType.Medtronic_523andHigher)) {
             // https://github.com/ps2/minimed_rf/blob/master/lib/minimed_rf/log_entries/bolus_wizard.rb#L102
             bolus_strokes = 40.0f;
 
@@ -607,7 +607,7 @@ public class MedtronicPumpHistoryDecoder extends MedtronicHistoryDecoder {
 
         byte[] data = entry.getHead();
 
-        if (MedtronicDeviceType.isSameDevice(MedtronicUtil.getDeviceType(), MedtronicDeviceType.Medtronic_523andHigher)) {
+        if (MedtronicDeviceType.isSameDevice(MedtronicUtil.getMedtronicPumpModel(), MedtronicDeviceType.Medtronic_523andHigher)) {
             bolus.setRequestedAmount(bitUtils.toInt(data[0], data[1]) / 40.0f);
             bolus.setDeliveredAmount(bitUtils.toInt(data[2], data[3]) / 10.0f);
             bolus.setInsulinOnBoard(bitUtils.toInt(data[4], data[5]) / 40.0f);

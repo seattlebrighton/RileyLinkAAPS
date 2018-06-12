@@ -49,7 +49,7 @@ public class ShowAAPS2Activity extends AppCompatActivity {
     public ShowAAPS2Activity() {
 
         // FIXME
-        addCommandAction("Set TBR", ImplementationStatus.WorkInProgress, "RefreshData.SetTBR"); // not working
+        addCommandAction("Set TBR", ImplementationStatus.Done, "RefreshData.SetTBR"); // not working
         addCommandAction("Set Basal Profile", ImplementationStatus.WorkInProgress, "RefreshData.SetBasalProfile");
         addCommandAction("Status - Bolus", ImplementationStatus.WorkInProgress, "RefreshData.GetStatus"); // weird on 512?
 
@@ -57,7 +57,7 @@ public class ShowAAPS2Activity extends AppCompatActivity {
 
         // WORK IN PROGRESS - waiting for something
         addCommandAction("Status - Remaining Power", ImplementationStatus.WorkInProgress, "RefreshData.RemainingPower");
-        addCommandAction("Set Bolus", ImplementationStatus.WorkInProgress, "RefreshData.SetBolus"); // works for less <25
+        addCommandAction("Set Bolus", ImplementationStatus.Done, "RefreshData.SetBolus"); // works for less <25
 
         // LOW PRIORITY
         addCommandAction("Read History", ImplementationStatus.NotStarted, null);

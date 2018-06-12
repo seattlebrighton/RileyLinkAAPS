@@ -47,7 +47,7 @@ public class ServiceTask implements Runnable {
 
     /*
     protected void sendResponse(ServiceResult result) {
-        RileyLinkMedtronicService.getInstance().sendServiceTransportResponse(mTransport,result);
+        RoundtripService.getInstance().sendServiceTransportResponse(mTransport,result);
     }
     */
 }

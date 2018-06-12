@@ -534,6 +534,7 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
 
         if (!RileyLinkUtil.isModelSet()) {
             RileyLinkUtil.setMedtronicPumpModel((MedtronicDeviceType) responseObject);
+            //MedtronicUtil.setMedtronicPumpModel((MedtronicDeviceType) responseObject);
         }
 
         return responseObject == null ? null : (MedtronicDeviceType) responseObject;
@@ -576,7 +577,7 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
     public Boolean setBolus(double units) {
 
         wakeUp(false);
-        
+
         byte[] body = MedtronicUtil.getBolusStrokes(units);
 
         if (debugSetCommands)

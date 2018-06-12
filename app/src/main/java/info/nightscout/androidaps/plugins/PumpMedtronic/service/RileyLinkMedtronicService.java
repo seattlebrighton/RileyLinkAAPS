@@ -258,6 +258,7 @@ public class RileyLinkMedtronicService extends RileyLinkService {
         pumpCommunicationManager = new MedtronicCommunicationManager(context, rfspy, rileyLinkTargetFrequency);
         medtronicCommunicationManager = (MedtronicCommunicationManager) pumpCommunicationManager;
 
+
         // FIXME remove
         pumpHistoryManager = new PumpHistoryManager(this.context);
 

@@ -29,13 +29,6 @@ public class RFSpy {
 
     private static final Logger LOG = LoggerFactory.getLogger(RFSpy.class);
 
-    //    public static final byte RFSPY_GET_STATE = 1;
-    //    public static final byte RFSPY_GET_VERSION = 2;
-    //    public static final byte RFSPY_GET_PACKET = 3; // aka Listen, receive
-    //    public static final byte RFSPY_SEND = 4;
-    //    public static final byte RFSPY_SEND_AND_LISTEN = 5;
-    //    public static final byte RFSPY_UPDATE_REGISTER = 6;
-    //    public static final byte RFSPY_RESET = 7;
 
     public static final long RILEYLINK_FREQ_XTAL = 24000000;
 
@@ -55,7 +48,7 @@ public class RFSpy {
 
     public RFSpy(RileyLinkBLE rileyLinkBle) {
         this.rileyLinkBle = rileyLinkBle;
-        this.rileyLinkBle.setRFSpy(this);
+        //this.rileyLinkBle.setRFSpy(this);
         reader = new RFSpyReader(rileyLinkBle);
     }
 
@@ -137,6 +130,28 @@ public class RFSpy {
     }
 
 
+    private byte[] getByteArray(byte... input) {
+        return input;
+    }
+
+
+    private byte[] getCommandArray(RFSpyCommand command, byte[] body) {
+        int bodyLength = body == null ? 0 : body.length;
+
+        byte[] output = new byte[bodyLength + 1];
+
+        output[0] = command.code;
+
+        if (body != null) {
+            for(int i = 0; i < body.length; i++) {
+                output[i + 1] = body[i];
+            }
+        }
+
+        return output;
+    }
+
+
     public RFSpyResponse getRadioVersion() {
         RFSpyResponse resp = writeToData(getCommandArray(RFSpyCommand.GetVersion, null), 1000);
         if (resp == null) {
@@ -209,28 +224,6 @@ public class RFSpy {
     }
 
 
-    private byte[] getByteArray(byte... input) {
-        return input;
-    }
-
-
-    private byte[] getCommandArray(RFSpyCommand command, byte[] body) {
-        int bodyLength = body == null ? 0 : body.length;
-
-        byte[] output = new byte[bodyLength + 1];
-
-        output[0] = command.code;
-
-        if (body != null) {
-            for(int i = 0; i < body.length; i++) {
-                output[i + 1] = body[i];
-            }
-        }
-
-        return output;
-    }
-
-
     private void configureRadioForRegion(RileyLinkTargetFrequency frequency) {
 
         // we update registers only on first run, or if region changed
@@ -281,26 +274,6 @@ public class RFSpy {
         byte chanbw = mode.value;
 
         updateRegister(CC111XRegister.mdmcfg4, (byte) (chanbw | drate_e));
-    }
-
-
-    @Deprecated
-    private int determineRegion(double freqMHz) {
-        int region = 0; // 1 - MDT Worldwide, 2 - MDT US, 3 - Omnipod, 0 - Undefined
-
-        if ((freqMHz >= 916.45) && (freqMHz <= 916.80)) {
-            region = 1;
-        } else if ((freqMHz >= 868.25) && (freqMHz <= 868.65)) {
-            region = 2;
-        } else if ((freqMHz >= 443.45) && (freqMHz <= 444.25)) { // 433.92 (exact frequencies will be added later
-
-        } else {
-            region = 0;
-        }
-
-        LOG.debug("Determine Region: " + region);
-
-        return region;
     }
 
 

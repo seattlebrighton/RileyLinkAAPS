@@ -148,4 +148,9 @@ public enum MedtronicDeviceType {
     public static boolean isLargerFormat(MedtronicDeviceType model) {
         return isSameDevice(model, Medtronic_523andHigher);
     }
+
+
+    public int getBolusStrokes() {
+        return (isLargerFormat(this)) ? 40 : 10;
+    }
 }

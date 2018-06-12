@@ -94,7 +94,7 @@ public abstract class MedtronicHistoryDecoder {
             return byteList;
         }
 
-        if (MedtronicUtil.getDeviceType() == null) {
+        if (MedtronicUtil.getMedtronicPumpModel() == null) {
             LOG.error("Device Type is not defined.");
             return byteList;
         }
@@ -111,7 +111,8 @@ public abstract class MedtronicHistoryDecoder {
 
 
     protected void prepareStatistics() {
-        if (!statisticsEnabled) return;
+        if (!statisticsEnabled)
+            return;
 
         unknownOpCodes = new HashMap<Integer, Integer>();
         mapStatistics = new HashMap<RecordDecodeStatus, Map<String, String>>();
@@ -123,7 +124,8 @@ public abstract class MedtronicHistoryDecoder {
 
 
     protected void addToStatistics(MedtronicHistoryEntry pumpHistoryEntry, RecordDecodeStatus status, Integer opCode) {
-        if (!statisticsEnabled) return;
+        if (!statisticsEnabled)
+            return;
 
         if (opCode != null) {
             if (!unknownOpCodes.containsKey(opCode)) {
@@ -155,7 +157,8 @@ public abstract class MedtronicHistoryDecoder {
             sb = new StringBuilder();
 
             if (entry.getKey() != RecordDecodeStatus.OK) {
-                if (entry.getValue().size() == 0) continue;
+                if (entry.getValue().size() == 0)
+                    continue;
 
                 for(Map.Entry<String, String> entrysub : entry.getValue().entrySet()) {
                     StringUtil.appendToStringBuilder(sb, entrysub.getKey(), ", ");
@@ -172,14 +175,18 @@ public abstract class MedtronicHistoryDecoder {
 
 
     private int getUnsignedByte(byte value) {
-        if (value < 0) return value + 256;
-        else return value;
+        if (value < 0)
+            return value + 256;
+        else
+            return value;
     }
 
 
     protected int getUnsignedInt(int value) {
-        if (value < 0) return value + 256;
-        else return value;
+        if (value < 0)
+            return value + 256;
+        else
+            return value;
     }
 
 

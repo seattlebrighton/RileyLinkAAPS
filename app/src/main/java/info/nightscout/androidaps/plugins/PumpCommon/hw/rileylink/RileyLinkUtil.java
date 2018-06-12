@@ -220,7 +220,7 @@ public class RileyLinkUtil {
 
 
     public static MedtronicDeviceType getMedtronicPumpModel() {
-        return medtronicPumpModel;
+        return RileyLinkUtil.medtronicPumpModel;
     }
 
 

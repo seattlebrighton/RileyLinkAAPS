@@ -30,19 +30,20 @@ import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.operations
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.operations.CharacteristicReadOperation;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.operations.CharacteristicWriteOperation;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.operations.DescriptorWriteOperation;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.defs.RileyLinkError;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.defs.RileyLinkServiceState;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.ServiceNotification;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.HexDump;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ThreadUtil;
-import info.nightscout.androidaps.plugins.PumpMedtronic.service.RileyLinkMedtronicService;
 
 /**
  * Created by geoff on 5/26/16.
+ * Added: State handling, configuration of RF for different configuration ranges, connection handling
  */
 public class RileyLinkBLE {
 
     private static final Logger LOG = LoggerFactory.getLogger(RFTools.class);
 
-    //private static final String TAG = "RileyLinkBLE";
     public boolean gattDebugEnabled = true;
 
     private BluetoothAdapter bluetoothAdapter;
@@ -60,15 +61,11 @@ public class RileyLinkBLE {
 
     private boolean mIsConnected = false;
 
-    private RFSpy rfspy;
-    //private info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RFSpy RFSpy;
-
 
     public RileyLinkBLE(final Context context) {
         this.context = context;
         this.bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
-        //this.bluetoothAdapter = bluetoothAdapter;
         LOG.debug("BT Adapter: " + this.bluetoothAdapter);
         bluetoothGattCallback = new BluetoothGattCallback() {
 
@@ -209,8 +206,6 @@ public class RileyLinkBLE {
 
                 if (status == BluetoothGatt.GATT_SUCCESS) {
                     final List<BluetoothGattService> services = gatt.getServices();
-                    // TODO: in here, we need to determine if this Bluetooth device is a RileyLink with appropriate
-                    // software (subg_rfspy) and set mIsConnected if the GATT is ok.
 
                     boolean rileyLinkFound = false;
 
@@ -229,12 +224,17 @@ public class RileyLinkBLE {
                     if (gattDebugEnabled) {
                         LOG.warn("onServicesDiscovered " + getGattStatusMessage(status));
                     }
-                    mIsConnected = true;
 
                     LOG.warn("Gatt device is RileyLink device: " + rileyLinkFound);
 
-                    RileyLinkUtil.sendBroadcastMessage(RileyLinkConst.Intents.RileyLinkReady);
-                    RileyLinkMedtronicService.getInstance().sendNotification(new ServiceNotification(RT2Const.IPC.MSG_BLE_RileyLinkReady), null);
+                    if (rileyLinkFound) {
+                        mIsConnected = true;
+                        RileyLinkUtil.sendBroadcastMessage(RileyLinkConst.Intents.RileyLinkReady);
+                        RileyLinkUtil.sendNotification(new ServiceNotification(RT2Const.IPC.MSG_BLE_RileyLinkReady), null);
+                    } else {
+                        mIsConnected = false;
+                        RileyLinkUtil.setServiceState(RileyLinkServiceState.RileyLinkError, RileyLinkError.DeviceIsNotRileyLink);
+                    }
 
                 } else {
                     LOG.error("onServicesDiscovered " + getGattStatusMessage(status));
@@ -329,8 +329,6 @@ public class RileyLinkBLE {
             LOG.error("Cannot discover GATT Services.");
             return false;
         }
-
-
     }
 
 
@@ -546,7 +544,4 @@ public class RileyLinkBLE {
     }
 
 
-    public void setRFSpy(RFSpy RFSpy) {
-        this.rfspy = RFSpy;
-    }
 }
