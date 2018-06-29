@@ -16,8 +16,8 @@ import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.BasalProfileEn
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.RawHistoryPage;
 import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.BolusDTO;
 import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.BolusWizardDTO;
-import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.PumpBolusType;
 import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicDeviceType;
+import info.nightscout.androidaps.plugins.PumpMedtronic.defs.PumpBolusType;
 import info.nightscout.androidaps.plugins.PumpMedtronic.util.MedtronicUtil;
 
 /**

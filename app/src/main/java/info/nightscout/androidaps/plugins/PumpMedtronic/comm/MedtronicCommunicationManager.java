@@ -34,6 +34,7 @@ import info.nightscout.androidaps.plugins.PumpMedtronic.comm.message.MessageBody
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.message.PacketType;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.message.PumpAckMessageBody;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.message.PumpMessage;
+import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.BatteryStatusDTO;
 import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.PumpSettingDTO;
 import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicCommandType;
 import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicDeviceType;
@@ -623,11 +624,11 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
 
 
     // FIXME:
-    public Integer getRemainingBattery() {
+    public BatteryStatusDTO getRemainingBattery() {
 
         Object responseObject = sendAndGetResponseWithCheck(MedtronicCommandType.GetBatteryStatus);
 
-        return responseObject == null ? null : (Integer) responseObject;
+        return responseObject == null ? null : (BatteryStatusDTO) responseObject;
     }
 
 
@@ -772,8 +773,8 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
 
 
     public void updatePumpManagerStatus() {
-        Integer resp = getRemainingBattery();
-        pumpStatus.batteryRemaining = resp == null ? -1 : resp;
+        //Integer resp = getRemainingBattery();
+        //pumpStatus.batteryRemaining = resp == null ? -1 : resp;
 
         pumpStatus.remainUnits = getRemainingInsulin();
 

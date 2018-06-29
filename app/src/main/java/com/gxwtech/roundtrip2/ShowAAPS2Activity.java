@@ -27,7 +27,9 @@ import info.nightscout.androidaps.plugins.PumpMedtronic.comm.MedtronicCommunicat
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.BasalProfile;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.BasalProfileEntry;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.TempBasalPair;
+import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.BatteryStatusDTO;
 import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.PumpSettingDTO;
+import info.nightscout.androidaps.plugins.PumpMedtronic.defs.BatteryType;
 import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicDeviceType;
 import info.nightscout.androidaps.plugins.PumpMedtronic.util.MedtronicUtil;
 
@@ -288,8 +290,11 @@ public class ShowAAPS2Activity extends AppCompatActivity {
             break;
 
             case "RefreshData.RemainingPower": {
-                Integer power = (Integer) data;
-                putOnDisplay("Remaining Battery: " + power);
+                BatteryStatusDTO status = (BatteryStatusDTO) data;
+                putOnDisplay("Remaining Battery: " + status.batteryStatusType.name() + //
+                        ", voltage=" + status.voltage + //
+                        ", percent(Alkaline)=" + status.getCalculatedPercent(BatteryType.Alkaline) + //
+                        ", percent(Lithium)=" + status.getCalculatedPercent(BatteryType.Lithium));
             }
             break;
 
