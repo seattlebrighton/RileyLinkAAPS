@@ -17,7 +17,7 @@ import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
 
 
 import info.nightscout.androidaps.plugins.PumpMedtronic.util.MedtronicConst;
-import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.PumpMessage;
+import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.PodMessage;
 import info.nightscout.utils.SP;
 
 /**
@@ -57,14 +57,14 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
 
 
     // All pump communications go through this function.
-    protected PumpMessage sendAndListen(RLMessage msg, int timeout_ms) {
+    protected PodMessage sendAndListen(RLMessage msg, int timeout_ms) {
 
         if (showPumpMessages) {
             LOG.info("Sent:" + ByteUtil.shortHexString(msg.getTxData()));
         }
 
         RFSpyResponse resp = rfspy.transmitThenReceive(new RadioPacket(msg.getTxData()), timeout_ms);
-        PumpMessage rval = new PumpMessage(resp.getRadioResponse().getPayload());
+        PodMessage rval = new PodMessage(resp.getRadioResponse().getPayload());
         if (rval.isValid()) {
             // Mark this as the last time we heard from the pump.
             rememberLastGoodPumpCommunicationTime();

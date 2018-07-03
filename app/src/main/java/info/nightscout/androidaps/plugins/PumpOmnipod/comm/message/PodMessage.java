@@ -13,8 +13,9 @@ import info.nightscout.androidaps.plugins.PumpOmnipod.defs.OmnipodCommandType;
 /**
  * Created by andy on 6/1/18.
  */
-// FIXME: This needs to be changed. this is just copy on Medtronic PumpMessage, which is much different in Omnipod I assume
-public class PumpMessage implements RLMessage {
+// FIXME: This needs to be changed. this is just copy of MedtronicPumpMessage, so I imagine this file will have different structure
+// in Omnipod I assume
+public class PodMessage implements RLMessage {
 
     public PacketType packetType = PacketType.Carelink;
     public byte[] address = new byte[]{0, 0, 0};
@@ -24,17 +25,17 @@ public class PumpMessage implements RLMessage {
     public String error = null;
 
 
-    public PumpMessage(String error) {
+    public PodMessage(String error) {
         this.error = error;
     }
 
 
-    public PumpMessage(byte[] rxData) {
+    public PodMessage(byte[] rxData) {
         init(rxData);
     }
 
 
-    public PumpMessage() {
+    public PodMessage() {
 
     }
 
@@ -73,7 +74,7 @@ public class PumpMessage implements RLMessage {
         if (rxData.length > 4) {
             this.commandType = OmnipodCommandType.getByCode(rxData[4]);
             if (this.commandType == OmnipodCommandType.InvalidCommand) {
-                Log.e("PumpMessage", "Unknown commandType " + rxData[4]);
+                Log.e("PodMessage", "Unknown commandType " + rxData[4]);
             }
         }
         if (rxData.length > 5) {
@@ -128,7 +129,7 @@ public class PumpMessage implements RLMessage {
 
         System.arraycopy(messageBody.getTxData(), 1, arrayOut, 0, length);
 
-        Log.d("PumpMessage", "Length: " + length + ", Original Length: " + originalLength + ", CommandType: " + commandType);
+        Log.d("PodMessage", "Length: " + length + ", Original Length: " + originalLength + ", CommandType: " + commandType);
 
         return arrayOut;
     }
@@ -153,7 +154,7 @@ public class PumpMessage implements RLMessage {
 
 
     public String getResponseContent() {
-        StringBuilder sb = new StringBuilder("PumpMessage [response=");
+        StringBuilder sb = new StringBuilder("PodMessage [response=");
         boolean showData = true;
 
         if (commandType != null) {
@@ -184,7 +185,7 @@ public class PumpMessage implements RLMessage {
 
 
     public String toString() {
-        StringBuilder sb = new StringBuilder("PumpMessage [");
+        StringBuilder sb = new StringBuilder("PodMessage [");
 
         sb.append("packetType=");
         sb.append(packetType == null ? "null" : packetType.name());
