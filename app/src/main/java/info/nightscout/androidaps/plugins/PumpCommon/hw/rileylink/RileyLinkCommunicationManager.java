@@ -62,13 +62,13 @@ public abstract class RileyLinkCommunicationManager {
     protected abstract void configurePumpSpecificSettings();
 
 
-    protected PumpMessage sendAndListen(RLMessage msg) {
+    protected RLMessage sendAndListen(RLMessage msg) {
         return sendAndListen(msg, 4000); // 2000
     }
 
 
     // All pump communications go through this function.
-    protected PumpMessage sendAndListen(RLMessage msg, int timeout_ms) {
+    protected RLMessage sendAndListen(RLMessage msg, int timeout_ms) {
 
         if (showPumpMessages) {
             LOG.info("Sent:" + ByteUtil.shortHexString(msg.getTxData()));
@@ -90,34 +90,7 @@ public abstract class RileyLinkCommunicationManager {
     }
 
 
-    //    /**
-    //     * For set commands we use this method (it just sends data and returns ACK or NAK)
-    //     *
-    //     * @param msg
-    //     * @param timeoutMs
-    //     * @return
-    //     */
-    //    protected PumpMessage send(RLMessage msg, int timeoutMs) {
-    //
-    //        // FIXME untested
-    //        if (showPumpMessages) {
-    //            LOG.info("Sent:" + ByteUtil.shortHexString(msg.getTxData()));
-    //        }
-    //
-    //        RFSpyResponse resp = rfspy.transmit(new RadioPacket(msg.getTxData()));
-    //        PumpMessage rval = new PumpMessage(resp.getRadioResponse().getPayload());
-    //        if (rval.isValid()) {
-    //            // Mark this as the last time we heard from the pump.
-    //            rememberLastGoodPumpCommunicationTime();
-    //        } else {
-    //            LOG.warn("Response is invalid. !!!");
-    //        }
-    //
-    //        if (showPumpMessages) {
-    //            LOG.info("Received:" + ByteUtil.shortHexString(resp.getRadioResponse().getPayload()));
-    //        }
-    //        return rval;
-    //    }
+
 
 
     public void wakeUp(boolean force) {
@@ -342,7 +315,7 @@ public abstract class RileyLinkCommunicationManager {
     }
 
 
-    private void rememberLastGoodPumpCommunicationTime() {
+    protected void rememberLastGoodPumpCommunicationTime() {
         lastGoodReceiverCommunicationTime = System.currentTimeMillis();
 
         SP.putLong(MedtronicConst.Prefs.LastGoodPumpCommunicationTime, lastGoodReceiverCommunicationTime);

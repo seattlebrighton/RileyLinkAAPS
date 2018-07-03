@@ -13,6 +13,7 @@ import info.nightscout.androidaps.plugins.PumpMedtronic.service.RileyLinkMedtron
 /**
  * Created by geoff on 7/10/16.
  */
+@Deprecated
 public class ReadISFProfileTask extends PumpTask {
     public ReadISFProfileTask() {
     }
@@ -30,7 +31,7 @@ public class ReadISFProfileTask extends PumpTask {
 
     @Override
     public void run() {
-        ISFTable table = RileyLinkMedtronicService.getCommunicationManager().getPumpISFProfile();
+        /**ISFTable table = RileyLinkMedtronicService.getCommunicationManager().getPumpISFProfile();
         ServiceResult result = getServiceTransport().getServiceResult();
         if (table.isValid()) {
             // convert from ISFTable to ISFProfile
@@ -41,7 +42,7 @@ public class ReadISFProfileTask extends PumpTask {
             result.setMap(map);
             result.setResultOK();
             getServiceTransport().setServiceResult(result);
-        }
+        }**/
     }
 
 }

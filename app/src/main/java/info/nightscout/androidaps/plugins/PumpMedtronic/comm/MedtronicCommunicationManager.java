@@ -16,6 +16,7 @@ import java.util.List;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkCommunicationManager;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RFSpy;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RLMessage;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RLMessageType;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkTargetFrequency;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
@@ -108,11 +109,11 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
         PumpMessage rval;
         PumpMessage shortMessage = makePumpMessage(msg.commandType, new CarelinkShortMessageBody(new byte[]{0}));
         // look for ack from short message
-        PumpMessage shortResponse = sendAndListen(shortMessage);
+        PumpMessage shortResponse = (PumpMessage)sendAndListen(shortMessage);
         if (shortResponse.commandType == MedtronicCommandType.CommandACK) {
             if (debugSetCommands)
                 LOG.debug("Run command with Args: Got ACK response");
-            rval = sendAndListen(msg);
+            rval = (PumpMessage)sendAndListen(msg);
             if (debugSetCommands)
                 LOG.debug("2nd Response: {}", rval);
             return rval;
@@ -130,7 +131,7 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
         PumpMessage rval = null;
         PumpMessage shortMessage = makePumpMessage(commandType, new CarelinkShortMessageBody(new byte[]{0}));
         // look for ack from short message
-        PumpMessage shortResponse = sendAndListen(shortMessage);
+        PumpMessage shortResponse = (PumpMessage)sendAndListen(shortMessage);
 
         if (shortResponse.commandType != MedtronicCommandType.CommandACK) {
             LOG.error("runCommandWithArgs: Pump did not ack Attention packet");
@@ -167,7 +168,7 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
 
             PumpMessage msg = makePumpMessage(commandType, new CarelinkLongMessageBody(frame));
 
-            rval = sendAndListen(msg);
+            rval = (PumpMessage)sendAndListen(msg);
 
             if (rval.commandType != MedtronicCommandType.CommandACK) {
                 LOG.error("runCommandWithArgs(Long): Pump did not ACK frame #{}", frameNr);
@@ -243,7 +244,7 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
             }
             if (!done) {
                 // ask for next frame
-                PumpMessage nextMsg = sendAndListen(ackMsg);
+                PumpMessage nextMsg = (PumpMessage)sendAndListen(ackMsg);
                 currentResponse = new GetHistoryPageCarelinkMessageBody(nextMsg.getMessageBody().getTxData());
             }
         }
@@ -300,7 +301,7 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
     public void pressButton(int which) {
         wakeUp(receiverDeviceAwakeForMinutes, false);
         PumpMessage pressButtonMessage = makePumpMessage(MedtronicCommandType.PushButton, new ButtonPressCarelinkMessageBody(which));
-        PumpMessage resp = sendAndListen(pressButtonMessage);
+        PumpMessage resp = (PumpMessage)sendAndListen(pressButtonMessage);
         if (resp.commandType != MedtronicCommandType.CommandACK) {
             LOG.error("Pump did not ack button press.");
         }
@@ -366,25 +367,25 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
     //    }
 
 
-    private PumpMessage sendAndGetResponse(MedtronicCommandType commandType) {
+    private RLMessage sendAndGetResponse(MedtronicCommandType commandType) {
 
         return sendAndGetResponse(commandType, null, DEFAULT_TIMEOUT);
     }
 
 
-    private PumpMessage sendAndGetResponse(MedtronicCommandType commandType, int timeoutMs) {
+    private RLMessage sendAndGetResponse(MedtronicCommandType commandType, int timeoutMs) {
 
         return sendAndGetResponse(commandType, null, timeoutMs);
     }
 
 
-    private PumpMessage sendAndGetResponse(MedtronicCommandType commandType, byte[] bodyData) {
+    private RLMessage sendAndGetResponse(MedtronicCommandType commandType, byte[] bodyData) {
 
         return sendAndGetResponse(commandType, bodyData, DEFAULT_TIMEOUT);
     }
 
 
-    private PumpMessage sendAndGetResponse(MedtronicCommandType commandType, byte[] bodyData, int timeoutMs) {
+    private RLMessage sendAndGetResponse(MedtronicCommandType commandType, byte[] bodyData, int timeoutMs) {
         // wakeUp
         wakeUp(receiverDeviceAwakeForMinutes, false);
 
@@ -397,7 +398,7 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
             msg = makePumpMessage(commandType, bodyData);
 
         // send and wait for response
-        PumpMessage response = sendAndListen(msg, timeoutMs);
+        RLMessage response = sendAndListen(msg, timeoutMs);
         return response;
     }
 
@@ -431,7 +432,7 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
 
         for(int retries = 0; retries < MAX_COMMAND_RETRIES; retries++) {
 
-            PumpMessage response = sendAndGetResponse(commandType, bodyData, DEFAULT_TIMEOUT + (DEFAULT_TIMEOUT * retries));
+            PumpMessage response = (PumpMessage)sendAndGetResponse(commandType, bodyData, DEFAULT_TIMEOUT + (DEFAULT_TIMEOUT * retries));
 
             String check = checkResponseContent(response, commandType.commandDescription, commandType.expectedLength);
 
@@ -635,30 +636,12 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
     // FIXME --- After this line commands in development --- REMOVE THIS COMMANDS
 
 
-    // TODO remove for AAPS
-    public ISFTable getPumpISFProfile() {
-
-        PumpMessage response = sendAndGetResponse(MedtronicCommandType.ReadInsulinSensitivities);
-
-        ISFTable table = new ISFTable();
-        table.parseFrom(response.getContents());
-        return table;
-    }
-
-
-    // TODO remove for AAPS
-    public PumpMessage getBolusWizardCarbProfile() {
-        PumpMessage response = sendAndGetResponse(MedtronicCommandType.GetCarbohydrateRatios);
-
-        return response;
-    }
-
 
     // TODO test
 
 
     public PumpMessage getPumpState() {
-        PumpMessage response = sendAndGetResponse(MedtronicCommandType.PumpState);
+        PumpMessage response = (PumpMessage)sendAndGetResponse(MedtronicCommandType.PumpState);
 
         byte[] data = response.getRawContent();
 
@@ -671,7 +654,7 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
 
 
     public PumpMessage getBolusStatus() {
-        PumpMessage response = sendAndGetResponse(MedtronicCommandType.SetBolus, new byte[]{0x03, 0x00, 0x00, 0x00}, 4000);
+        PumpMessage response = (PumpMessage)sendAndGetResponse(MedtronicCommandType.SetBolus, new byte[]{0x03, 0x00, 0x00, 0x00}, 4000);
 
         byte[] data = response.getRawContent();
 
@@ -746,7 +729,7 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
 
     public PumpMessage setExtendedBolus(double units, int duration) {
         // FIXME see decocare
-        PumpMessage response = sendAndGetResponse(MedtronicCommandType.SetBolus, MedtronicUtil.getBolusStrokes(units));
+        PumpMessage response = (PumpMessage)sendAndGetResponse(MedtronicCommandType.SetBolus, MedtronicUtil.getBolusStrokes(units));
 
         return response;
     }

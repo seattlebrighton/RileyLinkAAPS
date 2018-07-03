@@ -1,0 +1,25 @@
+package info.nightscout.androidaps.plugins.PumpOmnipod.util;
+
+/**
+ * Created by andy on 5/12/18.
+ */
+
+public class OmniPodConst {
+
+    static final String Prefix = "AAPS.OmniPod.";
+
+    public class Prefs {
+
+        public static final String PrefPrefix = "pref_omnipod_";
+        public static final String PumpType = PrefPrefix + "pump_type";
+        public static final String PumpFrequency = PrefPrefix + "frequency";
+        public static final String RileyLinkAddress = PrefPrefix + "rileylink_mac";
+        public static final String MaxBolus = PrefPrefix + "max_bolus";
+        public static final String MaxBasal = PrefPrefix + "max_basal";
+
+        public static final String LastGoodPumpCommunicationTime = Prefix + "lastGoodPumpCommunicationTime";
+        public static final String LastGoodPumpFrequency = Prefix + "LastGoodPumpFrequency";
+    }
+
+
+}

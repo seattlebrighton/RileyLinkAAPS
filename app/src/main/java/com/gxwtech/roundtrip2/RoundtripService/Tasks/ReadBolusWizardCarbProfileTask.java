@@ -9,6 +9,7 @@ import info.nightscout.androidaps.plugins.PumpMedtronic.service.RileyLinkMedtron
 /**
  * Created by geoff on 7/10/16.
  */
+@Deprecated
 public class ReadBolusWizardCarbProfileTask extends PumpTask {
     public ReadBolusWizardCarbProfileTask() {
         super();
@@ -22,9 +23,11 @@ public class ReadBolusWizardCarbProfileTask extends PumpTask {
 
     @Override
     public void run() {
+        /*
         PumpMessage msg = RileyLinkMedtronicService.getCommunicationManager().getBolusWizardCarbProfile();
         ServiceResult result = getServiceTransport().getServiceResult();
         // interpret msg here.
         getServiceTransport().setServiceResult(result);
+        */
     }
 }

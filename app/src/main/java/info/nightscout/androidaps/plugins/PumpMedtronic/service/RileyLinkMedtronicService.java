@@ -203,12 +203,6 @@ public class RileyLinkMedtronicService extends RileyLinkService {
 
 
     @Override
-    public void loadPumpCommunicationManager() {
-
-    }
-
-
-    @Override
     public void onConfigurationChanged(Configuration newConfig) {
         LOG.warn("onConfigurationChanged");
         super.onConfigurationChanged(newConfig);

@@ -134,7 +134,6 @@ public abstract class RileyLinkService extends Service {
         //
         //        RileyLinkUtil.setRileyLinkBLE(rileyLinkBLE);
 
-        loadPumpCommunicationManager();
 
         mBroadcastReceiver = new BroadcastReceiver() {
             @Override
@@ -271,7 +270,7 @@ public abstract class RileyLinkService extends Service {
 
     public abstract void handlePumpSpecificIntents(Intent intent);
 
-    public abstract void loadPumpCommunicationManager();
+    //public abstract void loadPumpCommunicationManager();
 
     public abstract void handleIncomingServiceTransport(Intent intent);
 
