@@ -16,6 +16,7 @@ import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.Riley
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
 
 
+import info.nightscout.androidaps.plugins.PumpMedtronic.comm.message.PumpMessage;
 import info.nightscout.androidaps.plugins.PumpMedtronic.util.MedtronicConst;
 import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.PodMessage;
 import info.nightscout.utils.SP;
@@ -34,7 +35,6 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
     public OmnipodCommunicationManager(Context context, RFSpy rfspy) {
         super(context, rfspy, RileyLinkTargetFrequency.Omnipod);
         omnipodCommunicationManager = this;
-        //this.medtronicConverter = new MedtronicConverter();
     }
 
 
@@ -42,6 +42,8 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
     protected void configurePumpSpecificSettings() {
 
     }
+
+
 
     @Override
     public boolean tryToConnectToDevice() {
@@ -51,31 +53,21 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
 
     @Override
     public byte[] createPumpMessageContent(RLMessageType type) {
-        // TODO
         return new byte[0];
+    }
+
+
+    @Override
+    public <E extends RLMessage> E createResponseMessage(byte[] payload, Class<E> clazz) {
+        PodMessage pumpMessage = new PodMessage(payload);
+        return (E)pumpMessage;
     }
 
 
     // All pump communications go through this function.
     protected PodMessage sendAndListen(RLMessage msg, int timeout_ms) {
 
-        if (showPumpMessages) {
-            LOG.info("Sent:" + ByteUtil.shortHexString(msg.getTxData()));
-        }
-
-        RFSpyResponse resp = rfspy.transmitThenReceive(new RadioPacket(msg.getTxData()), timeout_ms);
-        PodMessage rval = new PodMessage(resp.getRadioResponse().getPayload());
-        if (rval.isValid()) {
-            // Mark this as the last time we heard from the pump.
-            rememberLastGoodPumpCommunicationTime();
-        } else {
-            LOG.warn("Response is invalid. !!!");
-        }
-
-        if (showPumpMessages) {
-            LOG.info("Received:" + ByteUtil.shortHexString(resp.getRadioResponse().getPayload()));
-        }
-        return rval;
+        return sendAndListen(msg, timeout_ms, PodMessage.class);
     }
 
 

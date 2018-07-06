@@ -16,6 +16,8 @@ import java.util.List;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkCommunicationManager;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RFSpy;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.RFSpyResponse;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.RadioPacket;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RLMessage;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RLMessageType;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkTargetFrequency;
@@ -70,6 +72,12 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
     @Override
     protected void configurePumpSpecificSettings() {
         pumpStatus = RileyLinkUtil.getMedtronicPumpStatus();
+    }
+
+    @Override
+    public <E extends RLMessage> E createResponseMessage(byte[] payload, Class<E> clazz) {
+        PumpMessage pumpMessage = new PumpMessage(payload);
+        return (E)pumpMessage;
     }
 
 
@@ -420,6 +428,21 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
     //        PumpMessage response = send(msg, timeoutMs);
     //        return response;
     //    }
+
+
+
+    protected PumpMessage sendAndListen(RLMessage msg) {
+        return sendAndListen(msg, 4000); // 2000
+    }
+
+
+    // All pump communications go through this function.
+    protected PumpMessage sendAndListen(RLMessage msg, int timeout_ms) {
+        return sendAndListen(msg, timeout_ms, PumpMessage.class);
+    }
+
+
+
 
 
     private Object sendAndGetResponseWithCheck(MedtronicCommandType commandType) {
