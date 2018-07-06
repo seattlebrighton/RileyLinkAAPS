@@ -62,21 +62,24 @@ public abstract class RileyLinkCommunicationManager {
     protected abstract void configurePumpSpecificSettings();
 
 
-    protected RLMessage sendAndListen(RLMessage msg) {
-        return sendAndListen(msg, 4000); // 2000
-    }
+//    protected <E extends RLMessage> E sendAndListen(RLMessage msg, Class<E> clazz) {
+//        return sendAndListen(msg, 4000, clazz); // 2000
+//    }
 
 
     // All pump communications go through this function.
-    protected RLMessage sendAndListen(RLMessage msg, int timeout_ms) {
+    protected <E extends RLMessage> E sendAndListen(RLMessage msg, int timeout_ms, Class<E> clazz) {
 
         if (showPumpMessages) {
             LOG.info("Sent:" + ByteUtil.shortHexString(msg.getTxData()));
         }
 
         RFSpyResponse resp = rfspy.transmitThenReceive(new RadioPacket(msg.getTxData()), timeout_ms);
-        PumpMessage rval = new PumpMessage(resp.getRadioResponse().getPayload());
-        if (rval.isValid()) {
+
+        E response = createResponseMessage(resp.getRadioResponse().getPayload(), clazz);
+
+        //PumpMessage rval = new PumpMessage(resp.getRadioResponse().getPayload());
+        if (response.isValid()) {
             // Mark this as the last time we heard from the pump.
             rememberLastGoodPumpCommunicationTime();
         } else {
@@ -86,11 +89,11 @@ public abstract class RileyLinkCommunicationManager {
         if (showPumpMessages) {
             LOG.info("Received:" + ByteUtil.shortHexString(resp.getRadioResponse().getPayload()));
         }
-        return rval;
+        return response;
     }
 
 
-
+    public abstract <E extends RLMessage> E createResponseMessage(byte[] payload, Class<E> clazz);
 
 
     public void wakeUp(boolean force) {
