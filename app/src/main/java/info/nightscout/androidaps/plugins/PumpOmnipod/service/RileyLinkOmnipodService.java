@@ -12,6 +12,8 @@ import com.gxwtech.roundtrip2.RoundtripService.medtronic.PumpData.PumpHistoryMan
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkCommunicationManager;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkConst;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RFSpy;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RileyLinkBLE;
@@ -50,6 +52,9 @@ public class RileyLinkOmnipodService extends RileyLinkService {
     @Override
     protected void determineRileyLinkTargetFrequency() {
         this.rileyLinkTargetFrequency = RileyLinkTargetFrequency.Omnipod;
+
+        // omnipod has only one frequency, and no tuneup required
+        SP.putFloat(RileyLinkConst.Prefs.LastGoodDeviceFrequency, 433.91f);
     }
 
 
@@ -69,10 +74,12 @@ public class RileyLinkOmnipodService extends RileyLinkService {
 
         RileyLinkUtil.setRileyLinkBLE(rileyLinkBLE);
 
-
-        // init rileyLinkCommunicationManager
         omnipodCommunicationManager = new OmnipodCommunicationManager(context, rfspy);
-        pumpCommunicationManager = omnipodCommunicationManager;
+    }
+
+    @Override
+    public RileyLinkCommunicationManager getDeviceCommunicationManager() {
+        return this.omnipodCommunicationManager;
     }
 
 
@@ -104,5 +111,7 @@ public class RileyLinkOmnipodService extends RileyLinkService {
             return RileyLinkOmnipodService.this;
         }
     }
+
+
 
 }

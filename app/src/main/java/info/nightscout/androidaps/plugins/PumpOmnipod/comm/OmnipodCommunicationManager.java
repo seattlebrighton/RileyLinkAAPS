@@ -71,12 +71,7 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
     }
 
 
-    protected void rememberLastGoodPumpCommunicationTime() {
-        lastGoodReceiverCommunicationTime = System.currentTimeMillis();
 
-        SP.putLong(MedtronicConst.Prefs.LastGoodPumpCommunicationTime, lastGoodReceiverCommunicationTime);
-        pumpStatus.setLastDataTimeToNow();
-    }
 
 
 }

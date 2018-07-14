@@ -20,4 +20,14 @@ public class RileyLinkConst {
 
     }
 
+    public class Prefs {
+
+        public static final String PrefPrefix = "pref_rileylink_";
+        public static final String RileyLinkAddress = PrefPrefix + "rileylink_mac";
+
+        public static final String LastGoodDeviceCommunicationTime = Prefix + "lastGoodDeviceCommunicationTime";
+        public static final String LastGoodDeviceFrequency = Prefix + "LastGoodDeviceFrequency";
+    }
+
+
 }

@@ -29,6 +29,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkCommunicationManager;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RFSpy;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RileyLinkBLE;
@@ -249,13 +250,16 @@ public class RileyLinkMedtronicService extends RileyLinkService {
 
 
         // init rileyLinkCommunicationManager
-        pumpCommunicationManager = new MedtronicCommunicationManager(context, rfspy, rileyLinkTargetFrequency);
-        medtronicCommunicationManager = (MedtronicCommunicationManager) pumpCommunicationManager;
-
+        medtronicCommunicationManager = new MedtronicCommunicationManager(context, rfspy, rileyLinkTargetFrequency);
 
         // FIXME remove
         pumpHistoryManager = new PumpHistoryManager(this.context);
 
+    }
+
+    @Override
+    public RileyLinkCommunicationManager getDeviceCommunicationManager() {
+        return medtronicCommunicationManager;
     }
 
 

@@ -136,7 +136,7 @@ public class RileyLinkUtil {
 
 
     public static void tuneUpPump() {
-        RileyLinkUtil.rileyLinkService.doTunePump(); // FIXME thread
+        RileyLinkUtil.rileyLinkService.doTuneUpDevice(); // FIXME thread
     }
 
 
