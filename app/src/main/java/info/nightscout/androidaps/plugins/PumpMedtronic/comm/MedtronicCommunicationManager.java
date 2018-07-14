@@ -686,6 +686,43 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
     // TODO generateRawData (check if it works correctly) and test
     public Boolean setBasalProfile(BasalProfile basalProfile) {
 
+
+        //        [RileyLinkDevice] ======================== Save Basal Profile ===========================
+        //        [PumpMessageSender] getResponse(PumpMessage(carelink, setBasalProfileStandard, 3 bytes, 1 bytes), 0, 0.180000, 3)
+        //        [PeripheralManager+RileyLink] RL Send: 19050000000000000000b4030000a9659a6b19b199c555b2c000
+        //        [PeripheralManager+RileyLink] RL Recv(single): bb
+        //        [PeripheralManager+RileyLink] RileyLink response: PacketResponse(code: RileyLinkBLEKit.ResponseCode.commandInterrupted, packet: nil)
+        //        [PeripheralManager+RileyLink] RL Recv(single): dd0dbca9659a6b19b156655534d500
+        //        [PumpMessageSender] getResponse(PumpMessage(carelink, setBasalProfileStandard, 3 bytes, 65 bytes), 0, 0.180000, 3)
+        //        [PeripheralManager+RileyLink] RL Send: 79050000000000000000b4030000a9659a6b19b199c571c9a555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555556000
+        //        2018-06-30 15:03:13.333962-0500 Loop[24609:13622692] [PeripheralManager+RileyLink] RL Recv(single): dd10bda9659a6b19b156655534d500
+        //        2018-06-30 15:03:13.334927-0500 Loop[24609:13622484] [PumpMessageSender] getResponse(PumpMessage(carelink, setBasalProfileStandard, 3 bytes, 65 bytes), 0, 0.180000, 3)
+        //        2018-06-30 15:03:13.337923-0500 Loop[24609:13622484] [PeripheralManager+RileyLink] RL Send: 79050000000000000000b4030000a9659a6b19b199c5725555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555ac000
+        //        2018-06-30 15:03:14.114024-0500 Loop[24609:13622486] [PeripheralManager+RileyLink] RL Recv(single): dd0ebea9659a6b19b156655534d500
+        //        2018-06-30 15:03:14.115017-0500 Loop[24609:13622484] [PumpMessageSender] getResponse(PumpMessage(carelink, setBasalProfileStandard, 3 bytes, 65 bytes), 0, 0.180000, 3)
+        //        2018-06-30 15:03:14.117600-0500 Loop[24609:13622484] [PeripheralManager+RileyLink] RL Send: 79050000000000000000b4030000a9659a6b19b199c6a355555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555570e000
+        //        2018-06-30 15:03:15.644502-0500 Loop[24609:13622692] [PeripheralManager+RileyLink] RL Recv(single): dd0ebfa9659a6b19b156655534d500
+        //        2018-06-30 15:03:15.645388-0500 Loop[24609:13622484] [RileyLinkDevice] ------------------------ Save Basal Profile ---------------------------
+
+
+//        2018-06-30 15:03:12.167767-0500 Loop[24609:13622484] [RileyLinkDevice] ======================== Save Basal Profile ===========================
+//        2018-06-30 15:03:12.168652-0500 Loop[24609:13622484] [PumpMessageSender] getResponse(PumpMessage(carelink, setBasalProfileStandard, 3 bytes, 1 bytes), 0, 0.180000, 3)
+//        2018-06-30 15:03:12.169518-0500 Loop[24609:13622484] [PeripheralManager+RileyLink] RL Send: 19050000000000000000b4030000a9659a6b19b199c555b2c000
+//        2018-06-30 15:03:12.463546-0500 Loop[24609:13622486] [PeripheralManager+RileyLink] RL Recv(single): bb
+//        2018-06-30 15:03:12.463954-0500 Loop[24609:13622486] [PeripheralManager+RileyLink] RileyLink response: PacketResponse(code: RileyLinkBLEKit.ResponseCode.commandInterrupted, packet: nil)
+//        2018-06-30 15:03:12.554051-0500 Loop[24609:13622486] [PeripheralManager+RileyLink] RL Recv(single): dd0dbca9659a6b19b156655534d500
+//        2018-06-30 15:03:12.555175-0500 Loop[24609:13622484] [PumpMessageSender] getResponse(PumpMessage(carelink, setBasalProfileStandard, 3 bytes, 65 bytes), 0, 0.180000, 3)
+//        2018-06-30 15:03:12.557953-0500 Loop[24609:13622484] [PeripheralManager+RileyLink] RL Send: 79050000000000000000b4030000a9659a6b19b199c571c9a555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555556000
+//        2018-06-30 15:03:13.333962-0500 Loop[24609:13622692] [PeripheralManager+RileyLink] RL Recv(single): dd10bda9659a6b19b156655534d500
+//        2018-06-30 15:03:13.334927-0500 Loop[24609:13622484] [PumpMessageSender] getResponse(PumpMessage(carelink, setBasalProfileStandard, 3 bytes, 65 bytes), 0, 0.180000, 3)
+//        2018-06-30 15:03:13.337923-0500 Loop[24609:13622484] [PeripheralManager+RileyLink] RL Send: 79050000000000000000b4030000a9659a6b19b199c5725555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555ac000
+//        2018-06-30 15:03:14.114024-0500 Loop[24609:13622486] [PeripheralManager+RileyLink] RL Recv(single): dd0ebea9659a6b19b156655534d500
+//        2018-06-30 15:03:14.115017-0500 Loop[24609:13622484] [PumpMessageSender] getResponse(PumpMessage(carelink, setBasalProfileStandard, 3 bytes, 65 bytes), 0, 0.180000, 3)
+//        2018-06-30 15:03:14.117600-0500 Loop[24609:13622484] [PeripheralManager+RileyLink] RL Send: 79050000000000000000b4030000a9659a6b19b199c6a355555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555555570e000
+//        2018-06-30 15:03:15.644502-0500 Loop[24609:13622692] [PeripheralManager+RileyLink] RL Recv(single): dd0ebfa9659a6b19b156655534d500
+//        2018-06-30 15:03:15.645388-0500 Loop[24609:13622484] [RileyLinkDevice] ------------------------ Save Basal Profile ---------------------------
+
+
         //byte[] body = basalProfile.generateRawData();
 
         byte[] body = new byte[]{32, 0, 0, 38, 0, 13, 44, 0, 19, 38, 0, 28};

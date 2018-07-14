@@ -12,11 +12,13 @@ public class RileyLinkConst {
 
         public static final String RileyLinkReady = Prefix + "RileyLink_Ready";
         public static final String RileyLinkGattFailed = Prefix + "RileyLink_Gatt_Failed";
-        public static final String RileyLinkError = Prefix + "RileyLink_Ready";
+        //public static final String RileyLinkError = Prefix + "RileyLink_Ready";
 
         public static final String BluetoothConnected = Prefix + "Bluetooth_Connected";
+        public static final String BluetoothReconnected = Prefix + "Bluetooth_Reconnected";
         public static final String BluetoothDisconnected = Prefix + "Bluetooth_Disconnected";
-        public static final String RileyLinkDisconnected = Prefix + "RileyLink_Disconnected";
+
+        public static final String RileyLinkDisconnected = Prefix + "RileyLin-k_Disconnected";
 
     }
 
