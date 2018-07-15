@@ -3,6 +3,6 @@
 
     <Preference
         android:title="@string/pref_rileylink_ble_id"
-        android:key="pref_medtronic_rileylink_mac" />
+        android:key="pref_rileylink_mac_address" />
 
 </PreferenceScreen>

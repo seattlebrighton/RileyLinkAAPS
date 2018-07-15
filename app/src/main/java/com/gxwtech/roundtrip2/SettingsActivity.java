@@ -16,6 +16,7 @@ import android.view.MenuItem;
 
 import java.util.List;
 
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkConst;
 import info.nightscout.androidaps.plugins.PumpMedtronic.util.MedtronicConst;
 
 /**
@@ -183,8 +184,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             // to their values. When their values change, their summaries are
             // updated to reflect the new value, per the Android Design
             // guidelines.
-            bindPreferenceSummaryToValue(findPreference(MedtronicConst.Prefs.RileyLinkAddress));
-            Preference rileylink_ble = findPreference(MedtronicConst.Prefs.RileyLinkAddress);
+            bindPreferenceSummaryToValue(findPreference(RileyLinkConst.Prefs.RileyLinkAddress));
+            Preference rileylink_ble = findPreference(RileyLinkConst.Prefs.RileyLinkAddress);
             rileylink_ble.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {

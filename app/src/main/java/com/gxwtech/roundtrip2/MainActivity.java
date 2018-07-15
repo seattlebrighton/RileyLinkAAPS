@@ -50,12 +50,14 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 
 import info.nightscout.androidaps.interfaces.PumpDescription;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkConst;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.ServiceNotification;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.ServiceTransport;
 import info.nightscout.androidaps.plugins.PumpMedtronic.driver.MedtronicPumpStatus;
 import info.nightscout.androidaps.plugins.PumpMedtronic.service.RileyLinkMedtronicService;
 import info.nightscout.androidaps.plugins.PumpMedtronic.util.MedtronicConst;
+import info.nightscout.androidaps.plugins.PumpOmnipod.service.RileyLinkOmnipodService;
 import info.nightscout.utils.SP;
 
 public class MainActivity extends AppCompatActivity {
@@ -104,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
          * Note that calling startService repeatedly has no ill effects on RileyLinkMedtronicService
          */
         // explicitly call startService to keep it running even when the GUI goes away.
-        Intent bindIntent = new Intent(this, RileyLinkMedtronicService.class);
+        Intent bindIntent = new Intent(this, RileyLinkOmnipodService.class);
         startService(bindIntent);
 
         linearProgressBar = (ProgressBar) findViewById(R.id.progressBarCommandActivity);
@@ -157,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
                              * use the last known good value.  But the kick-off of bluetooth ops must
                              * come from an Activity.
                              */
-                            String RileylinkBLEAddress = SP.getString(MedtronicConst.Prefs.RileyLinkAddress, "");
+                            String RileylinkBLEAddress = SP.getString(RileyLinkConst.Prefs.RileyLinkAddress, "");
                             if (RileylinkBLEAddress.equals("")) {
                                 // TODO: 11/07/2016 @TIM UI message for user
                                 Log.e(TAG, "No Rileylink BLE Address saved in app");

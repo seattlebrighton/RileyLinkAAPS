@@ -39,6 +39,7 @@ import com.gxwtech.roundtrip2.util.LocationHelper;
 import java.util.ArrayList;
 import java.util.List;
 
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkConst;
 import info.nightscout.androidaps.plugins.PumpMedtronic.util.MedtronicConst;
 import info.nightscout.utils.SP;
 
@@ -83,7 +84,7 @@ public class RileyLinkScan extends AppCompatActivity {
                 String bleAddress = textview.getText().toString();
 
                 //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                SP.putString(MedtronicConst.Prefs.RileyLinkAddress, bleAddress);
+                SP.putString(RileyLinkConst.Prefs.RileyLinkAddress, bleAddress);
 
                 //Notify that we have a new rileylinkAddressKey
                 LocalBroadcastManager.getInstance(MainApp.instance()).sendBroadcast(new Intent(RT2Const.local.INTENT_NEW_rileylinkAddressKey));
@@ -333,7 +334,7 @@ public class RileyLinkScan extends AppCompatActivity {
             BluetoothDevice device = mLeDevices.get(i);
             String deviceName = device.getName();
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-            if (SP.getString(MedtronicConst.Prefs.RileyLinkAddress, "").compareTo(device.getAddress()) == 0) {
+            if (SP.getString(RileyLinkConst.Prefs.RileyLinkAddress, "").compareTo(device.getAddress()) == 0) {
                 viewHolder.deviceName.setTextColor(getColor(R.color.secondary_text_light));
                 viewHolder.deviceAddress.setTextColor(getColor(R.color.secondary_text_light));
                 deviceName += " (" + getResources().getString(R.string.selected_device) + ")";

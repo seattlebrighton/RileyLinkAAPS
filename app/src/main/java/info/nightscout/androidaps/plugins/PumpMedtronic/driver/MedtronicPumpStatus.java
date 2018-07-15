@@ -14,6 +14,7 @@ import java.util.Map;
 import info.nightscout.androidaps.interfaces.PumpDescription;
 import info.nightscout.androidaps.plugins.PumpCommon.data.PumpStatus;
 import info.nightscout.androidaps.plugins.PumpCommon.defs.PumpType;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkConst;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkUtil;
 import info.nightscout.androidaps.plugins.PumpMedtronic.util.MedtronicConst;
 import info.nightscout.utils.SP;
@@ -183,7 +184,7 @@ public class MedtronicPumpStatus extends PumpStatus {
             }
 
 
-            String rileyLinkAddress = SP.getString(MedtronicConst.Prefs.RileyLinkAddress, null);
+            String rileyLinkAddress = SP.getString(RileyLinkConst.Prefs.RileyLinkAddress, null);
 
             if (rileyLinkAddress == null) {
                 this.errorDescription = MainApp.gs(R.string.medtronic_error_rileylink_address_invalid);

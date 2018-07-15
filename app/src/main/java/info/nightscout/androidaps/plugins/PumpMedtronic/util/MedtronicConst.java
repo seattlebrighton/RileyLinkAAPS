@@ -14,7 +14,7 @@ public class MedtronicConst {
         public static final String PumpSerial = PrefPrefix + "serial";
         public static final String PumpType = PrefPrefix + "pump_type";
         public static final String PumpFrequency = PrefPrefix + "frequency";
-        public static final String RileyLinkAddress = PrefPrefix + "rileylink_mac";
+        //public static final String RileyLinkAddress = PrefPrefix + "rileylink_mac";
         public static final String MaxBolus = PrefPrefix + "max_bolus";
         public static final String MaxBasal = PrefPrefix + "max_basal";
 
