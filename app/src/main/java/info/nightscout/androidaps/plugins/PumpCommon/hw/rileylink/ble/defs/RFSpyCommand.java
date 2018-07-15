@@ -13,6 +13,13 @@ public enum RFSpyCommand {
     SendAndListen(5), //
     UpdateRegister(6), //
     Reset(7), //
+    Led(8),
+    ReadRegister(8),
+    SetModeRegisters(10),
+    SetSWEncoding(11),
+    SetPreamble(12),
+    ResetRadioConfig(13),
+    GetStatistics(14),
 
     ;
 

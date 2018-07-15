@@ -4,9 +4,11 @@ import android.os.SystemClock;
 
 import com.gxwtech.roundtrip2.util.StringUtil;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.ByteBuffer;
 import java.util.UUID;
 
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkUtil;
@@ -16,11 +18,14 @@ import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.Radio
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.RadioResponse;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.CC111XRegister;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RFSpyCommand;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RLSoftwareEncodingType;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RXFilterMode;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkTargetFrequency;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.operations.BLECommOperationResult;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ThreadUtil;
+
+import static info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RLSoftwareEncodingType.Manchester;
 
 /**
  * Created by geoff on 5/26/16.
@@ -207,6 +212,7 @@ public class RFSpy {
     }
 
 
+
     public void setBaseFrequency(double freqMHz) {
         int value = (int) (freqMHz * 1000000 / ((double) (RILEYLINK_FREQ_XTAL) / Math.pow(2.0, 16.0)));
         updateRegister(CC111XRegister.freq0, (byte) (value & 0xff));
@@ -247,18 +253,57 @@ public class RFSpy {
 
             }
             break;
-
             case Omnipod: {
-                LOG.debug("No region configuration for RfSpy and {}", frequency.name());
-            }
+                //RL initialization for Omnipod is a copy/paste from OmniKit implementation.
+                //Last commit from original repository: 5c3beb4144
+                //so if something is terribly wrong, please check git diff PodCommsSession.swift  since that commit
+                setSoftwareEncoding(Manchester);
+                setPreamble(0x6665);
 
+                updateRegister(CC111XRegister.pktctrl1, 0x20);
+                updateRegister(CC111XRegister.agcctrl0, 0x00);
+                updateRegister(CC111XRegister.fsctrl1, 0x06);
+                updateRegister(CC111XRegister.mdmcfg4, 0xCA);
+                updateRegister(CC111XRegister.mdmcfg3, 0xBC);
+                updateRegister(CC111XRegister.mdmcfg2, 0x06);
+                updateRegister(CC111XRegister.mdmcfg1, 0x70);
+                updateRegister(CC111XRegister.mdmcfg0, 0x11);
+                updateRegister(CC111XRegister.deviatn, 0x44);
+                updateRegister(CC111XRegister.mcsm0, 0x18);
+                updateRegister(CC111XRegister.foccfg, 0x17);
+                updateRegister(CC111XRegister.fscal3, 0xE9);
+                updateRegister(CC111XRegister.fscal2, 0x2A);
+                updateRegister(CC111XRegister.fscal1, 0x00);
+                updateRegister(CC111XRegister.fscal0, 0x1F);
+
+                updateRegister(CC111XRegister.test1, 0x31);
+                updateRegister(CC111XRegister.test0, 0x09);
+                updateRegister(CC111XRegister.paTable0, 0x84);
+                updateRegister(CC111XRegister.sync1, 0xA5);
+                updateRegister(CC111XRegister.sync0,0x5A );
+
+            }
+            break;
             default:
-                // no configuration
+                LOG.debug("No region configuration for RfSpy and {}", frequency.name());
                 break;
 
         }
 
         this.selectedTargetFrequency = frequency;
+    }
+
+    private RFSpyResponse setPreamble(int preamble) {
+        byte[] bytes = ByteBuffer.allocate(4).putInt(preamble).array();
+        byte[] data = getByteArray(bytes[2], bytes[3]);
+        RFSpyResponse resp = writeToData(RFSpyCommand.SetSWEncoding, data, EXPECTED_MAX_BLUETOOTH_LATENCY_MS);
+        return resp;
+    }
+
+    private RFSpyResponse setSoftwareEncoding(RLSoftwareEncodingType encoding) {
+        byte[] data = getByteArray(encoding.value);
+        RFSpyResponse resp = writeToData(RFSpyCommand.SetSWEncoding, data, EXPECTED_MAX_BLUETOOTH_LATENCY_MS);
+        return resp;
     }
 
 

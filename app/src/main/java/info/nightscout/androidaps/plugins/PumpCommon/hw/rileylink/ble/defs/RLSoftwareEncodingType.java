@@ -1,0 +1,12 @@
+package info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs;
+
+public enum RLSoftwareEncodingType {
+    None(0x00),
+    Manchester(0x01),
+    ForBSixB(0x02),
+    ;
+    public byte value;
+    RLSoftwareEncodingType(int value) {
+        this.value = (byte)value;
+    }
+}
