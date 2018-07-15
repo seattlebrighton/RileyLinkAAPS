@@ -37,7 +37,6 @@ public class RFSpy {
 
     private RileyLinkBLE rileyLinkBle;
     private RFSpyReader reader;
-    private int previousRegion = 0;
     private RileyLinkTargetFrequency selectedTargetFrequency;
 
     private UUID radioServiceUUID = UUID.fromString(GattAttributes.SERVICE_RADIO);
@@ -48,7 +47,6 @@ public class RFSpy {
 
     public RFSpy(RileyLinkBLE rileyLinkBle) {
         this.rileyLinkBle = rileyLinkBle;
-        //this.rileyLinkBle.setRFSpy(this);
         reader = new RFSpyReader(rileyLinkBle);
     }
 
@@ -87,7 +85,10 @@ public class RFSpy {
 
 
     // The caller has to know how long the RFSpy will be busy with what was sent to it.
-    private RFSpyResponse writeToData(byte[] bytes, int responseTimeout_ms) {
+    private RFSpyResponse writeToData(RFSpyCommand command, byte[] body, int responseTimeout_ms) {
+
+        byte[] bytes = getCommandArray(command, body);
+
         SystemClock.sleep(100);
         // FIXME drain read queue?
         byte[] junkInBuffer = reader.poll(0);
@@ -107,7 +108,7 @@ public class RFSpy {
         SystemClock.sleep(100);
         //Log.i(TAG,ThreadUtil.sig()+String.format(" writeToData:(timeout %d) %s",(responseTimeout_ms),ByteUtil.shortHexString(prepended)));
         byte[] rawResponse = reader.poll(responseTimeout_ms);
-        RFSpyResponse resp = new RFSpyResponse(rawResponse);
+        RFSpyResponse resp = new RFSpyResponse(command, rawResponse);
         if (rawResponse == null) {
             LOG.error("writeToData: No response from RileyLink");
         } else {
@@ -152,21 +153,14 @@ public class RFSpy {
     }
 
 
-    public RFSpyResponse getRadioVersion() {
-        RFSpyResponse resp = writeToData(getCommandArray(RFSpyCommand.GetVersion, null), 1000);
+    public String getRadioVersion() {
+        RFSpyResponse resp = writeToData(RFSpyCommand.GetVersion, null, 4000);
         if (resp == null) {
             LOG.error("getRadioVersion returned null");
-        }
-        /*
-        Log.d(TAG,"checking response count");
-        BLECommOperationResult checkRC = rileyLinkBle.readCharacteristic_blocking(radioServiceUUID,responseCountUUID);
-        if (checkRC.resultCode == BLECommOperationResult.RESULT_SUCCESS) {
-            Log.d(TAG,"Response count is: " + ByteUtil.shortHexString(checkRC.value));
+            return "(null)";
         } else {
-            LOG.error("Error getting response count, code is " + checkRC.resultCode);
+            return StringUtil.fromBytes(resp.getRadioResponse().decodedPayload);
         }
-        */
-        return resp;
     }
 
 
@@ -178,16 +172,16 @@ public class RFSpy {
 
     public RFSpyResponse transmit(RadioPacket radioPacket, byte sendChannel, byte repeatCount, byte delay_ms) {
         // append checksum, encode data, send it.
-        byte[] fullPacket = ByteUtil.concat(getCommandArray(RFSpyCommand.Send, getByteArray(sendChannel, repeatCount, delay_ms)), radioPacket.getEncoded());
-        RFSpyResponse response = writeToData(fullPacket, delay_ms + EXPECTED_MAX_BLUETOOTH_LATENCY_MS);
+        byte[] fullPacket = ByteUtil.concat(getByteArray(sendChannel, repeatCount, delay_ms), radioPacket.getEncoded());
+        RFSpyResponse response = writeToData(RFSpyCommand.Send, fullPacket, delay_ms + EXPECTED_MAX_BLUETOOTH_LATENCY_MS);
         return response;
     }
 
 
     public RFSpyResponse receive(byte listenChannel, int timeout_ms, byte retryCount) {
         int receiveDelay = timeout_ms * (retryCount + 1);
-        byte[] listen = getCommandArray(RFSpyCommand.GetPacket, getByteArray(listenChannel, (byte) ((timeout_ms >> 24) & 0x0FF), (byte) ((timeout_ms >> 16) & 0x0FF), (byte) ((timeout_ms >> 8) & 0x0FF), (byte) (timeout_ms & 0x0FF), retryCount));
-        return writeToData(listen, receiveDelay);
+        byte[] listen = getByteArray(listenChannel, (byte) ((timeout_ms >> 24) & 0x0FF), (byte) ((timeout_ms >> 16) & 0x0FF), (byte) ((timeout_ms >> 8) & 0x0FF), (byte) (timeout_ms & 0x0FF), retryCount);
+        return writeToData(RFSpyCommand.GetPacket, listen, receiveDelay);
     }
 
 
@@ -200,15 +194,15 @@ public class RFSpy {
 
         int sendDelay = repeatCount * delay_ms;
         int receiveDelay = timeout_ms * (retryCount + 1);
-        byte[] sendAndListen = getCommandArray(RFSpyCommand.SendAndListen, getByteArray(sendChannel, repeatCount, delay_ms, listenChannel, (byte) ((timeout_ms >> 24) & 0x0FF), (byte) ((timeout_ms >> 16) & 0x0FF), (byte) ((timeout_ms >> 8) & 0x0FF), (byte) (timeout_ms & 0x0FF), (byte) retryCount));
+        byte[] sendAndListen = getByteArray(sendChannel, repeatCount, delay_ms, listenChannel, (byte) ((timeout_ms >> 24) & 0x0FF), (byte) ((timeout_ms >> 16) & 0x0FF), (byte) ((timeout_ms >> 8) & 0x0FF), (byte) (timeout_ms & 0x0FF), (byte) retryCount);
         byte[] fullPacket = ByteUtil.concat(sendAndListen, pkt.getEncoded());
-        return writeToData(fullPacket, sendDelay + receiveDelay + EXPECTED_MAX_BLUETOOTH_LATENCY_MS);
+        return writeToData(RFSpyCommand.SendAndListen, fullPacket, sendDelay + receiveDelay + EXPECTED_MAX_BLUETOOTH_LATENCY_MS);
     }
 
 
     public RFSpyResponse updateRegister(CC111XRegister reg, int val) {
-        byte[] updateRegisterPkt = getCommandArray(RFSpyCommand.UpdateRegister, getByteArray(reg.value, (byte) val));
-        RFSpyResponse resp = writeToData(updateRegisterPkt, EXPECTED_MAX_BLUETOOTH_LATENCY_MS);
+        byte[] updateRegisterPkt = getByteArray(reg.value, (byte) val);
+        RFSpyResponse resp = writeToData(RFSpyCommand.UpdateRegister, updateRegisterPkt, EXPECTED_MAX_BLUETOOTH_LATENCY_MS);
         return resp;
     }
 

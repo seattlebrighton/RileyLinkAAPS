@@ -1,5 +1,6 @@
 package com.gxwtech.roundtrip2;
 
+import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -66,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_ENABLE_BT = 2177; // just something unique.
     private RoundtripServiceClientConnection roundtripServiceClientConnection;
     private BroadcastReceiver mBroadcastReceiver;
+    private BroadcastReceiver btReceiver;
 
     private static final Logger LOG = LoggerFactory.getLogger(MainActivity.class);
 
@@ -96,6 +98,8 @@ public class MainActivity extends AppCompatActivity {
 
         setBroadcastReceiver();
 
+        setBTReceiver();
+
         // Temporary AAPS
         RileyLinkUtil.setPumpStatus(new MedtronicPumpStatus(new PumpDescription()));
 
@@ -111,6 +115,41 @@ public class MainActivity extends AppCompatActivity {
 
         linearProgressBar = (ProgressBar) findViewById(R.id.progressBarCommandActivity);
         spinnyProgressBar = (ProgressBar) findViewById(R.id.progressBarSpinny);
+    }
+
+
+    private void setBTReceiver() {
+        btReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                final String action = intent.getAction();
+
+                if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
+                    final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR);
+                    switch (state) {
+                        case BluetoothAdapter.STATE_OFF:
+                            LOG.trace("Bluetooth off");
+                            break;
+                        case BluetoothAdapter.STATE_TURNING_OFF:
+                            //LOG.trace("Turning Bluetooth off...");
+                            break;
+                        case BluetoothAdapter.STATE_ON:
+                            LOG.trace("Bluetooth on");
+                            RileyLinkUtil.sendBroadcastMessage(RileyLinkConst.Intents.BluetoothReconnected);
+                            break;
+                        case BluetoothAdapter.STATE_TURNING_ON:
+                            //LOG.trace("Turning Bluetooth on...");
+                            break;
+                    }
+                }
+            }
+        };
+
+        // Register for broadcasts on BluetoothAdapter state change
+        IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
+        //LocalBroadcastManager.getInstance(MainApp.instance()).registerReceiver(btReceiver, filter);
+        registerReceiver(btReceiver, filter);
+
     }
 
 
@@ -131,6 +170,18 @@ public class MainActivity extends AppCompatActivity {
         if (mBroadcastReceiver != null) {
             LocalBroadcastManager.getInstance(MainApp.instance()).unregisterReceiver(mBroadcastReceiver);
         }
+
+    }
+
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (btReceiver != null) {
+            unregisterReceiver(btReceiver);
+        }
+
     }
 
 

@@ -21,7 +21,7 @@ import info.nightscout.androidaps.plugins.PumpOmnipod.service.RileyLinkOmnipodSe
 public class ServiceClientConnection {
 
     private static String TAG = "ServiceClientConnection";
-    //private static final Logger LOG = LoggerFactory.getLogger(ServiceClientConnection.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ServiceClientConnection.class);
 
 
     private RoundtripServiceClientConnection roundtripServiceClientConnection;
@@ -44,7 +44,7 @@ public class ServiceClientConnection {
     private void doBindService() {
         context.bindService(new Intent(context, RileyLinkOmnipodService.class), roundtripServiceClientConnection.getServiceConnection(), Context.BIND_AUTO_CREATE);
         Log.d(TAG, "doBindService: binding.");
-        //LOG.debug("doBindService Logger: binding.");
+        LOG.debug("doBindService Logger: binding.");
     }
 
 

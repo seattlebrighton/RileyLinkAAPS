@@ -140,12 +140,11 @@ public abstract class RileyLinkService extends Service {
                     if (action == null) {
                         LOG.error("onReceive: null action");
                     } else {
+
                         if (action.equals(RileyLinkConst.Intents.BluetoothConnected)) {
-                            LOG.warn("serviceLocal.bluetooth_connected");
+                            //LOG.warn("serviceLocal.bluetooth_connected");
                             rileyLinkIPCConnection.sendNotification(new ServiceNotification(RT2Const.IPC.MSG_note_FindingRileyLink), null);
                             ServiceTaskExecutor.startTask(new DiscoverGattServicesTask());
-                            // If this is successful,
-                            // We will get a broadcast of RT2Const.serviceLocal.BLE_services_discovered
                         } else if (action.equals(RileyLinkConst.Intents.RileyLinkDisconnected)) {
                             if (bluetoothAdapter.isEnabled()) {
                                 RileyLinkUtil.setServiceState(RileyLinkServiceState.BluetoothReady, RileyLinkError.RileyLinkUnreachable);
@@ -153,52 +152,29 @@ public abstract class RileyLinkService extends Service {
                                 RileyLinkUtil.setServiceState(RileyLinkServiceState.BluetoothError, RileyLinkError.BluetoothDisabled);
                             }
 
-                        } else if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
-
-                            // FIXME remove
-                            final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR);
-
-                            LOG.debug("Bluetooth Action State Changed: " + state);
-
-                            switch (state) {
-                                case BluetoothAdapter.STATE_OFF: {
-                                    LOG.debug("Bluetooth OFF");
-                                    //RileyLinkUtil.setServiceState(RileyLinkServiceState.BluetoothError, RileyLinkError.BluetoothDisabled);
-                                }
-                                break;
-
-
-                                case BluetoothAdapter.STATE_ON: {
-                                    LOG.debug("Bluetooth ON");
-                                    //setButtonText("Bluetooth on");
-                                }
-                                break;
-
-                                case BluetoothAdapter.STATE_TURNING_OFF:
-                                case BluetoothAdapter.STATE_TURNING_ON:
-                                    break;
-                            }
-                        } else if (action.equals(RileyLinkConst.Intents.RileyLinkReady)) {
+                        }  else if (action.equals(RileyLinkConst.Intents.RileyLinkReady)) {
                             LOG.warn("MedtronicConst.Intents.RileyLinkReady");
                             // FIXME
                             rileyLinkIPCConnection.sendNotification(new ServiceNotification(RT2Const.IPC.MSG_note_WakingPump), null);
                             rileyLinkBLE.enableNotifications();
                             rfspy.startReader(); // call startReader from outside?
 
-                            LOG.debug("RfSpy version (BLE113): " + rfspy.getVersion());
+                            String data = rfspy.getVersion();
+                            LOG.debug("RfSpy version (BLE113): " + data);
+                            rileyLinkServiceData.versionBLE113 = data;
 
-                            RFSpyResponse radioVersion = rfspy.getRadioVersion();
-
-                            // FIXME not working yet
-                            byte[] response = radioVersion.getRadioResponse().decodedPayload;
-
-                            LOG.debug("Response: " + HexDump.toHexStringDisplayable(response));
-
-                            LOG.debug("RfSpy Radio version (CC110): " + StringUtil.fromBytes(radioVersion.getRadioResponse().decodedPayload));
+                            data = rfspy.getRadioVersion();
+                            LOG.debug("RfSpy Radio version (CC110): " + data);
+                            rileyLinkServiceData.versionCC110 = data;
 
                             ServiceTask task = new InitializePumpManagerTask();
                             ServiceTaskExecutor.startTask(task);
                             LOG.info("Announcing RileyLink open For business");
+                        } else if (action.equals(RileyLinkConst.Intents.BluetoothReconnected)) {
+                            LOG.debug("Reconnecting Bluetooth");
+                            rileyLinkIPCConnection.sendNotification(new ServiceNotification(RT2Const.IPC.MSG_note_FindingRileyLink), null);
+                            bluetoothInit();
+                            ServiceTaskExecutor.startTask(new DiscoverGattServicesTask(true));
                         } else if (action.equals(RT2Const.serviceLocal.ipcBound)) {
                             // If we still need permission for bluetooth, ask now.
                             // FIXME removed Andy - doesn't do anything
@@ -245,8 +221,7 @@ public abstract class RileyLinkService extends Service {
         intentFilter.addAction(RileyLinkConst.Intents.BluetoothDisconnected);
         intentFilter.addAction(RileyLinkConst.Intents.RileyLinkReady);
         intentFilter.addAction(RileyLinkConst.Intents.RileyLinkDisconnected);
-        intentFilter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
-        intentFilter.addAction(BluetoothAdapter.ACTION_CONNECTION_STATE_CHANGED);
+        intentFilter.addAction(RileyLinkConst.Intents.BluetoothReconnected);
         intentFilter.addAction(RT2Const.serviceLocal.ipcBound);
         //intentFilter.addAction(RT2Const.IPC.MSG_BLE_accessGranted);
         //intentFilter.addAction(RT2Const.IPC.MSG_BLE_accessDenied);

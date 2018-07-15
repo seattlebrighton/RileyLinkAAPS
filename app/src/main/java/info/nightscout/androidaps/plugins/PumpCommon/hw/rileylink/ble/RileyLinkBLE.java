@@ -137,8 +137,13 @@ public class RileyLinkBLE {
                     LOG.warn("onConnectionStateChange " + getGattStatusMessage(status) + " " + stateMessage);
                 }
 
-                if (status == BluetoothGatt.GATT_SUCCESS && newState == BluetoothProfile.STATE_CONNECTED) {
-                    RileyLinkUtil.sendBroadcastMessage(RileyLinkConst.Intents.BluetoothConnected);
+                if (newState == BluetoothProfile.STATE_CONNECTED) {
+                    if (status == BluetoothGatt.GATT_SUCCESS) {
+                        RileyLinkUtil.sendBroadcastMessage(RileyLinkConst.Intents.BluetoothConnected);
+                    } else {
+                        LOG.debug("BT State connected, GATT status {} ({})", status, getGattStatusMessage(status));
+                    }
+
                 } else if ((newState == BluetoothProfile.STATE_CONNECTING) || //
                         (newState == BluetoothProfile.STATE_DISCONNECTING)) {
                     //LOG.debug("We are in {} state.", status == BluetoothProfile.STATE_CONNECTING ? "Connecting" : "Disconnecting");
