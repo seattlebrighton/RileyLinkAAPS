@@ -254,33 +254,34 @@ public class RFSpy {
             }
             break;
             case Omnipod: {
+                RFSpyResponse r = null;
                 //RL initialization for Omnipod is a copy/paste from OmniKit implementation.
                 //Last commit from original repository: 5c3beb4144
                 //so if something is terribly wrong, please check git diff PodCommsSession.swift  since that commit
-                setSoftwareEncoding(Manchester);
-                setPreamble(0x6665);
+                r = updateRegister(CC111XRegister.pktctrl1, 0x20);
+                r = updateRegister(CC111XRegister.agcctrl0, 0x00);
+                r = updateRegister(CC111XRegister.fsctrl1, 0x06);
+                r = updateRegister(CC111XRegister.mdmcfg4, 0xCA);
+                r = updateRegister(CC111XRegister.mdmcfg3, 0xBC);
+                r = updateRegister(CC111XRegister.mdmcfg2, 0x06);
+                r = updateRegister(CC111XRegister.mdmcfg1, 0x70);
+                r = updateRegister(CC111XRegister.mdmcfg0, 0x11);
+                r = updateRegister(CC111XRegister.deviatn, 0x44);
+                r = updateRegister(CC111XRegister.mcsm0, 0x18);
+                r = updateRegister(CC111XRegister.foccfg, 0x17);
+                r = updateRegister(CC111XRegister.fscal3, 0xE9);
+                r = updateRegister(CC111XRegister.fscal2, 0x2A);
+                r = updateRegister(CC111XRegister.fscal1, 0x00);
+                r = updateRegister(CC111XRegister.fscal0, 0x1F);
 
-                updateRegister(CC111XRegister.pktctrl1, 0x20);
-                updateRegister(CC111XRegister.agcctrl0, 0x00);
-                updateRegister(CC111XRegister.fsctrl1, 0x06);
-                updateRegister(CC111XRegister.mdmcfg4, 0xCA);
-                updateRegister(CC111XRegister.mdmcfg3, 0xBC);
-                updateRegister(CC111XRegister.mdmcfg2, 0x06);
-                updateRegister(CC111XRegister.mdmcfg1, 0x70);
-                updateRegister(CC111XRegister.mdmcfg0, 0x11);
-                updateRegister(CC111XRegister.deviatn, 0x44);
-                updateRegister(CC111XRegister.mcsm0, 0x18);
-                updateRegister(CC111XRegister.foccfg, 0x17);
-                updateRegister(CC111XRegister.fscal3, 0xE9);
-                updateRegister(CC111XRegister.fscal2, 0x2A);
-                updateRegister(CC111XRegister.fscal1, 0x00);
-                updateRegister(CC111XRegister.fscal0, 0x1F);
+                r = updateRegister(CC111XRegister.test1, 0x31);
+                r = updateRegister(CC111XRegister.test0, 0x09);
+                r = updateRegister(CC111XRegister.paTable0, 0x84);
+                r = updateRegister(CC111XRegister.sync1, 0xA5);
+                r = updateRegister(CC111XRegister.sync0,0x5A );
 
-                updateRegister(CC111XRegister.test1, 0x31);
-                updateRegister(CC111XRegister.test0, 0x09);
-                updateRegister(CC111XRegister.paTable0, 0x84);
-                updateRegister(CC111XRegister.sync1, 0xA5);
-                updateRegister(CC111XRegister.sync0,0x5A );
+                r = setSoftwareEncoding(Manchester);
+                r = setPreamble(0x6665);
 
             }
             break;
@@ -296,7 +297,7 @@ public class RFSpy {
     private RFSpyResponse setPreamble(int preamble) {
         byte[] bytes = ByteBuffer.allocate(4).putInt(preamble).array();
         byte[] data = getByteArray(bytes[2], bytes[3]);
-        RFSpyResponse resp = writeToData(RFSpyCommand.SetSWEncoding, data, EXPECTED_MAX_BLUETOOTH_LATENCY_MS);
+        RFSpyResponse resp = writeToData(RFSpyCommand.SetPreamble, data, EXPECTED_MAX_BLUETOOTH_LATENCY_MS);
         return resp;
     }
 
