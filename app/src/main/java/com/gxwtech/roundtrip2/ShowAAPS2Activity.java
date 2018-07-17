@@ -32,6 +32,7 @@ import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.PumpSettingDTO;
 import info.nightscout.androidaps.plugins.PumpMedtronic.defs.BatteryType;
 import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicDeviceType;
 import info.nightscout.androidaps.plugins.PumpMedtronic.util.MedtronicUtil;
+import info.nightscout.androidaps.plugins.PumpOmnipod.comm.OmnipodCommunicationManager;
 
 public class ShowAAPS2Activity extends AppCompatActivity {
 
@@ -51,36 +52,36 @@ public class ShowAAPS2Activity extends AppCompatActivity {
     public ShowAAPS2Activity() {
 
         // FIXME
-        addCommandAction("Set TBR", ImplementationStatus.Done, "RefreshData.SetTBR"); // not working
-        addCommandAction("Set Basal Profile", ImplementationStatus.WorkInProgress, "RefreshData.SetBasalProfile");
-        addCommandAction("Status - Bolus", ImplementationStatus.WorkInProgress, "RefreshData.GetStatus"); // weird on 512?
-
-        // STATUS: has Bolus / is running / is beeing primed
-
-        // WORK IN PROGRESS - waiting for something
-        addCommandAction("Status - Remaining Power", ImplementationStatus.WorkInProgress, "RefreshData.RemainingPower");
-        addCommandAction("Set Bolus", ImplementationStatus.Done, "RefreshData.SetBolus"); // works for less <25
-
-        // LOW PRIORITY
-        addCommandAction("Read History", ImplementationStatus.NotStarted, null);
-        addCommandAction("Set Ext Bolus", ImplementationStatus.NotStarted, null);
-        addCommandAction("Status - Ext. Bolus", ImplementationStatus.WorkInProgress, "RefreshData.GetBolus");
-        //addCommandAction("Load TDD", ImplementationStatus.NotStarted, null); Not needed, we have good history
-
-
-        // DONE
-        addCommandAction("Cancel TBR", ImplementationStatus.WorkInProgress, "RefreshData.CancelTBR");
-
-        addCommandAction("Get Model", ImplementationStatus.Done, "RefreshData.PumpModel");
-        addCommandAction("Get Basal Profile", ImplementationStatus.Done, "RefreshData.BasalProfile");
-        addCommandAction("Status - Remaining Insulin", ImplementationStatus.Done, "RefreshData.RemainingInsulin");
-        addCommandAction("Status - Get Time", ImplementationStatus.Done, "RefreshData.GetTime");
-        addCommandAction("Status - TBR", ImplementationStatus.Done, "RefreshData.GetTBR");
-        addCommandAction("Status - Settings", ImplementationStatus.Done, "RefreshData.GetSettings");
-
-        // NOT SUPPORTED
-        addCommandAction("Cancel Ext Bolus", ImplementationStatus.NotSupportedByDevice, null);
-        addCommandAction("Cancel Bolus", ImplementationStatus.NotSupportedByDevice, null);
+        addCommandAction("Initialize new POD", ImplementationStatus.Done, "RefreshData.InitializePod");
+//        addCommandAction("Set Basal Profile", ImplementationStatus.WorkInProgress, "RefreshData.SetBasalProfile");
+//        addCommandAction("Status - Bolus", ImplementationStatus.WorkInProgress, "RefreshData.GetStatus"); // weird on 512?
+//
+//        // STATUS: has Bolus / is running / is beeing primed
+//
+//        // WORK IN PROGRESS - waiting for something
+//        addCommandAction("Status - Remaining Power", ImplementationStatus.WorkInProgress, "RefreshData.RemainingPower");
+//        addCommandAction("Set Bolus", ImplementationStatus.Done, "RefreshData.SetBolus"); // works for less <25
+//
+//        // LOW PRIORITY
+//        addCommandAction("Read History", ImplementationStatus.NotStarted, null);
+//        addCommandAction("Set Ext Bolus", ImplementationStatus.NotStarted, null);
+//        addCommandAction("Status - Ext. Bolus", ImplementationStatus.WorkInProgress, "RefreshData.GetBolus");
+//        //addCommandAction("Load TDD", ImplementationStatus.NotStarted, null); Not needed, we have good history
+//
+//
+//        // DONE
+//        addCommandAction("Cancel TBR", ImplementationStatus.WorkInProgress, "RefreshData.CancelTBR");
+//
+//        addCommandAction("Get Model", ImplementationStatus.Done, "RefreshData.PumpModel");
+//        addCommandAction("Get Basal Profile", ImplementationStatus.Done, "RefreshData.BasalProfile");
+//        addCommandAction("Status - Remaining Insulin", ImplementationStatus.Done, "RefreshData.RemainingInsulin");
+//        addCommandAction("Status - Get Time", ImplementationStatus.Done, "RefreshData.GetTime");
+//        addCommandAction("Status - TBR", ImplementationStatus.Done, "RefreshData.GetTBR");
+//        addCommandAction("Status - Settings", ImplementationStatus.Done, "RefreshData.GetSettings");
+//
+//        // NOT SUPPORTED
+//        addCommandAction("Cancel Ext Bolus", ImplementationStatus.NotSupportedByDevice, null);
+//        addCommandAction("Cancel Bolus", ImplementationStatus.NotSupportedByDevice, null);
 
     }
 
@@ -251,15 +252,15 @@ public class ShowAAPS2Activity extends AppCompatActivity {
 
     }
 
-    MedtronicCommunicationManager mcmInstance = null;
+    OmnipodCommunicationManager ocmInstance = null;
 
 
-    private MedtronicCommunicationManager getCommunicationManager() {
-        if (mcmInstance == null) {
-            mcmInstance = MedtronicCommunicationManager.getInstance();
+    private OmnipodCommunicationManager getCommunicationManager() {
+        if (ocmInstance == null) {
+            ocmInstance = OmnipodCommunicationManager.getInstance();
         }
 
-        return mcmInstance;
+        return ocmInstance;
     }
 
 
@@ -271,100 +272,100 @@ public class ShowAAPS2Activity extends AppCompatActivity {
 
         // FIXME
         switch (action) {
-            case "RefreshData.PumpModel": {
-                MedtronicDeviceType pumpModel = (MedtronicDeviceType) data;
-                putOnDisplay("Model: " + pumpModel.name());
-            }
-            break;
-
-            case "RefreshData.BasalProfile": {
-                BasalProfile basalProfile = (BasalProfile) data;
-                putOnDisplay("Basal Profile: " + basalProfile.getBasalProfileAsString());
-            }
-            break;
-
-            case "RefreshData.RemainingInsulin": {
-                Float remainingInsulin = (Float) data;
-                putOnDisplay("Remaining Insulin: " + remainingInsulin);
-            }
-            break;
-
-            case "RefreshData.RemainingPower": {
-                BatteryStatusDTO status = (BatteryStatusDTO) data;
-                putOnDisplay("Remaining Battery: " + status.batteryStatusType.name() + //
-                        ", voltage=" + status.voltage + //
-                        ", percent(Alkaline)=" + status.getCalculatedPercent(BatteryType.Alkaline) + //
-                        ", percent(Lithium)=" + status.getCalculatedPercent(BatteryType.Lithium));
-            }
-            break;
-
-            case "RefreshData.GetTime": {
-                LocalDateTime ldt = (LocalDateTime) data;
-                putOnDisplay("Pump Time: " + ldt.toString("dd.MM.yyyy HH:mm:ss"));
-            }
-            break;
-
-            case "RefreshData.ErrorCode": {
-                putOnDisplay("Error: " + errorCode);
-            }
-            break;
-
-            case "RefreshData.SetTBR": {
-                Boolean response = (Boolean) data;
-                TempBasalPair tbr = getTBRSettings();
-
-                putOnDisplay(String.format("TBR: Amount: %.3f, Duration: %s - %s", tbr.getInsulinRate(), "" + tbr.getDurationMinutes(), (response ? "Was set." : "Was NOT set.")));
-            }
-            break;
-
-            case "RefreshData.GetTBR": {
-                TempBasalPair tbr = (TempBasalPair) data;
-
-                putOnDisplay(String.format("TBR: Amount: %s, Duration: %s", "" + tbr.getInsulinRate(), "" + tbr.getDurationMinutes()));
-            }
-            break;
-
-            case "RefreshData.SetBolus": {
-                Boolean response = (Boolean) data;
-
-                Float amount = getAmount();
-
-                putOnDisplay(String.format("Bolus: %.2f - %s", amount, (response ? "Was set." : "Was NOT set.")));
-            }
-            break;
-
-            case "RefreshData.CancelTBR": {
-                Boolean response = (Boolean) data;
-
-                putOnDisplay(String.format("TBR %s cancelled.", (response ? "was" : "was NOT")));
-            }
-            break;
-
-            case "RefreshData.SetBasalProfile": {
-                Boolean response = (Boolean) data;
-
-                putOnDisplay(String.format("Basal profile %s set.", (response ? "was" : "was NOT")));
-            }
-            break;
-
-
-            case "RefreshData.GetStatus": {
-                // FIXME
-                putOnDisplay("Status undefined ?");
-            }
-            break;
-
-
-            case "RefreshData.GetSettings": {
-                List<PumpSettingDTO> settings = (List<PumpSettingDTO>) data;
-
-                putOnDisplay("Settings on pump:");
-                LOG.debug("Settings on front: " + settings);
-                for(PumpSettingDTO entry : settings) {
-                    putOnDisplay(entry.key + " = " + entry.value);
-                }
-            }
-            break;
+//            case "RefreshData.PumpModel": {
+//                MedtronicDeviceType pumpModel = (MedtronicDeviceType) data;
+//                putOnDisplay("Model: " + pumpModel.name());
+//            }
+//            break;
+//
+//            case "RefreshData.BasalProfile": {
+//                BasalProfile basalProfile = (BasalProfile) data;
+//                putOnDisplay("Basal Profile: " + basalProfile.getBasalProfileAsString());
+//            }
+//            break;
+//
+//            case "RefreshData.RemainingInsulin": {
+//                Float remainingInsulin = (Float) data;
+//                putOnDisplay("Remaining Insulin: " + remainingInsulin);
+//            }
+//            break;
+//
+//            case "RefreshData.RemainingPower": {
+//                BatteryStatusDTO status = (BatteryStatusDTO) data;
+//                putOnDisplay("Remaining Battery: " + status.batteryStatusType.name() + //
+//                        ", voltage=" + status.voltage + //
+//                        ", percent(Alkaline)=" + status.getCalculatedPercent(BatteryType.Alkaline) + //
+//                        ", percent(Lithium)=" + status.getCalculatedPercent(BatteryType.Lithium));
+//            }
+//            break;
+//
+//            case "RefreshData.GetTime": {
+//                LocalDateTime ldt = (LocalDateTime) data;
+//                putOnDisplay("Pump Time: " + ldt.toString("dd.MM.yyyy HH:mm:ss"));
+//            }
+//            break;
+//
+//            case "RefreshData.ErrorCode": {
+//                putOnDisplay("Error: " + errorCode);
+//            }
+//            break;
+//
+//            case "RefreshData.SetTBR": {
+//                Boolean response = (Boolean) data;
+//                TempBasalPair tbr = getTBRSettings();
+//
+//                putOnDisplay(String.format("TBR: Amount: %.3f, Duration: %s - %s", tbr.getInsulinRate(), "" + tbr.getDurationMinutes(), (response ? "Was set." : "Was NOT set.")));
+//            }
+//            break;
+//
+//            case "RefreshData.GetTBR": {
+//                TempBasalPair tbr = (TempBasalPair) data;
+//
+//                putOnDisplay(String.format("TBR: Amount: %s, Duration: %s", "" + tbr.getInsulinRate(), "" + tbr.getDurationMinutes()));
+//            }
+//            break;
+//
+//            case "RefreshData.SetBolus": {
+//                Boolean response = (Boolean) data;
+//
+//                Float amount = getAmount();
+//
+//                putOnDisplay(String.format("Bolus: %.2f - %s", amount, (response ? "Was set." : "Was NOT set.")));
+//            }
+//            break;
+//
+//            case "RefreshData.CancelTBR": {
+//                Boolean response = (Boolean) data;
+//
+//                putOnDisplay(String.format("TBR %s cancelled.", (response ? "was" : "was NOT")));
+//            }
+//            break;
+//
+//            case "RefreshData.SetBasalProfile": {
+//                Boolean response = (Boolean) data;
+//
+//                putOnDisplay(String.format("Basal profile %s set.", (response ? "was" : "was NOT")));
+//            }
+//            break;
+//
+//
+//            case "RefreshData.GetStatus": {
+//                // FIXME
+//                putOnDisplay("Status undefined ?");
+//            }
+//            break;
+//
+//
+//            case "RefreshData.GetSettings": {
+//                List<PumpSettingDTO> settings = (List<PumpSettingDTO>) data;
+//
+//                putOnDisplay("Settings on pump:");
+//                LOG.debug("Settings on front: " + settings);
+//                for(PumpSettingDTO entry : settings) {
+//                    putOnDisplay(entry.key + " = " + entry.value);
+//                }
+//            }
+//            break;
 
             default:
                 putOnDisplay("Unsupported action: " + action);
@@ -388,92 +389,92 @@ public class ShowAAPS2Activity extends AppCompatActivity {
                 Object returnData = null;
 
                 switch (selectedCommandAction.intentString) {
-                    case "RefreshData.PumpModel": {
-                        returnData = getCommunicationManager().getPumpModel();
+                    case "RefreshData.InitializePod": {
+                        returnData = getCommunicationManager().initializePod();
                     }
                     break;
-
-                    case "RefreshData.BasalProfile": {
-                        returnData = getCommunicationManager().getBasalProfile();
-                    }
-                    break;
-
-                    case "RefreshData.RemainingInsulin": {
-                        returnData = getCommunicationManager().getRemainingInsulin();
-                    }
-                    break;
-
-                    case "RefreshData.GetTime": {
-                        returnData = getCommunicationManager().getPumpTime();
-                    }
-                    break;
-
-                    case "RefreshData.RemainingPower": {
-                        returnData = getCommunicationManager().getRemainingBattery();
-                    }
-                    break;
-
-                    case "RefreshData.SetTBR": {
-                        TempBasalPair tbr = getTBRSettings();
-                        if (tbr != null) {
-                            returnData = getCommunicationManager().setTBR(tbr);
-                        }
-                    }
-                    break;
-
-                    case "RefreshData.GetTBR": {
-                        returnData = getCommunicationManager().getTemporaryBasal();
-                    }
-                    break;
-
-                    case "RefreshData.GetStatus": {
-                        returnData = getCommunicationManager().getPumpState();
-                    }
-                    break;
-
-                    case "RefreshData.GetBolus": {
-                        returnData = getCommunicationManager().getBolusStatus();
-                    }
-                    break;
-
-                    case "RefreshData.GetSettings": {
-                        returnData = getCommunicationManager().getPumpSettings();
-                    }
-                    break;
-
-                    case "RefreshData.SetBolus": {
-                        Float amount = getAmount();
-
-                        if (amount != null)
-                            returnData = getCommunicationManager().setBolus(amount);
-                    }
-                    break;
-
-                    case "RefreshData.CancelTBR": {
-                        returnData = getCommunicationManager().cancelTBR();
-                    }
-                    break;
-
-                    case "RefreshData.SetBasalProfile": {
-
-                        Float amount = getAmount();
-
-                        if (amount != null) {
-
-                            BasalProfile profile = new BasalProfile();
-
-                            int basalStrokes1 = MedtronicUtil.getBasalStrokesInt(amount);
-                            int basalStrokes2 = MedtronicUtil.getBasalStrokesInt(amount * 2);
-
-                            for(int i = 0; i < 24; i++) {
-                                profile.addEntry(new BasalProfileEntry(i % 2 == 0 ? basalStrokes1 : basalStrokes2, i * 2));
-                            }
-
-                            returnData = getCommunicationManager().setBasalProfile(profile);
-                        }
-
-                    }
-                    break;
+//
+//                    case "RefreshData.BasalProfile": {
+//                        returnData = getCommunicationManager().getBasalProfile();
+//                    }
+//                    break;
+//
+//                    case "RefreshData.RemainingInsulin": {
+//                        returnData = getCommunicationManager().getRemainingInsulin();
+//                    }
+//                    break;
+//
+//                    case "RefreshData.GetTime": {
+//                        returnData = getCommunicationManager().getPumpTime();
+//                    }
+//                    break;
+//
+//                    case "RefreshData.RemainingPower": {
+//                        returnData = getCommunicationManager().getRemainingBattery();
+//                    }
+//                    break;
+//
+//                    case "RefreshData.SetTBR": {
+//                        TempBasalPair tbr = getTBRSettings();
+//                        if (tbr != null) {
+//                            returnData = getCommunicationManager().setTBR(tbr);
+//                        }
+//                    }
+//                    break;
+//
+//                    case "RefreshData.GetTBR": {
+//                        returnData = getCommunicationManager().getTemporaryBasal();
+//                    }
+//                    break;
+//
+//                    case "RefreshData.GetStatus": {
+//                        returnData = getCommunicationManager().getPumpState();
+//                    }
+//                    break;
+//
+//                    case "RefreshData.GetBolus": {
+//                        returnData = getCommunicationManager().getBolusStatus();
+//                    }
+//                    break;
+//
+//                    case "RefreshData.GetSettings": {
+//                        returnData = getCommunicationManager().getPumpSettings();
+//                    }
+//                    break;
+//
+//                    case "RefreshData.SetBolus": {
+//                        Float amount = getAmount();
+//
+//                        if (amount != null)
+//                            returnData = getCommunicationManager().setBolus(amount);
+//                    }
+//                    break;
+//
+//                    case "RefreshData.CancelTBR": {
+//                        returnData = getCommunicationManager().cancelTBR();
+//                    }
+//                    break;
+//
+//                    case "RefreshData.SetBasalProfile": {
+//
+//                        Float amount = getAmount();
+//
+//                        if (amount != null) {
+//
+//                            BasalProfile profile = new BasalProfile();
+//
+//                            int basalStrokes1 = MedtronicUtil.getBasalStrokesInt(amount);
+//                            int basalStrokes2 = MedtronicUtil.getBasalStrokesInt(amount * 2);
+//
+//                            for(int i = 0; i < 24; i++) {
+//                                profile.addEntry(new BasalProfileEntry(i % 2 == 0 ? basalStrokes1 : basalStrokes2, i * 2));
+//                            }
+//
+//                            returnData = getCommunicationManager().setBasalProfile(profile);
+//                        }
+//
+//                    }
+//                    break;
 
                     default:
                         LOG.warn("Action is not supported {}.", selectedCommandAction);
@@ -483,7 +484,7 @@ public class ShowAAPS2Activity extends AppCompatActivity {
 
                 if (returnData == null) {
                     data = null;
-                    errorCode = MedtronicCommunicationManager.getInstance().getErrorResponse();
+//                    errorCode = MedtronicCommunicationManager.getInstance().getErrorResponse();
                     RileyLinkUtil.sendBroadcastMessage("RefreshData.ErrorCode");
                 } else {
                     data = returnData;
