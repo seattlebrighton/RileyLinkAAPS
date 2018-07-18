@@ -66,15 +66,17 @@ public abstract class RileyLinkCommunicationManager {
 //        return sendAndListen(msg, 4000, clazz); // 2000
 //    }
 
-
-    // All pump communications go through this function.
     protected <E extends RLMessage> E sendAndListen(RLMessage msg, int timeout_ms, Class<E> clazz) {
+        return sendAndListen(msg, timeout_ms, 0, 0, clazz);
+    }
+    // All pump communications go through this function.
+    protected <E extends RLMessage> E sendAndListen(RLMessage msg, int timeout_ms, int repeatCount, int extendPreamble_ms, Class<E> clazz) {
 
         if (showPumpMessages) {
             LOG.info("Sent:" + ByteUtil.shortHexString(msg.getTxData()));
         }
 
-        RFSpyResponse resp = rfspy.transmitThenReceive(new RadioPacket(msg.getTxData()), timeout_ms);
+        RFSpyResponse resp = rfspy.transmitThenReceive(new RadioPacket(msg.getTxData()), (byte) 0, (byte) repeatCount, (byte) 0, (byte) 0, timeout_ms, (byte) 0, extendPreamble_ms);
 
         E response = createResponseMessage(resp.getRadioResponse().getPayload(), clazz);
 

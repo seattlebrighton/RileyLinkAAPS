@@ -193,9 +193,18 @@ public class RFSpy {
     public RFSpyResponse transmitThenReceive(RadioPacket pkt, int timeout_ms) {
         return transmitThenReceive(pkt, (byte) 0, (byte) 0, (byte) 0, (byte) 0, timeout_ms, (byte) 0);
     }
-
+    public RFSpyResponse transmitThenReceive(RadioPacket pkt, int timeout_ms, int repeatCount, int extendPreamble_ms) {
+        return transmitThenReceive(pkt, (byte) 0, (byte) repeatCount, (byte) 0, (byte) 0, timeout_ms, (byte) 0);
+    }
 
     public RFSpyResponse transmitThenReceive(RadioPacket pkt, byte sendChannel, byte repeatCount, byte delay_ms, byte listenChannel, int timeout_ms, byte retryCount) {
+        return transmitThenReceive( pkt,  sendChannel,  repeatCount,  delay_ms,  listenChannel,  timeout_ms,  retryCount, 0);
+
+    }
+
+    //FIXME: to be able to work with Omnipod we need to support preamble extensions so we should create a class for the SnedAndListen RL command
+    //To avoid snedAndListen command assembly magic
+    public RFSpyResponse transmitThenReceive(RadioPacket pkt, byte sendChannel, byte repeatCount, byte delay_ms, byte listenChannel, int timeout_ms, byte retryCount, int extendPreamble_ms) {
 
         int sendDelay = repeatCount * delay_ms;
         int receiveDelay = timeout_ms * (retryCount + 1);
