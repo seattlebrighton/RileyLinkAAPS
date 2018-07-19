@@ -1,6 +1,6 @@
 package info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data;
 
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RFSpyCommand;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.command.RileyLinkCommandType;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RFSpyRLResponse;
 
 /**
@@ -16,7 +16,7 @@ public class RFSpyResponse {
 
     protected byte[] raw;
     protected RadioResponse radioResponse;
-    private RFSpyCommand command;
+    private RileyLinkCommandType command;
 
 
 
@@ -30,7 +30,7 @@ public class RFSpyResponse {
     }
 
 
-    public RFSpyResponse(RFSpyCommand command, byte[] rawResponse) {
+    public RFSpyResponse(RileyLinkCommandType command, byte[] rawResponse) {
 
         this.command = command;
         init(rawResponse);

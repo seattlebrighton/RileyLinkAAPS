@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RFTools;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RFSpyCommand;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.command.RileyLinkCommandType;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.CRC;
 
@@ -20,7 +20,7 @@ public class RadioResponse {
     public int responseNumber;
     public byte[] decodedPayload = new byte[0];
     public byte receivedCRC;
-    private RFSpyCommand command;
+    private RileyLinkCommandType command;
 
 
     public RadioResponse() {
@@ -31,7 +31,7 @@ public class RadioResponse {
         init(rxData);
     }
 
-    public RadioResponse(RFSpyCommand command, byte[] raw) {
+    public RadioResponse(RileyLinkCommandType command, byte[] raw) {
 
         this.command = command;
         init(raw);

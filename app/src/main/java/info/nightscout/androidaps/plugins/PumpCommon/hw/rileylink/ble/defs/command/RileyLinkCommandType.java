@@ -1,10 +1,10 @@
-package info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs;
+package info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.command;
 
 /**
  * Created by andy on 22/05/2018.
  */
 
-public enum RFSpyCommand {
+public enum RileyLinkCommandType {
 
     GetState(1), //
     GetVersion(2, false), //
@@ -27,12 +27,12 @@ public enum RFSpyCommand {
     private boolean encoded = true;
 
 
-    RFSpyCommand(int code) {
+    RileyLinkCommandType(int code) {
         this.code = (byte) code;
     }
 
 
-    RFSpyCommand(int code, boolean encoded) {
+    RileyLinkCommandType(int code, boolean encoded) {
         this.code = (byte) code;
         this.encoded = encoded;
     }

@@ -159,13 +159,15 @@ public abstract class RileyLinkService extends Service {
                             rileyLinkBLE.enableNotifications();
                             rfspy.startReader(); // call startReader from outside?
 
-                            String data = rfspy.getVersion();
-                            LOG.debug("RfSpy version (BLE113): " + data);
-                            rileyLinkServiceData.versionBLE113 = data;
+                            rfspy.initializeRileyLink();
+                            String bleVersion = rfspy.getBLEVersionCached();
+                            String rlVersion = rfspy.getRLVersionCached().toString();
 
-                            data = rfspy.getRadioVersion();
-                            LOG.debug("RfSpy Radio version (CC110): " + data);
-                            rileyLinkServiceData.versionCC110 = data;
+                            LOG.debug("RfSpy version (BLE113): " + bleVersion);
+                            rileyLinkServiceData.versionBLE113 = bleVersion;
+
+                            LOG.debug("RfSpy Radio version (CC110): " + rlVersion);
+                            rileyLinkServiceData.versionCC110 = rlVersion;
 
                             ServiceTask task = new InitializePumpManagerTask();
                             ServiceTaskExecutor.startTask(task);
