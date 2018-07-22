@@ -209,7 +209,7 @@ public class MainActivity extends AppCompatActivity {
                              * use the last known good value.  But the kick-off of bluetooth ops must
                              * come from an Activity.
                              */
-                            String RileylinkBLEAddress = SP.getString(MedtronicConst.Prefs.RileyLinkAddress, "");
+                            String RileylinkBLEAddress = SP.getString(RileyLinkConst.Prefs.RileyLinkAddress, "");
                             if (RileylinkBLEAddress.equals("")) {
                                 // TODO: 11/07/2016 @TIM UI message for user
                                 Log.e(TAG, "No Rileylink BLE Address saved in app");

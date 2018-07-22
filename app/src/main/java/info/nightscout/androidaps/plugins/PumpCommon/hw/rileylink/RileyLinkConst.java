@@ -17,9 +17,18 @@ public class RileyLinkConst {
         public static final String BluetoothConnected = Prefix + "Bluetooth_Connected";
         public static final String BluetoothReconnected = Prefix + "Bluetooth_Reconnected";
         public static final String BluetoothDisconnected = Prefix + "Bluetooth_Disconnected";
-
-        public static final String RileyLinkDisconnected = Prefix + "RileyLin-k_Disconnected";
+        public static final String RileyLinkDisconnected = Prefix + "RileyLink_Disconnected";
 
     }
+
+    public class Prefs {
+
+        public static final String PrefPrefix = "pref_rileylink_";
+        public static final String RileyLinkAddress = PrefPrefix + "mac_address";
+
+        public static final String LastGoodDeviceCommunicationTime = Prefix + "lastGoodDeviceCommunicationTime";
+        public static final String LastGoodDeviceFrequency = Prefix + "LastGoodDeviceFrequency";
+    }
+
 
 }

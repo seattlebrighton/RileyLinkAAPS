@@ -17,8 +17,6 @@ import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RLMes
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkTargetFrequency;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.RileyLinkServiceData;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.message.PumpMessage;
-import info.nightscout.androidaps.plugins.PumpMedtronic.util.MedtronicConst;
 import info.nightscout.utils.SP;
 
 
@@ -62,23 +60,26 @@ public abstract class RileyLinkCommunicationManager {
     protected abstract void configurePumpSpecificSettings();
 
 
-    protected PumpMessage sendAndListen(RLMessage msg) {
-        return sendAndListen(msg, 4000); // 2000
-    }
+    //    protected <E extends RLMessage> E sendAndListen(RLMessage msg, Class<E> clazz) {
+    //        return sendAndListen(msg, 4000, clazz); // 2000
+    //    }
 
 
     // All pump communications go through this function.
-    protected PumpMessage sendAndListen(RLMessage msg, int timeout_ms) {
+    protected <E extends RLMessage> E sendAndListen(RLMessage msg, int timeout_ms, Class<E> clazz) {
 
         if (showPumpMessages) {
             LOG.info("Sent:" + ByteUtil.shortHexString(msg.getTxData()));
         }
 
         RFSpyResponse resp = rfspy.transmitThenReceive(new RadioPacket(msg.getTxData()), timeout_ms);
-        PumpMessage rval = new PumpMessage(resp.getRadioResponse().getPayload());
-        if (rval.isValid()) {
+
+        E response = createResponseMessage(resp.getRadioResponse().getPayload(), clazz);
+
+        //PumpMessage rval = new PumpMessage(resp.getRadioResponse().getPayload());
+        if (response.isValid()) {
             // Mark this as the last time we heard from the pump.
-            rememberLastGoodPumpCommunicationTime();
+            rememberLastGoodDeviceCommunicationTime();
         } else {
             LOG.warn("Response is invalid. !!!");
         }
@@ -86,44 +87,15 @@ public abstract class RileyLinkCommunicationManager {
         if (showPumpMessages) {
             LOG.info("Received:" + ByteUtil.shortHexString(resp.getRadioResponse().getPayload()));
         }
-        return rval;
+        return response;
     }
 
 
-    //    /**
-    //     * For set commands we use this method (it just sends data and returns ACK or NAK)
-    //     *
-    //     * @param msg
-    //     * @param timeoutMs
-    //     * @return
-    //     */
-    //    protected PumpMessage send(RLMessage msg, int timeoutMs) {
-    //
-    //        // FIXME untested
-    //        if (showPumpMessages) {
-    //            LOG.info("Sent:" + ByteUtil.shortHexString(msg.getTxData()));
-    //        }
-    //
-    //        RFSpyResponse resp = rfspy.transmit(new RadioPacket(msg.getTxData()));
-    //        PumpMessage rval = new PumpMessage(resp.getRadioResponse().getPayload());
-    //        if (rval.isValid()) {
-    //            // Mark this as the last time we heard from the pump.
-    //            rememberLastGoodPumpCommunicationTime();
-    //        } else {
-    //            LOG.warn("Response is invalid. !!!");
-    //        }
-    //
-    //        if (showPumpMessages) {
-    //            LOG.info("Received:" + ByteUtil.shortHexString(resp.getRadioResponse().getPayload()));
-    //        }
-    //        return rval;
-    //    }
+    public abstract <E extends RLMessage> E createResponseMessage(byte[] payload, Class<E> clazz);
 
 
     public void wakeUp(boolean force) {
         wakeUp(receiverDeviceAwakeForMinutes, force);
-
-
     }
 
 
@@ -172,20 +144,24 @@ public abstract class RileyLinkCommunicationManager {
     }
 
 
-    public double tuneForPump() {
-        return scanForPump(scanFrequencies);
+    public double tuneForDevice() {
+        return scanForDevice(scanFrequencies);
     }
 
 
     /**
      * If user changes pump and one pump is running in US freq, and other in WW, then previously set frequency would be invalid,
-     * so we would need to retune. This checks that saved frequency is corrent range.
+     * so we would need to retune. This checks that saved frequency is correct range.
      *
      * @param frequency
      * @return
      */
     public boolean isValidFrequency(double frequency) {
-        return (this.scanFrequencies[0] <= frequency && this.scanFrequencies[scanFrequencies.length - 1] >= frequency);
+        if (scanFrequencies.length == 1) {
+            return RileyLinkUtil.isSame(scanFrequencies[0], frequency);
+        } else {
+            return (this.scanFrequencies[0] <= frequency && this.scanFrequencies[scanFrequencies.length - 1] >= frequency);
+        }
     }
 
 
@@ -198,7 +174,7 @@ public abstract class RileyLinkCommunicationManager {
 
 
     // FIXME sorting, and time display
-    public double scanForPump(double[] frequencies) {
+    public double scanForDevice(double[] frequencies) {
         LOG.info("Scanning for receiver ({})", receiverDeviceID);
         wakeUp(receiverDeviceAwakeForMinutes, false);
         FrequencyScanResults results = new FrequencyScanResults();
@@ -342,10 +318,10 @@ public abstract class RileyLinkCommunicationManager {
     }
 
 
-    private void rememberLastGoodPumpCommunicationTime() {
+    protected void rememberLastGoodDeviceCommunicationTime() {
         lastGoodReceiverCommunicationTime = System.currentTimeMillis();
 
-        SP.putLong(MedtronicConst.Prefs.LastGoodPumpCommunicationTime, lastGoodReceiverCommunicationTime);
+        SP.putLong(RileyLinkConst.Prefs.LastGoodDeviceCommunicationTime, lastGoodReceiverCommunicationTime);
         pumpStatus.setLastDataTimeToNow();
     }
 
@@ -353,7 +329,7 @@ public abstract class RileyLinkCommunicationManager {
     private long getLastGoodReceiverCommunicationTime() {
         // If we have a value of zero, we need to load from prefs.
         if (lastGoodReceiverCommunicationTime == 0L) {
-            lastGoodReceiverCommunicationTime = SP.getLong(MedtronicConst.Prefs.LastGoodPumpCommunicationTime, 0L);
+            lastGoodReceiverCommunicationTime = SP.getLong(RileyLinkConst.Prefs.LastGoodDeviceCommunicationTime, 0L);
             // Might still be zero, but that's fine.
         }
         double minutesAgo = (System.currentTimeMillis() - lastGoodReceiverCommunicationTime) / (1000.0 * 60.0);

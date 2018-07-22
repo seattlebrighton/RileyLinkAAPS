@@ -20,7 +20,7 @@ public enum RileyLinkServiceState {
     RileyLinkReady, // (OK) if tunning was already done we go to PumpConnectorReady
 
     // Tunning
-    TuneUpPump, // (S)
+    TuneUpDevice, // (S)
     //TuneUpPumpError, //
     PumpConnectorError, // either TuneUp Error or pump couldn't not be contacted error
     PumpConnectorReady, // (OK) RileyLink Ready for Pump Communication

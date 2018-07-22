@@ -136,7 +136,7 @@ public class RileyLinkUtil {
 
 
     public static void tuneUpPump() {
-        RileyLinkUtil.rileyLinkService.doTunePump(); // FIXME thread
+        RileyLinkUtil.rileyLinkService.doTuneUpDevice(); // FIXME thread
     }
 
 
@@ -232,4 +232,12 @@ public class RileyLinkUtil {
     public static RileyLinkTargetFrequency getRileyLinkTargetFrequency() {
         return RileyLinkUtil.rileyLinkTargetFrequency;
     }
+
+
+    public static boolean isSame(Double d1, Double d2) {
+        double diff = d1 - d2;
+
+        return (Math.abs(diff) <= 0.000001);
+    }
+
 }

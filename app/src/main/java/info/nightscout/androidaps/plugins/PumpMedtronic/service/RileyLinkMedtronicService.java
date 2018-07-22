@@ -29,6 +29,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkCommunicationManager;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkConst;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RFSpy;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RileyLinkBLE;
@@ -203,12 +205,6 @@ public class RileyLinkMedtronicService extends RileyLinkService {
 
 
     @Override
-    public void loadPumpCommunicationManager() {
-
-    }
-
-
-    @Override
     public void onConfigurationChanged(Configuration newConfig) {
         LOG.warn("onConfigurationChanged");
         super.onConfigurationChanged(newConfig);
@@ -245,7 +241,7 @@ public class RileyLinkMedtronicService extends RileyLinkService {
         setPumpIDString(SP.getString(MedtronicConst.Prefs.PumpSerial, "000000"));
 
         // get most recently used RileyLink address
-        rileyLinkServiceData.rileylinkAddress = SP.getString(MedtronicConst.Prefs.RileyLinkAddress, "");
+        rileyLinkServiceData.rileylinkAddress = SP.getString(RileyLinkConst.Prefs.RileyLinkAddress, "");
 
         rileyLinkBLE = new RileyLinkBLE(this.context); // or this
         rfspy = new RFSpy(rileyLinkBLE);
@@ -255,13 +251,16 @@ public class RileyLinkMedtronicService extends RileyLinkService {
 
 
         // init rileyLinkCommunicationManager
-        pumpCommunicationManager = new MedtronicCommunicationManager(context, rfspy, rileyLinkTargetFrequency);
-        medtronicCommunicationManager = (MedtronicCommunicationManager) pumpCommunicationManager;
-
+        medtronicCommunicationManager = new MedtronicCommunicationManager(context, rfspy, rileyLinkTargetFrequency);
 
         // FIXME remove
         pumpHistoryManager = new PumpHistoryManager(this.context);
 
+    }
+
+    @Override
+    public RileyLinkCommunicationManager getDeviceCommunicationManager() {
+        return medtronicCommunicationManager;
     }
 
 

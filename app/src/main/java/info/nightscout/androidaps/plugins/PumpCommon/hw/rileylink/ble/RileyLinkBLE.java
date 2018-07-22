@@ -66,7 +66,6 @@ public class RileyLinkBLE {
         this.context = context;
         this.bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
-
         LOG.debug("BT Adapter: " + this.bluetoothAdapter);
         bluetoothGattCallback = new BluetoothGattCallback() {
 
@@ -204,12 +203,6 @@ public class RileyLinkBLE {
                     LOG.warn("onReliableWriteCompleted status " + status);
                 }
             }
-
-            //            @Override
-            //            public void onBluetoothStateChange()
-            //            {
-            //                super.onB
-            //            }
 
 
             @Override
@@ -383,19 +376,9 @@ public class RileyLinkBLE {
 
 
     public void disconnect() {
-
-        LOG.warn("RileyLinkBLE::disconnect");
-
-
-        if (true)
-            return;
-
-
         mIsConnected = false;
         LOG.warn("Closing GATT connection");
         // Close old conenction
-
-
         if (bluetoothConnectionGatt != null) {
             // Not sure if to disconnect or to close first..
             bluetoothConnectionGatt.disconnect();
@@ -407,12 +390,6 @@ public class RileyLinkBLE {
 
 
     public void close() {
-
-        LOG.warn("RileyLinkBLE::close");
-
-        if (true)
-            return;
-
         if (bluetoothConnectionGatt != null) {
             bluetoothConnectionGatt.close();
             bluetoothConnectionGatt = null;

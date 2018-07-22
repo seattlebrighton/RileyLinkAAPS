@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.gxwtech.roundtrip2.RT2Const;
 
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkConst;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.defs.RileyLinkError;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.defs.RileyLinkServiceState;
@@ -36,7 +37,7 @@ public class InitializePumpManagerTask extends ServiceTask {
     public void run() {
 
         // FIXME
-        double lastGoodFrequency = SP.getFloat(MedtronicConst.Prefs.LastGoodPumpFrequency, (float) 0.0);
+        double lastGoodFrequency = SP.getFloat(RileyLinkConst.Prefs.LastGoodDeviceFrequency, (float) 0.0);
 
         if ((lastGoodFrequency > 0.0d) && RileyLinkUtil.getRileyLinkCommunicationManager().isValidFrequency(lastGoodFrequency)) {
 

@@ -25,6 +25,7 @@ import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RileyLinkB
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkTargetFrequency;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.defs.RileyLinkError;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.defs.RileyLinkServiceState;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.defs.RileyLinkTargetDevice;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.ServiceNotification;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.ServiceResult;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.ServiceTransport;
@@ -32,7 +33,6 @@ import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.tasks.
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.tasks.InitializePumpManagerTask;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.tasks.ServiceTask;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.tasks.ServiceTaskExecutor;
-import info.nightscout.androidaps.plugins.PumpMedtronic.util.MedtronicConst;
 import info.nightscout.utils.SP;
 
 import static info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkUtil.getRileyLinkCommunicationManager;
@@ -55,7 +55,7 @@ public abstract class RileyLinkService extends Service {
     //protected boolean needBluetoothPermission = true;
     protected RileyLinkIPCConnection rileyLinkIPCConnection;
     protected Context context;
-    public RileyLinkCommunicationManager pumpCommunicationManager;
+    //public RileyLinkCommunicationManager pumpCommunicationManager;
     protected BroadcastReceiver mBroadcastReceiver;
 
     protected RileyLinkServiceData rileyLinkServiceData;
@@ -122,16 +122,6 @@ public abstract class RileyLinkService extends Service {
         rileyLinkIPCConnection = new RileyLinkIPCConnection(context); // TODO We might be able to remove this -- Andy
         RileyLinkUtil.setRileyLinkIPCConnection(rileyLinkIPCConnection);
 
-        //        // get most recently used RileyLink address
-        //        rileyLinkServiceData.rileylinkAddress = SP.getString(MedtronicConst.Prefs.RileyLinkAddress, "");
-        //
-        //        rileyLinkBLE = new RileyLinkBLE(this);
-        //        rfspy = new RFSpy(context, rileyLinkBLE);
-        //        rfspy.startReader();
-        //
-        //        RileyLinkUtil.setRileyLinkBLE(rileyLinkBLE);
-
-        loadPumpCommunicationManager();
 
         mBroadcastReceiver = new BroadcastReceiver() {
             @Override
@@ -177,7 +167,7 @@ public abstract class RileyLinkService extends Service {
                             ServiceTaskExecutor.startTask(task);
                             LOG.info("Announcing RileyLink open For business");
                         } else if (action.equals(RileyLinkConst.Intents.BluetoothReconnected)) {
-                            LOG.error("!!!!! Reconnected parameters");
+                            LOG.debug("Reconnecting Bluetooth");
                             rileyLinkIPCConnection.sendNotification(new ServiceNotification(RT2Const.IPC.MSG_note_FindingRileyLink), null);
                             bluetoothInit();
                             ServiceTaskExecutor.startTask(new DiscoverGattServicesTask(true));
@@ -195,9 +185,13 @@ public abstract class RileyLinkService extends Service {
                             LOG.error("BLE_Access_Denied recived. Stoping the service.");
                             stopSelf(); // This will stop the service.
                         } */ else if (action.equals(RT2Const.IPC.MSG_PUMP_tunePump)) {
-                            doTunePump();
+                            if (getRileyLinkTargetDevice().isTuneUpEnabled()) {
+                                doTuneUpDevice();
+                            }
                         } else if (action.equals(RT2Const.IPC.MSG_PUMP_quickTune)) {
-                            doTunePump();
+                            if (getRileyLinkTargetDevice().isTuneUpEnabled()) {
+                                doTuneUpDevice();
+                            }
                         } else if (action.startsWith("MSG_PUMP_")) {
                             handlePumpSpecificIntents(intent);
                         } else if (RT2Const.IPC.MSG_ServiceCommand.equals(action)) {
@@ -241,11 +235,11 @@ public abstract class RileyLinkService extends Service {
     }
 
 
+    public abstract RileyLinkCommunicationManager getDeviceCommunicationManager();
+
     public abstract void addPumpSpecificIntents(IntentFilter intentFilter);
 
     public abstract void handlePumpSpecificIntents(Intent intent);
-
-    public abstract void loadPumpCommunicationManager();
 
     public abstract void handleIncomingServiceTransport(Intent intent);
 
@@ -378,14 +372,14 @@ public abstract class RileyLinkService extends Service {
 
 
     // FIXME: This needs to be run in a session so that is interruptable, has a separate thread, etc.
-    public void doTunePump() {
+    public void doTuneUpDevice() {
 
-        RileyLinkUtil.setServiceState(RileyLinkServiceState.TuneUpPump);
+        RileyLinkUtil.setServiceState(RileyLinkServiceState.TuneUpDevice);
 
         double lastGoodFrequency = 0.0d;
 
         if (rileyLinkServiceData.lastGoodFrequency == null) {
-            lastGoodFrequency = SP.getFloat(MedtronicConst.Prefs.LastGoodPumpFrequency, 0.0f);
+            lastGoodFrequency = SP.getFloat(RileyLinkConst.Prefs.LastGoodDeviceFrequency, 0.0f);
         } else {
             lastGoodFrequency = rileyLinkServiceData.lastGoodFrequency;
         }
@@ -394,21 +388,21 @@ public abstract class RileyLinkService extends Service {
         if ((lastGoodFrequency > 0.0d) && getRileyLinkCommunicationManager().isValidFrequency(lastGoodFrequency)) {
             LOG.info("Checking for pump near last saved frequency of {}MHz", lastGoodFrequency);
             // we have an old frequency, so let's start there.
-            newFrequency = pumpCommunicationManager.quickTuneForPump(lastGoodFrequency);
+            newFrequency = getDeviceCommunicationManager().quickTuneForPump(lastGoodFrequency);
             if (newFrequency == 0.0) {
                 // quick scan failed to find pump.  Try full scan
                 LOG.warn("Failed to find pump near last saved frequency, doing full scan");
-                newFrequency = pumpCommunicationManager.tuneForPump();
+                newFrequency = getDeviceCommunicationManager().tuneForDevice();
             }
         } else {
             LOG.warn("No saved frequency for pump, doing full scan.");
             // we don't have a saved frequency, so do the full scan.
-            newFrequency = pumpCommunicationManager.tuneForPump();
+            newFrequency = getDeviceCommunicationManager().tuneForDevice();
         }
 
         if ((newFrequency != 0.0) && (newFrequency != lastGoodFrequency)) {
             LOG.info("Saving new pump frequency of {}MHz", newFrequency);
-            SP.putFloat(MedtronicConst.Prefs.LastGoodPumpFrequency, (float) newFrequency);
+            SP.putFloat(RileyLinkConst.Prefs.LastGoodDeviceFrequency, (float) newFrequency);
             rileyLinkServiceData.lastGoodFrequency = newFrequency;
             rileyLinkServiceData.tuneUpDone = true;
             rileyLinkServiceData.lastTuneUpTime = System.currentTimeMillis();
@@ -416,12 +410,17 @@ public abstract class RileyLinkService extends Service {
 
         if (newFrequency == 0.0d) {
             // error tuning pump, pump not present ??
-            RileyLinkUtil.setServiceState(RileyLinkServiceState.PumpConnectorError, RileyLinkError.TuneUpOfPumpFailed);
+            RileyLinkUtil.setServiceState(RileyLinkServiceState.PumpConnectorError, RileyLinkError.TuneUpOfDeviceFailed);
         }
     }
 
 
     public void disconnectRileyLink() {
         this.rileyLinkBLE.disconnect();
+    }
+
+
+    public RileyLinkTargetDevice getRileyLinkTargetDevice() {
+        return this.rileyLinkServiceData.targetDevice;
     }
 }
