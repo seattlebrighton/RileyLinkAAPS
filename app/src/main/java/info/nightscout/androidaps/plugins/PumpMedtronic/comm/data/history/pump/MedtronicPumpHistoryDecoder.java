@@ -1,4 +1,4 @@
-package info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history2;
+package info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history.pump;
 
 
 import android.util.Log;
@@ -13,8 +13,10 @@ import java.util.List;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.HexDump;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.BasalProfileEntry;
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.RawHistoryPage;
+import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history.MedtronicHistoryDecoder;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history.MedtronicHistoryEntry;
+import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history.RawHistoryPage;
+import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history.RecordDecodeStatus;
 import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.BolusDTO;
 import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.BolusWizardDTO;
 import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicDeviceType;

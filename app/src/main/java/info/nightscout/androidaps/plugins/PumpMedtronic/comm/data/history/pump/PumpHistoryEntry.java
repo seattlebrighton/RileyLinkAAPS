@@ -1,4 +1,4 @@
-package info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history2;
+package info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history.pump;
 
 import info.nightscout.androidaps.plugins.PumpCommon.utils.HexDump;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history.MedtronicHistoryEntry;
@@ -89,5 +89,17 @@ public class PumpHistoryEntry extends MedtronicHistoryEntry {
 
     public void setOffset(int offset) {
         this.offset = offset;
+    }
+
+
+    @Override
+    public String getEntryTypeName() {
+        return this.entryType.name();
+    }
+
+
+    @Override
+    public int getDateLength() {
+        return this.entryType.getDateLength();
     }
 }

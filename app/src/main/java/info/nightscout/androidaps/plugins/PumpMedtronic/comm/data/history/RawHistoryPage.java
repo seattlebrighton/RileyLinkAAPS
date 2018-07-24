@@ -1,4 +1,4 @@
-package info.nightscout.androidaps.plugins.PumpMedtronic.comm.data;
+package info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history;
 
 import android.util.Log;
 
@@ -56,7 +56,8 @@ public class RawHistoryPage {
         if (crcCalculated != crcStored) {
             LOG.error("Stored CRC ({}) is different than calculated ({}), but ignored for now.", crcStored, crcCalculated);
         } else {
-            if (MedtronicUtil.isLowLevelDebug()) LOG.debug("CRC ok.");
+            if (MedtronicUtil.isLowLevelDebug())
+                LOG.debug("CRC ok.");
         }
 
         return crcCalculated == crcStored;

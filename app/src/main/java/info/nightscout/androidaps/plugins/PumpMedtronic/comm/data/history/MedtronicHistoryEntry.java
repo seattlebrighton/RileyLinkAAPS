@@ -7,7 +7,6 @@ import java.util.List;
 
 import info.nightscout.androidaps.plugins.PumpCommon.utils.HexDump;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.StringUtil;
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history2.PumpHistoryEntryType;
 import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.PumpTimeStampedRecord;
 
 /**
@@ -36,7 +35,7 @@ import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.PumpTimeStamped
  * Author: Andy {andy@atech-software.com}
  */
 
-public abstract class MedtronicHistoryEntry {
+public abstract class MedtronicHistoryEntry implements MedtronicHistoryEntryInterface {
 
     protected List<Byte> rawData;
 
@@ -209,6 +208,6 @@ public abstract class MedtronicHistoryEntry {
 
 
     // if we extend to CGMS this need to be changed back
-    public abstract PumpHistoryEntryType getEntryType();
+    //public abstract PumpHistoryEntryType getEntryType();
 
 }
