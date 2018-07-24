@@ -259,7 +259,7 @@ public class RFTools {
         }
         if (codingErrors > 0) {
             LOG.error("decode4b6b: " + codingErrors + " coding errors encountered.");
-            //throw new NumberFormatException();
+            throw new NumberFormatException();
         }
         return rval;
     }

@@ -19,7 +19,7 @@ public abstract class PumpStatus {
 
     // last bolus
     public Date lastBolusTime;
-    public double lastBolusAmount;
+    public Double lastBolusAmount;
 
     // other pump settings
     public String activeProfileName = "0";
@@ -51,6 +51,7 @@ public abstract class PumpStatus {
     public Double constraintBolus;
     public Integer constraintCarbs;
     public Double constraintMaxIob;
+    public Double[] basalsByHour;
 
 
     public PumpStatus(PumpDescription pumpDescription) {
@@ -63,7 +64,7 @@ public abstract class PumpStatus {
     public abstract void initSettings();
 
 
-    public void setLastDataTimeToNow() {
+    public void setLastCommunicationToNow() {
         this.lastDataTime = new Date();
         this.lastConnection = System.currentTimeMillis();
     }
@@ -85,19 +86,19 @@ public abstract class PumpStatus {
 
     // FIXME cleanup this is from RT2
 
-    public long getTimeIndex() {
-        return (long) Math.ceil(time.getTime() / 60000d);
-    }
+//    public long getTimeIndex() {
+//        return (long) Math.ceil(time.getTime() / 60000d);
+//    }
+//
+//    public void setTimeIndex(long timeIndex) {
+//        this.timeIndex = timeIndex;
+//    }
+//
+//    public long timeIndex;
+//
+//    public Date time;
 
-    public void setTimeIndex(long timeIndex) {
-        this.timeIndex = timeIndex;
-    }
-
-    public long timeIndex;
-
-    public Date time;
-
-    public double remainUnits = 0;
+    //public double remainUnits = 0;
     public int remainBattery = 0;
 
     public double currentBasal = 0;
@@ -107,9 +108,8 @@ public abstract class PumpStatus {
     public int tempBasalRemainMin = 0;
     public Date tempBasalStart;
 
-    public Date last_bolus_time;
-    public double last_bolus_amount = 0;
-
+    //public Date last_bolus_time;
+    //public double last_bolus_amount = 0;
 
 
 }

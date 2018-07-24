@@ -96,33 +96,6 @@ public class RadioResponse {
     }
 
 
-    public void init(byte[] rxData, boolean isEncoded) {
-        if (rxData == null) {
-            return;
-        }
-        if (rxData.length < 3) {
-            // This does not look like something valid heard from a RileyLink device
-            return;
-        }
-        rssi = rxData[0];
-        responseNumber = rxData[1];
-        byte[] encodedPayload = ByteUtil.substring(rxData, 2, rxData.length - 2);
-        try {
-            byte[] decodeThis = RFTools.decode4b6b(encodedPayload);
-            decodedOK = true;
-            decodedPayload = ByteUtil.substring(decodeThis, 0, decodeThis.length - 1);
-            byte calculatedCRC = CRC.crc8(decodedPayload);
-            receivedCRC = decodeThis[decodeThis.length - 1];
-            if (receivedCRC != calculatedCRC) {
-                LOG.error("RadioResponse: CRC mismatch, calculated 0x%02x, received 0x%02x", calculatedCRC, receivedCRC);
-            }
-        } catch (NumberFormatException e) {
-            decodedOK = false;
-            LOG.error("Failed to decode radio data: " + ByteUtil.shortHexString(encodedPayload));
-        }
-    }
-
-
     public byte[] getPayload() {
         return decodedPayload;
     }

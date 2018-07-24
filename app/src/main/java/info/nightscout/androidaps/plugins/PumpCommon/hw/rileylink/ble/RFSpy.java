@@ -2,8 +2,6 @@ package info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble;
 
 import android.os.SystemClock;
 
-import com.gxwtech.roundtrip2.util.StringUtil;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,15 +69,29 @@ public class RFSpy {
     }
 
 
+    public int notConnectedCount = 0;
+
+
     // This gets the version from the BLE113, not from the CC1110.
     // I.e., this gets the version from the BLE interface, not from the radio.
     public String getVersion() {
         BLECommOperationResult result = rileyLinkBle.readCharacteristic_blocking(radioServiceUUID, radioVersionUUID);
         if (result.resultCode == BLECommOperationResult.RESULT_SUCCESS) {
-            return StringUtil.fromBytes(result.value);
+            return com.gxwtech.roundtrip2.util.StringUtil.fromBytes(result.value);
         } else {
             LOG.error("getVersion failed with code: " + result.resultCode);
             return "(null)";
+        }
+    }
+
+
+    public String getRadioVersion() {
+        RFSpyResponse resp = writeToData(RFSpyCommand.GetVersion, null, EXPECTED_MAX_BLUETOOTH_LATENCY_MS);
+        if (resp == null) {
+            LOG.error("getRadioVersion returned null");
+            return "(null)";
+        } else {
+            return info.nightscout.androidaps.plugins.PumpCommon.utils.StringUtil.fromBytes(resp.getRadioResponse().decodedPayload);
         }
     }
 
@@ -111,23 +123,32 @@ public class RFSpy {
         RFSpyResponse resp = new RFSpyResponse(command, rawResponse);
         if (rawResponse == null) {
             LOG.error("writeToData: No response from RileyLink");
+            notConnectedCount++;
         } else {
             if (resp.wasInterrupted()) {
                 LOG.error("writeToData: RileyLink was interrupted");
             } else if (resp.wasTimeout()) {
                 LOG.error("writeToData: RileyLink reports timeout");
+                notConnectedCount++;
             } else if (resp.isOK()) {
                 LOG.warn("writeToData: RileyLink reports OK");
+                resetNotConnectedCount();
             } else {
                 if (resp.looksLikeRadioPacket()) {
                     RadioResponse radioResp = resp.getRadioResponse();
                     byte[] responsePayload = radioResp.getPayload();
                     LOG.info("writeToData: decoded radio response is " + ByteUtil.shortHexString(responsePayload));
+                    resetNotConnectedCount();
                 }
                 //Log.i(TAG, "writeToData: raw response is " + ByteUtil.shortHexString(rawResponse));
             }
         }
         return resp;
+    }
+
+
+    private void resetNotConnectedCount() {
+        this.notConnectedCount = 0;
     }
 
 
@@ -150,17 +171,6 @@ public class RFSpy {
         }
 
         return output;
-    }
-
-
-    public String getRadioVersion() {
-        RFSpyResponse resp = writeToData(RFSpyCommand.GetVersion, null, 4000);
-        if (resp == null) {
-            LOG.error("getRadioVersion returned null");
-            return "(null)";
-        } else {
-            return StringUtil.fromBytes(resp.getRadioResponse().decodedPayload);
-        }
     }
 
 

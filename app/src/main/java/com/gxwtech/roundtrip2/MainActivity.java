@@ -58,6 +58,7 @@ import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.S
 import info.nightscout.androidaps.plugins.PumpMedtronic.driver.MedtronicPumpStatus;
 import info.nightscout.androidaps.plugins.PumpMedtronic.service.RileyLinkMedtronicService;
 import info.nightscout.androidaps.plugins.PumpMedtronic.util.MedtronicConst;
+import info.nightscout.androidaps.plugins.PumpMedtronic.util.MedtronicUtil;
 import info.nightscout.utils.SP;
 
 public class MainActivity extends AppCompatActivity {
@@ -100,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
         setBTReceiver();
 
         // Temporary AAPS
-        RileyLinkUtil.setPumpStatus(new MedtronicPumpStatus(new PumpDescription()));
+        MedtronicUtil.setPumpStatus(new MedtronicPumpStatus(new PumpDescription()));
 
 
         /* start the RileyLinkMedtronicService */

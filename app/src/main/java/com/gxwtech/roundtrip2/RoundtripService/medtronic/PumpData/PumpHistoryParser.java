@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history.PumpTimeStamp;
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history.TimeFormat;
+import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history_old.PumpTimeStamp;
+import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history_old.TimeFormat;
 import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicDeviceType;
 
 /**

@@ -298,7 +298,7 @@ public abstract class RileyLinkService extends Service {
 
 
     // returns true if our Rileylink configuration changed
-    public boolean reconfigureRileylink(String deviceAddress) {
+    public boolean reconfigureRileyLink(String deviceAddress) {
 
         RileyLinkUtil.setServiceState(RileyLinkServiceState.RileyLinkInitializing);
 
@@ -407,6 +407,8 @@ public abstract class RileyLinkService extends Service {
             rileyLinkServiceData.tuneUpDone = true;
             rileyLinkServiceData.lastTuneUpTime = System.currentTimeMillis();
         }
+
+        getRileyLinkCommunicationManager().clearNotConnectedCount();
 
         if (newFrequency == 0.0d) {
             // error tuning pump, pump not present ??

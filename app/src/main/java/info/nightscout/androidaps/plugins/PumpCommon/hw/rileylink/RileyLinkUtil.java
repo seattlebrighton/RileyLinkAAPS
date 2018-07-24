@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-import info.nightscout.androidaps.plugins.PumpCommon.defs.PumpType;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RileyLinkBLE;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkTargetFrequency;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.data.RLHistoryItem;
@@ -26,7 +25,6 @@ import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.S
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.ServiceTransport;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.tasks.ServiceTask;
 import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicDeviceType;
-import info.nightscout.androidaps.plugins.PumpMedtronic.driver.MedtronicPumpStatus;
 
 
 /**
@@ -41,20 +39,21 @@ public class RileyLinkUtil {
     private static RileyLinkBLE rileyLinkBLE;
     private static RileyLinkServiceData rileyLinkServiceData;
     private static List<RLHistoryItem> historyRileyLink = new ArrayList<>();
-    private static PumpType pumpType;
-    private static MedtronicPumpStatus medtronicPumpStatus;
+    //private static PumpType pumpType;
+    //private static MedtronicPumpStatus medtronicPumpStatus;
     private static RileyLinkService rileyLinkService;
-    private static RileyLinkCommunicationManager rileyLinkCommunicationManager;
-    private static RileyLinkIPCConnection rileyLinkIPCConnection;
+    protected static RileyLinkCommunicationManager rileyLinkCommunicationManager;
+    //private static RileyLinkIPCConnection rileyLinkIPCConnection;
     private static MedtronicDeviceType medtronicPumpModel;
     private static RileyLinkTargetFrequency rileyLinkTargetFrequency;
+    private static RileyLinkIPCConnection rileyLinkIPCConnection;
     // BAD dependencies in Classes: RileyLinkService
 
     // Broadcasts: RileyLinkBLE, RileyLinkService,
 
 
     public static void setContext(Context contextIn) {
-        context = contextIn;
+        RileyLinkUtil.context = contextIn;
     }
 
 
@@ -109,25 +108,20 @@ public class RileyLinkUtil {
     }
 
 
-    public static void setPumpType(PumpType pumpType) {
-        RileyLinkUtil.pumpType = pumpType;
-    }
-
-
-    public static void setPumpStatus(MedtronicPumpStatus medtronicPumpStatus) {
-
-        RileyLinkUtil.medtronicPumpStatus = medtronicPumpStatus;
-    }
+    //    public static void setMedtronicPumpStatus(MedtronicPumpStatus medtronicPumpStatus) {
+    //
+    //        RileyLinkUtil.medtronicPumpStatus = medtronicPumpStatus;
+    //    }
 
     //    public static void addHistoryEntry(RLHistoryItem rlHistoryItem) {
     //        historyRileyLink.add(rlHistoryItem);
     //    }
 
 
-    public static MedtronicPumpStatus getMedtronicPumpStatus() {
-
-        return RileyLinkUtil.medtronicPumpStatus;
-    }
+    //    public static MedtronicPumpStatus getMedtronicPumpStatus() {
+    //
+    //        return RileyLinkUtil.medtronicPumpStatus;
+    //    }
 
 
     public static boolean hasPumpBeenTunned() {
@@ -135,9 +129,9 @@ public class RileyLinkUtil {
     }
 
 
-    public static void tuneUpPump() {
-        RileyLinkUtil.rileyLinkService.doTuneUpDevice(); // FIXME thread
-    }
+    //    public static void tuneUpPump() {
+    //        RileyLinkUtil.rileyLinkService.doTunePump(); // FIXME thread
+    //    }
 
 
     public static void setRileyLinkService(RileyLinkService rileyLinkService) {
@@ -204,23 +198,6 @@ public class RileyLinkUtil {
 
     public static void setRileyLinkIPCConnection(RileyLinkIPCConnection rileyLinkIPCConnection) {
         RileyLinkUtil.rileyLinkIPCConnection = rileyLinkIPCConnection;
-    }
-
-
-    public static boolean isModelSet() {
-        return RileyLinkUtil.medtronicPumpModel != null;
-    }
-
-
-    public static void setMedtronicPumpModel(MedtronicDeviceType medtronicPumpModel) {
-        if (medtronicPumpModel != null && medtronicPumpModel != MedtronicDeviceType.Unknown_Device) {
-            RileyLinkUtil.medtronicPumpModel = medtronicPumpModel;
-        }
-    }
-
-
-    public static MedtronicDeviceType getMedtronicPumpModel() {
-        return RileyLinkUtil.medtronicPumpModel;
     }
 
 

@@ -7,7 +7,7 @@ import com.gxwtech.roundtrip2.RoundtripService.medtronic.PumpData.ISFTable;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.ServiceResult;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.ServiceTransport;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.tasks.PumpTask;
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history.TimeFormat;
+import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history_old.TimeFormat;
 import info.nightscout.androidaps.plugins.PumpMedtronic.service.RileyLinkMedtronicService;
 
 /**

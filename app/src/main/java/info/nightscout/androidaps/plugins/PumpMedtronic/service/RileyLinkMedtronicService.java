@@ -49,6 +49,7 @@ import info.nightscout.androidaps.plugins.PumpMedtronic.comm.MedtronicCommunicat
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.Page;
 import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicDeviceType;
 import info.nightscout.androidaps.plugins.PumpMedtronic.util.MedtronicConst;
+import info.nightscout.androidaps.plugins.PumpMedtronic.util.MedtronicUtil;
 import info.nightscout.utils.SP;
 
 /**
@@ -72,13 +73,15 @@ public class RileyLinkMedtronicService extends RileyLinkService {
     public MedtronicCommunicationManager medtronicCommunicationManager;
     private static ServiceTask currentTask = null;
 
+    //MedtronicPumpStatus pumpStatus = (MedtronicPumpStatus) MedtronicPumpPlugin.getPlugin().getPumpStatusData();
+
 
     public RileyLinkMedtronicService() {
         super(MainApp.instance().getApplicationContext());
         instance = this;
         LOG.debug("RileyLinkMedtronicService newly constructed");
-        RileyLinkUtil.setRileyLinkService(this);
-        //this.context = getApplicationContext();
+        MedtronicUtil.setMedtronicService(this);
+        //pumpStatus = (MedtronicPumpStatus) MedtronicPumpPlugin.getPlugin().getPumpStatusData();
     }
 
 
@@ -258,6 +261,7 @@ public class RileyLinkMedtronicService extends RileyLinkService {
 
     }
 
+
     @Override
     public RileyLinkCommunicationManager getDeviceCommunicationManager() {
         return medtronicCommunicationManager;
@@ -378,7 +382,7 @@ public class RileyLinkMedtronicService extends RileyLinkService {
                     if ("".equals(deviceAddress)) {
                         LOG.error("handleIPCMessage: null RL address passed");
                     } else {
-                        reconfigureRileylink(deviceAddress);
+                        reconfigureRileyLink(deviceAddress);
                     }
                     break;
                 default:

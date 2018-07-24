@@ -11,12 +11,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
 
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkCommunicationManager;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RFSpy;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RLMessage;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.RLMessage;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RLMessageType;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkTargetFrequency;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
@@ -25,7 +24,7 @@ import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.BasalProfile;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.Page;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.RawHistoryPage;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.TempBasalPair;
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history.Record;
+import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history_old.Record;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.message.ButtonPressCarelinkMessageBody;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.message.CarelinkLongMessageBody;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.message.CarelinkShortMessageBody;
@@ -39,6 +38,7 @@ import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.BatteryStatusDT
 import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.PumpSettingDTO;
 import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicCommandType;
 import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicDeviceType;
+import info.nightscout.androidaps.plugins.PumpMedtronic.defs.PumpDeviceState;
 import info.nightscout.androidaps.plugins.PumpMedtronic.service.RileyLinkMedtronicService;
 import info.nightscout.androidaps.plugins.PumpMedtronic.util.MedtronicUtil;
 
@@ -69,7 +69,7 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
 
     @Override
     protected void configurePumpSpecificSettings() {
-        pumpStatus = RileyLinkUtil.getMedtronicPumpStatus();
+        pumpStatus = MedtronicUtil.getPumpStatus();
     }
 
 
@@ -96,7 +96,32 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
             pumpModel = getPumpModel();
         }
 
+
+        boolean connected = (pumpModel != MedtronicDeviceType.Unknown_Device);
+
+        if (connected) {
+            checkFirstConnectionTime();
+            setLastConnectionTime();
+        }
+
+
         return (pumpModel != MedtronicDeviceType.Unknown_Device);
+    }
+
+
+    private void setLastConnectionTime() {
+
+        // FIXME rename
+        this.pumpStatus.setLastCommunicationToNow();
+
+        // FIXME set to SP
+
+
+    }
+
+
+    private void checkFirstConnectionTime() {
+        // FIXME set to SP
     }
 
 
@@ -392,9 +417,19 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
     }
 
 
+    /**
+     * Main wrapper method for sending data - (for getting responses)
+     *
+     * @param commandType
+     * @param bodyData
+     * @param timeoutMs
+     * @return
+     */
     private PumpMessage sendAndGetResponse(MedtronicCommandType commandType, byte[] bodyData, int timeoutMs) {
         // wakeUp
         wakeUp(receiverDeviceAwakeForMinutes, false);
+
+        MedtronicUtil.setPumpDeviceState(PumpDeviceState.Active);
 
         // create message
         PumpMessage msg;
@@ -406,6 +441,9 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
 
         // send and wait for response
         PumpMessage response = sendAndListen(msg, timeoutMs);
+
+        MedtronicUtil.setPumpDeviceState(PumpDeviceState.Sleeping);
+
         return response;
     }
 
@@ -552,9 +590,8 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
 
         Object responseObject = sendAndGetResponseWithCheck(MedtronicCommandType.PumpModel);
 
-        if (!RileyLinkUtil.isModelSet()) {
-            RileyLinkUtil.setMedtronicPumpModel((MedtronicDeviceType) responseObject);
-            //MedtronicUtil.setMedtronicPumpModel((MedtronicDeviceType) responseObject);
+        if (!MedtronicUtil.isModelSet()) {
+            MedtronicUtil.setMedtronicPumpModel((MedtronicDeviceType) responseObject);
         }
 
         return responseObject == null ? null : (MedtronicDeviceType) responseObject;
@@ -585,16 +622,18 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
     }
 
 
-    public List<PumpSettingDTO> getPumpSettings() {
+    public Map<String, PumpSettingDTO> getPumpSettings() {
 
-        Object responseObject = sendAndGetResponseWithCheck(MedtronicCommandType.getSettings(RileyLinkUtil.getMedtronicPumpModel()));
+        Object responseObject = sendAndGetResponseWithCheck(MedtronicCommandType.getSettings(MedtronicUtil.getMedtronicPumpModel()));
 
-        return responseObject == null ? null : (List<PumpSettingDTO>) responseObject;
+        return responseObject == null ? null : (Map<String, PumpSettingDTO>) responseObject;
     }
 
 
     // TODO test with values bigger than 30U
     public Boolean setBolus(double units) {
+
+        LOG.warn("setBolus: " + units);
 
         wakeUp(false);
 
@@ -813,17 +852,17 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
         return null;
     }
 
-    // Set TBR
-    // Cancel TBR (set TBR 100%)
+    // Set TBR                             100%
+    // Cancel TBR (set TBR 100%)           100%
     // Get Status                  (40%)
 
-    // Set Bolus                            80%
+    // Set Bolus                           100%
     // Set Extended Bolus                   20%
-    // Cancel Bolus                         0% ?
-    // Cancel Extended Bolus                0% ?
+    // Cancel Bolus                          0%  -- NOT SUPPORTED
+    // Cancel Extended Bolus                 0%  -- NOT SUPPORTED
 
     // Get Basal Profile (0x92) Read STD   100%
-    // Set Basal Profile                    20%
+    // Set Basal Profile                     0%  -- NOT SUPPORTED
     // Read History                         60%
     // Load TDD                             ?
 
@@ -832,7 +871,7 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
         //Integer resp = getRemainingBattery();
         //pumpStatus.batteryRemaining = resp == null ? -1 : resp;
 
-        pumpStatus.remainUnits = getRemainingInsulin();
+        pumpStatus.reservoirRemainingUnits = getRemainingInsulin();
 
         /* current basal */
         //TempBasalPair basalRate = getCurrentBasalRate();
@@ -859,7 +898,7 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
         // get pump time
         LocalDateTime clockResult = getPumpTime();
         if (clockResult != null) {
-            pumpStatus.time = clockResult.toDate();
+            //pumpStatus.time = clockResult.toDate();
         }
         // get last sync time
 

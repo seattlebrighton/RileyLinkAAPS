@@ -384,6 +384,11 @@ public enum PumpHistoryEntryType //implements CodeEnum
     }
 
 
+    public static boolean isRelevantEntry() {
+        return true;
+    }
+
+
     enum DateFormat {
         None(0), //
         LongDate(5), //

@@ -182,7 +182,10 @@ public enum MedtronicCommandType implements Serializable //, MinimedCommandTypeI
     // READ_CURRENT_CBG_PAGE : 0xCD
     // };
 
-    ;
+
+    // Fake Commands
+
+    CancelTBR(),;
 
     public byte commandCode = 0;
     private int recordLength = 64;
@@ -217,6 +220,11 @@ public enum MedtronicCommandType implements Serializable //, MinimedCommandTypeI
         for(MedtronicCommandType medtronicCommandType : values()) {
             mapByCode.put(medtronicCommandType.getCommandCode(), medtronicCommandType);
         }
+    }
+
+
+    MedtronicCommandType() {
+        // this is for "fake" commands needed by AAPS MedtronicUITask
     }
 
 

@@ -30,5 +30,4 @@ public class RileyLinkConst {
         public static final String LastGoodDeviceFrequency = Prefix + "LastGoodDeviceFrequency";
     }
 
-
 }

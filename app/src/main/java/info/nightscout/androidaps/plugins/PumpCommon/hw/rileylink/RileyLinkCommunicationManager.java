@@ -10,9 +10,9 @@ import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RFSpy;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.FrequencyScanResults;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.FrequencyTrial;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.RFSpyResponse;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.RLMessage;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.RadioPacket;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.RadioResponse;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RLMessage;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RLMessageType;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkTargetFrequency;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.RileyLinkServiceData;
@@ -65,6 +65,9 @@ public abstract class RileyLinkCommunicationManager {
     //    }
 
 
+    private int timeoutCount = 0;
+
+
     // All pump communications go through this function.
     protected <E extends RLMessage> E sendAndListen(RLMessage msg, int timeout_ms, Class<E> clazz) {
 
@@ -100,6 +103,11 @@ public abstract class RileyLinkCommunicationManager {
 
 
     long nextWakeUpRequired = 0L;
+
+
+    public int getNotConnectedCount() {
+        return rfspy != null ? rfspy.notConnectedCount : 0;
+    }
 
 
     // FIXME change wakeup
@@ -209,12 +217,23 @@ public abstract class RileyLinkCommunicationManager {
             trial.averageRSSI = (double) (sumRSSI) / (double) (trial.tries);
             results.trials.add(trial);
         }
-        results.sort(); // sorts in ascending order
-        LOG.debug("Sorted scan results:");
+
+
+        StringBuilder stringBuilder = new StringBuilder("Scan results:\n");
+
         for(int k = 0; k < results.trials.size(); k++) {
             FrequencyTrial one = results.trials.get(k);
-            LOG.debug("Scan Result[{}]: Freq={}, avg RSSI = {}", k, one.frequencyMHz, one.averageRSSI);
+
+            stringBuilder.append(String.format("Scan Result[%s]: Freq=%s, avg RSSI = %s\n", "" + k, "" + one.frequencyMHz, "" + one.averageRSSI));
+
+            //LOG.debug("Scan Result[{}]: Freq={}, avg RSSI = {}", k, one.frequencyMHz, one.averageRSSI);
         }
+
+        LOG.debug(stringBuilder.toString());
+
+        results.sort(); // sorts in ascending order
+
+
         FrequencyTrial bestTrial = results.trials.get(results.trials.size() - 1);
         results.bestFrequencyMHz = bestTrial.frequencyMHz;
         if (bestTrial.successes > 0) {
@@ -225,17 +244,6 @@ public abstract class RileyLinkCommunicationManager {
             return 0.0;
         }
     }
-
-
-    //    public RLMessage makeRLMessage(RLMessageType type) {
-    //        return makeRLMessage(type, null);
-    //    }
-
-
-    //public abstract RLMessage makeRLMessage(RLMessageType type, byte[] data);
-
-
-    //public abstract RLMessage makeRLMessage(byte[] data);
 
 
     public abstract byte[] createPumpMessageContent(RLMessageType type);
@@ -322,7 +330,7 @@ public abstract class RileyLinkCommunicationManager {
         lastGoodReceiverCommunicationTime = System.currentTimeMillis();
 
         SP.putLong(RileyLinkConst.Prefs.LastGoodDeviceCommunicationTime, lastGoodReceiverCommunicationTime);
-        pumpStatus.setLastDataTimeToNow();
+        pumpStatus.setLastCommunicationToNow();
     }
 
 
@@ -343,4 +351,9 @@ public abstract class RileyLinkCommunicationManager {
     }
 
 
+    public void clearNotConnectedCount() {
+        if (rfspy != null) {
+            rfspy.notConnectedCount = 0;
+        }
+    }
 }
