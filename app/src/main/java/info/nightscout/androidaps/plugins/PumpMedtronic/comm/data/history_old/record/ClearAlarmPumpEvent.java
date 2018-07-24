@@ -6,10 +6,12 @@ public class ClearAlarmPumpEvent extends TimeStampedRecord {
     public ClearAlarmPumpEvent() {
     }
 
+
     @Override
     public String getShortTypeName() {
         return "Clear Alarm";
     }
+
 
     @Override
     public boolean isAAPSRelevant() {

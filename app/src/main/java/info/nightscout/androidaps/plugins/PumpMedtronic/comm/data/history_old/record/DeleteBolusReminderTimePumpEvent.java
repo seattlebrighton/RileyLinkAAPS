@@ -9,15 +9,18 @@ public class DeleteBolusReminderTimePumpEvent extends TimeStampedRecord {
     public DeleteBolusReminderTimePumpEvent() {
     }
 
+
     @Override
     public int getLength() {
         return 9;
     }
 
+
     @Override
     public String getShortTypeName() {
         return "Del Bolus Rmndr Time";
     }
+
 
     @Override
     public boolean isAAPSRelevant() {

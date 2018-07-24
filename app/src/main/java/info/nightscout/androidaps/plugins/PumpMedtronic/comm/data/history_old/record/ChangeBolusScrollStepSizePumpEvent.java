@@ -9,10 +9,12 @@ public class ChangeBolusScrollStepSizePumpEvent extends TimeStampedRecord {
     public ChangeBolusScrollStepSizePumpEvent() {
     }
 
+
     @Override
     public String getShortTypeName() {
         return "Ch Bolus Scroll SS";
     }
+
 
     @Override
     public boolean isAAPSRelevant() {

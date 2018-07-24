@@ -13,6 +13,7 @@ import java.util.Map;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.StringUtil;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.RawHistoryPage;
+import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history.MedtronicHistoryEntry;
 import info.nightscout.androidaps.plugins.PumpMedtronic.util.MedtronicUtil;
 
 /**

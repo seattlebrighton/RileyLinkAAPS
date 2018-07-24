@@ -8,15 +8,18 @@ public class ChangeTimePumpEvent extends TimeStampedRecord {
 
     }
 
+
     @Override
     public int getLength() {
         return 14;
     }
 
+
     @Override
     public String getShortTypeName() {
         return "Change Time";
     }
+
 
     @Override
     public boolean isAAPSRelevant() {

@@ -9,10 +9,12 @@ public class ChangeCarbUnitsPumpEvent extends TimeStampedRecord {
     public ChangeCarbUnitsPumpEvent() {
     }
 
+
     @Override
     public String getShortTypeName() {
         return "Ch Carb Units";
     }
+
 
     @Override
     public boolean isAAPSRelevant() {

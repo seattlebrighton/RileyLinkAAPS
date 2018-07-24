@@ -9,15 +9,18 @@ public class DeleteOtherDeviceIDPumpEvent extends TimeStampedRecord {
     public DeleteOtherDeviceIDPumpEvent() {
     }
 
+
     @Override
     public int getLength() {
         return 12;
     }
 
+
     @Override
     public String getShortTypeName() {
         return "Del Other Dev ID";
     }
+
 
     @Override
     public boolean isAAPSRelevant() {

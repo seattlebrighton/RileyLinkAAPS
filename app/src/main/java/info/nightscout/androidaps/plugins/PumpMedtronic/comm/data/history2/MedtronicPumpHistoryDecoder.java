@@ -14,6 +14,7 @@ import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.HexDump;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.BasalProfileEntry;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.RawHistoryPage;
+import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history.MedtronicHistoryEntry;
 import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.BolusDTO;
 import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.BolusWizardDTO;
 import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicDeviceType;

@@ -9,10 +9,12 @@ public class ChangeChildBlockEnablePumpEvent extends TimeStampedRecord {
     public ChangeChildBlockEnablePumpEvent() {
     }
 
+
     @Override
     public String getShortTypeName() {
         return "Ch Child Block Ena";
     }
+
 
     @Override
     public boolean isAAPSRelevant() {

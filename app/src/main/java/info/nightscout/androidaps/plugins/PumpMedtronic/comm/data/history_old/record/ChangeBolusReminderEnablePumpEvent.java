@@ -9,15 +9,18 @@ public class ChangeBolusReminderEnablePumpEvent extends TimeStampedRecord {
     public ChangeBolusReminderEnablePumpEvent() {
     }
 
+
     @Override
     public int getLength() {
         return 9;
     }
 
+
     @Override
     public String getShortTypeName() {
         return "Ch Bolus Rmndr Enable";
     }
+
 
     @Override
     public boolean isAAPSRelevant() {

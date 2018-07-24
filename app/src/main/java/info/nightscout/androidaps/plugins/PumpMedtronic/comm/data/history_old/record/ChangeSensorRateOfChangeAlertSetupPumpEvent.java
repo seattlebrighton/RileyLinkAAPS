@@ -9,15 +9,18 @@ public class ChangeSensorRateOfChangeAlertSetupPumpEvent extends TimeStampedReco
     public ChangeSensorRateOfChangeAlertSetupPumpEvent() {
     }
 
+
     @Override
     public int getLength() {
         return 12;
     }
 
+
     @Override
     public String getShortTypeName() {
         return "Ch Sensor ROC Alert";
     }
+
 
     @Override
     public boolean isAAPSRelevant() {

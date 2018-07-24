@@ -7,15 +7,18 @@ public class EnableDisableRemotePumpEvent extends TimeStampedRecord {
     public EnableDisableRemotePumpEvent() {
     }
 
+
     @Override
     public int getLength() {
         return 21;
     }
 
+
     @Override
     public String getShortTypeName() {
         return "Toggle Remote";
     }
+
 
     @Override
     public boolean isAAPSRelevant() {

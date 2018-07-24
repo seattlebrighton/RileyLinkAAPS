@@ -6,10 +6,12 @@ public class SuspendPumpEvent extends TimeStampedRecord {
     public SuspendPumpEvent() {
     }
 
+
     @Override
     public String getShortTypeName() {
         return "Suspend";
     }
+
 
     @Override
     public boolean isAAPSRelevant() {

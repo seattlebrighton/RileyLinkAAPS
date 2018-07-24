@@ -9,6 +9,7 @@ public class InsulinMarkerEvent extends TimeStampedRecord {
     public InsulinMarkerEvent() {
     }
 
+
     @Override
     public int getLength() {
         return 8;
@@ -19,10 +20,12 @@ public class InsulinMarkerEvent extends TimeStampedRecord {
      it is a manual entry of a bolus that the pump didn't deliver, so opcode, timestamp and at least a number to represent the units of insulin
     */
 
+
     @Override
     public String getShortTypeName() {
         return "UnknownInsulin";
     }
+
 
     @Override
     public boolean isAAPSRelevant() {

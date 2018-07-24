@@ -9,10 +9,12 @@ public class Unknown7ByteEvent1 extends TimeStampedRecord {
     public Unknown7ByteEvent1() {
     }
 
+
     @Override
     public String getShortTypeName() {
         return "Unknown7Byte1";
     }
+
 
     @Override
     public boolean isAAPSRelevant() {

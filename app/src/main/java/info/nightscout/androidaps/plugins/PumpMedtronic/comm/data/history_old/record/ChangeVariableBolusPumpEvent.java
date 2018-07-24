@@ -9,10 +9,12 @@ public class ChangeVariableBolusPumpEvent extends TimeStampedRecord {
     public ChangeVariableBolusPumpEvent() {
     }
 
+
     @Override
     public String getShortTypeName() {
         return "Ch Var. Bolus";
     }
+
 
     @Override
     public boolean isAAPSRelevant() {

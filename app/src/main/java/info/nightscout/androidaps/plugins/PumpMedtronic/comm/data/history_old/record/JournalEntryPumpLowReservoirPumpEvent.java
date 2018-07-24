@@ -6,10 +6,12 @@ public class JournalEntryPumpLowReservoirPumpEvent extends TimeStampedRecord {
     public JournalEntryPumpLowReservoirPumpEvent() {
     }
 
+
     @Override
     public String getShortTypeName() {
         return "Low Reservoir";
     }
+
 
     @Override
     public boolean isAAPSRelevant() {

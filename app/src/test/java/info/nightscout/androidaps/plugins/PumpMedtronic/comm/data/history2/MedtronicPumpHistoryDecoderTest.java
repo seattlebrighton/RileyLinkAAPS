@@ -12,6 +12,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.RawHistoryPage;
+import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history.MedtronicHistoryEntry;
 import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicDeviceType;
 import info.nightscout.androidaps.plugins.PumpMedtronic.util.MedtronicUtil;
 

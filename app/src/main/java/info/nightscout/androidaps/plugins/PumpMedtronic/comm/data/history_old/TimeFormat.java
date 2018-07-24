@@ -16,14 +16,18 @@ public class TimeFormat {
     private static final boolean DEBUG_TIMEFORMAT = false;
     private static final String TAG = "TimeFormat";
 
+
     public TimeFormat() {
     }
 
+
     public static final String standardFormatString = "YYYY-MM-dd HH:mm:ss";
+
 
     public static DateTimeFormatter standardFormatter() {
         return DateTimeFormat.forPattern(standardFormatString);
     }
+
 
     public static LocalDate parse2ByteDate(byte[] data, int offset) throws org.joda.time.IllegalFieldValueException {
         int low = ByteUtil.asUINT8(data[0 + offset]) & 0x1F;
@@ -36,7 +40,7 @@ public class TimeFormat {
         Log.w(TAG, String.format("Attempting to create DateTime from: %04d-%02d-%02d %02d:%02d:%02d",
                 year + 2000, month, dayOfMonth, hour, minutes, seconds));
         */
-//        try {
+        //        try {
         LocalDate rval = new LocalDate(year, month, dayOfMonth);
         return rval;
         /*
@@ -54,8 +58,7 @@ public class TimeFormat {
     public static LocalDateTime parse5ByteDate(byte[] data, int offset) throws org.joda.time.IllegalFieldValueException {
         //offset = headerSize;
         if (DEBUG_TIMEFORMAT) {
-            Log.w(TAG, String.format("bytes to parse: 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X",
-                    data[offset], data[offset + 1], data[offset + 2], data[offset + 3], data[offset + 4]));
+            Log.w(TAG, String.format("bytes to parse: 0x%02X, 0x%02X, 0x%02X, 0x%02X, 0x%02X", data[offset], data[offset + 1], data[offset + 2], data[offset + 3], data[offset + 4]));
         }
         int seconds = data[offset] & 0x3F;
         int minutes = data[offset + 1] & 0x3F;
@@ -68,7 +71,7 @@ public class TimeFormat {
         Log.w(TAG,String.format("Attempting to create DateTime from: %04d-%02d-%02d %02d:%02d:%02d",
                 year+2000,month,dayOfMonth,hour,minutes,seconds));
         */
-//        try {
+        //        try {
         LocalDateTime timeStamp = new LocalDateTime(year + 2000, month, dayOfMonth, hour, minutes, seconds);
         return timeStamp;
         /*

@@ -9,10 +9,12 @@ public class ChangeWatchdogEnablePumpEvent extends TimeStampedRecord {
     public ChangeWatchdogEnablePumpEvent() {
     }
 
+
     @Override
     public String getShortTypeName() {
         return "Ch Watchdog Enable";
     }
+
 
     @Override
     public boolean isAAPSRelevant() {

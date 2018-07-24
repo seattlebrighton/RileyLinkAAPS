@@ -40,11 +40,11 @@ import java.util.List;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.CRC;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.HexDump;
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history.PumpTimeStamp;
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history.Record;
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history.RecordTypeEnum;
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history.TimeFormat;
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history.record.IgnoredHistoryEntry;
+import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history_old.PumpTimeStamp;
+import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history_old.Record;
+import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history_old.RecordTypeEnum;
+import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history_old.TimeFormat;
+import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history_old.record.IgnoredHistoryEntry;
 import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicDeviceType;
 
 @Deprecated
@@ -91,7 +91,8 @@ public class Page {
         this.model = model;
         int pageOffset = 0;
 
-        if ((rawPage == null) || (rawPage.length == 0)) return false;
+        if ((rawPage == null) || (rawPage.length == 0))
+            return false;
         this.data = Arrays.copyOfRange(rawPage, 0, rawPage.length - 2);
         this.crc = Arrays.copyOfRange(rawPage, rawPage.length - 2, rawPage.length);
         byte[] expectedCrc = CRC.calculate16CCITT(this.data);

@@ -10,15 +10,18 @@ public class AlarmSensorPumpEvent extends TimeStampedRecord {
     public AlarmSensorPumpEvent() {
     }
 
+
     @Override
     public int getLength() {
         return 8;
     }
 
+
     @Override
     public String getShortTypeName() {
         return "Alarm Sensor";
     }
+
 
     @Override
     public boolean isAAPSRelevant() {

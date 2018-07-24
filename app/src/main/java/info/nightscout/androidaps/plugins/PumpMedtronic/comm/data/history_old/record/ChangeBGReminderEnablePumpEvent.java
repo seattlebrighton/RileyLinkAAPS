@@ -9,10 +9,12 @@ public class ChangeBGReminderEnablePumpEvent extends TimeStampedRecord {
     public ChangeBGReminderEnablePumpEvent() {
     }
 
+
     @Override
     public String getShortTypeName() {
         return "Ch BG Rmndr Enable";
     }
+
 
     @Override
     public boolean isAAPSRelevant() {

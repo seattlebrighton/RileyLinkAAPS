@@ -6,10 +6,12 @@ public class RewindPumpEvent extends TimeStampedRecord {
     public RewindPumpEvent() {
     }
 
+
     @Override
     public String getShortTypeName() {
         return "Rewind";
     }
+
 
     @Override
     public boolean isAAPSRelevant() {

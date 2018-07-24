@@ -9,10 +9,12 @@ public class ChangeCaptureEventEnablePumpEvent extends TimeStampedRecord {
     public ChangeCaptureEventEnablePumpEvent() {
     }
 
+
     @Override
     public String getShortTypeName() {
         return "Ch Capture Event Ena";
     }
+
 
     @Override
     public boolean isAAPSRelevant() {

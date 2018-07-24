@@ -6,10 +6,12 @@ public class ResumePumpEvent extends TimeStampedRecord {
     public ResumePumpEvent() {
     }
 
+
     @Override
     public String getShortTypeName() {
         return "Resume";
     }
+
 
     @Override
     public boolean isAAPSRelevant() {

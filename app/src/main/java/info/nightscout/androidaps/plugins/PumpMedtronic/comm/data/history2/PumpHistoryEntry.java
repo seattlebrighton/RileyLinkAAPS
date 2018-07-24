@@ -1,6 +1,7 @@
 package info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history2;
 
 import info.nightscout.androidaps.plugins.PumpCommon.utils.HexDump;
+import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history.MedtronicHistoryEntry;
 import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.PumpTimeStampedRecord;
 
 /**

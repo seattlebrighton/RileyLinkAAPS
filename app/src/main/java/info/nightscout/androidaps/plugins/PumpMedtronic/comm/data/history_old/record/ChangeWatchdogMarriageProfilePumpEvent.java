@@ -9,15 +9,18 @@ public class ChangeWatchdogMarriageProfilePumpEvent extends TimeStampedRecord {
     public ChangeWatchdogMarriageProfilePumpEvent() {
     }
 
+
     @Override
     public int getLength() {
         return 12;
     }
 
+
     @Override
     public String getShortTypeName() {
         return "Ch WD Marriage";
     }
+
 
     @Override
     public boolean isAAPSRelevant() {

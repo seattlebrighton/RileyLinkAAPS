@@ -17,14 +17,17 @@ public class HistoryReport {
     public ArrayList<BolusWizardBolusEstimatePumpEvent> mBolusWizardEvents;
     public ArrayList<TempBasalEvent> mBasalEvents;
 
+
     public HistoryReport() {
         mBolusWizardEvents = new ArrayList<>();
         mBasalEvents = new ArrayList<>();
     }
 
+
     public void addBolusWizardEvent(BolusWizardBolusEstimatePumpEvent event) {
         mBolusWizardEvents.add(event);
     }
+
 
     public void addTempBasalEvent(TempBasalEvent event) {
         mBasalEvents.add(event);

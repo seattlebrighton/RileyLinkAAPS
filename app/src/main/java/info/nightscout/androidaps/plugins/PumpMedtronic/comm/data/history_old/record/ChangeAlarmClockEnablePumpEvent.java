@@ -9,10 +9,12 @@ public class ChangeAlarmClockEnablePumpEvent extends TimeStampedRecord {
     public ChangeAlarmClockEnablePumpEvent() {
     }
 
+
     @Override
     public String getShortTypeName() {
         return "Alarm Clock Enable";
     }
+
 
     @Override
     public boolean isAAPSRelevant() {

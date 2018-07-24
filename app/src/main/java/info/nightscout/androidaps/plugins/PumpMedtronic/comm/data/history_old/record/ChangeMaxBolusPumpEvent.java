@@ -9,10 +9,12 @@ public class ChangeMaxBolusPumpEvent extends TimeStampedRecord {
     public ChangeMaxBolusPumpEvent() {
     }
 
+
     @Override
     public String getShortTypeName() {
         return "Ch Max Bolux";
     }
+
 
     @Override
     public boolean isAAPSRelevant() {

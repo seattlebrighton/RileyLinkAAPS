@@ -1,4 +1,4 @@
-package info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history2;
+package info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history;
 
 
 import org.joda.time.LocalDateTime;
@@ -7,6 +7,7 @@ import java.util.List;
 
 import info.nightscout.androidaps.plugins.PumpCommon.utils.HexDump;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.StringUtil;
+import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history2.PumpHistoryEntryType;
 import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.PumpTimeStampedRecord;
 
 /**
