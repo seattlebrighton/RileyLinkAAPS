@@ -24,6 +24,7 @@ import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RFSpy;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RileyLinkBLE;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.RFSpyResponse;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkFirmwareVersion;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkTargetFrequency;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.defs.RileyLinkError;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.defs.RileyLinkServiceState;
@@ -161,12 +162,12 @@ public abstract class RileyLinkService extends Service {
 
                             rfspy.initializeRileyLink();
                             String bleVersion = rfspy.getBLEVersionCached();
-                            String rlVersion = rfspy.getRLVersionCached().toString();
+                            RileyLinkFirmwareVersion rlVersion = rfspy.getRLVersionCached();
 
                             LOG.debug("RfSpy version (BLE113): " + bleVersion);
                             rileyLinkServiceData.versionBLE113 = bleVersion;
 
-                            LOG.debug("RfSpy Radio version (CC110): " + rlVersion);
+                            LOG.debug("RfSpy Radio version (CC110): " + rlVersion.toString());
                             rileyLinkServiceData.versionCC110 = rlVersion;
 
                             ServiceTask task = new InitializePumpManagerTask();

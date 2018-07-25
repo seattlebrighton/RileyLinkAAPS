@@ -3,10 +3,14 @@ package info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs;
 /**
  * Created by andy on 5/6/18.
  */
-public interface RLMessage {
+public abstract class RLMessage {
 
-    byte[] getTxData();
+    protected RLSoftwareEncodingType encoding;
 
-    boolean isValid();
+    public abstract RLSoftwareEncodingType getEncoding();
+
+    public abstract byte[] getTxData();
+
+    public abstract boolean isValid();
 
 }

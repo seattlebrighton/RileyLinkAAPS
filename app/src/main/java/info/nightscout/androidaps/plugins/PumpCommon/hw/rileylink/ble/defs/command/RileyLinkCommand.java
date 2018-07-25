@@ -4,11 +4,27 @@ import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.Riley
 
 public abstract class RileyLinkCommand {
 
-    protected RileyLinkFirmwareVersion _version;
+    protected RileyLinkFirmwareVersion version;
 
     public RileyLinkCommand(RileyLinkFirmwareVersion version) {
-        this._version = version;
+        this.version = version;
+    }
+
+    protected RileyLinkCommandType type;
+
+    public abstract byte[] getRaw();
+
+    protected byte[] getRawSimple() {
+        return getByteArray(type.code);
 
     }
-    public abstract byte[] getRaw();
+    public RileyLinkCommandType getType() {
+        return type;
+    }
+
+    protected byte[] getByteArray(byte... input) {
+        return input;
+    }
+
+
 }

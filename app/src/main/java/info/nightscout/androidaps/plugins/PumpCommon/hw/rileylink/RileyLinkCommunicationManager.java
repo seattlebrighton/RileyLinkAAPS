@@ -14,6 +14,7 @@ import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.Radio
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.RadioResponse;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RLMessage;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RLMessageType;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RLSoftwareEncodingType;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkTargetFrequency;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.RileyLinkServiceData;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
@@ -76,9 +77,9 @@ public abstract class RileyLinkCommunicationManager {
             LOG.info("Sent:" + ByteUtil.shortHexString(msg.getTxData()));
         }
 
-        RFSpyResponse resp = rfspy.transmitThenReceive(new RadioPacket(msg.getTxData()), (byte) 0, (byte) repeatCount, (byte) 0, (byte) 0, timeout_ms, (byte) 0, extendPreamble_ms);
+        RFSpyResponse resp = rfspy.transmitThenReceive(new RadioPacket(msg.getTxData(), msg.getEncoding(), rileyLinkServiceData.versionCC110), (byte) 0, (byte) repeatCount, (byte) 0, (byte) 0, timeout_ms, (byte) 0, extendPreamble_ms);
 
-        E response = createResponseMessage(resp.getRadioResponse().getPayload(), clazz);
+        E response = createResponseMessage(resp.getRadioResponse(msg.getEncoding()).getPayload(), clazz);
 
         //PumpMessage rval = new PumpMessage(resp.getRadioResponse().getPayload());
         if (response.isValid()) {
@@ -89,7 +90,7 @@ public abstract class RileyLinkCommunicationManager {
         }
 
         if (showPumpMessages) {
-            LOG.info("Received:" + ByteUtil.shortHexString(resp.getRadioResponse().getPayload()));
+            LOG.info("Received:" + ByteUtil.shortHexString(resp.getRadioResponse(msg.getEncoding()).getPayload()));
         }
         return response;
     }
@@ -121,7 +122,7 @@ public abstract class RileyLinkCommunicationManager {
             LOG.info("Waking pump...");
 
             byte[] pumpMsgContent = createPumpMessageContent(RLMessageType.ReadSimpleData); // simple
-            RFSpyResponse resp = rfspy.transmitThenReceive(new RadioPacket(pumpMsgContent), (byte) 0, (byte) 200, (byte) 0, (byte) 0, 25000, (byte) 0);
+            RFSpyResponse resp = rfspy.transmitThenReceive(new RadioPacket(pumpMsgContent, RLSoftwareEncodingType.FourBSixB, rileyLinkServiceData.versionCC110), (byte) 0, (byte) 200, (byte) 0, (byte) 0, 25000, (byte) 0);
             LOG.info("wakeup: raw response is " + ByteUtil.shortHexString(resp.getRaw()));
 
             nextWakeUpRequired = System.currentTimeMillis() + (receiverDeviceAwakeForMinutes * 60 * 1000);
@@ -190,11 +191,11 @@ public abstract class RileyLinkCommunicationManager {
             for(int j = 0; j < tries; j++) {
 
                 byte[] pumpMsgContent = createPumpMessageContent(RLMessageType.ReadSimpleData);
-                RFSpyResponse resp = rfspy.transmitThenReceive(new RadioPacket(pumpMsgContent), (byte) 0, (byte) 0, (byte) 0, (byte) 0, rfspy.EXPECTED_MAX_BLUETOOTH_LATENCY_MS, (byte) 0);
+                RFSpyResponse resp = rfspy.transmitThenReceive(new RadioPacket(pumpMsgContent, RLSoftwareEncodingType.FourBSixB, rileyLinkServiceData.versionCC110), (byte) 0, (byte) 0, (byte) 0, (byte) 0, rfspy.EXPECTED_MAX_BLUETOOTH_LATENCY_MS, (byte) 0);
                 if (resp.wasTimeout()) {
                     LOG.error("scanForPump: Failed to find pump at frequency {}", frequencies[i]);
                 } else if (resp.looksLikeRadioPacket()) {
-                    RadioResponse radioResponse = new RadioResponse(resp.getRaw());
+                    RadioResponse radioResponse = new RadioResponse(resp.getRaw(), RLSoftwareEncodingType.FourBSixB);//This method is MMT-only so it uses hardcoded encoding);
                     if (radioResponse.isValid()) {
                         sumRSSI += radioResponse.rssi;
                         trial.successes++;
@@ -246,12 +247,12 @@ public abstract class RileyLinkCommunicationManager {
         rfspy.setBaseFrequency(freqMHz);
         //RLMessage msg = makeRLMessage(RLMessageType.ReadSimpleData);
         byte[] pumpMsgContent = createPumpMessageContent(RLMessageType.ReadSimpleData);
-        RadioPacket pkt = new RadioPacket(pumpMsgContent);
+        RadioPacket pkt = new RadioPacket(pumpMsgContent, RLSoftwareEncodingType.FourBSixB, rileyLinkServiceData.versionCC110); //this method is used only for MMT
         RFSpyResponse resp = rfspy.transmitThenReceive(pkt, (byte) 0, (byte) 0, (byte) 0, (byte) 0, rfspy.EXPECTED_MAX_BLUETOOTH_LATENCY_MS, (byte) 0);
         if (resp.wasTimeout()) {
             LOG.warn("tune_tryFrequency: no pump response at frequency {}", freqMHz);
         } else if (resp.looksLikeRadioPacket()) {
-            RadioResponse radioResponse = new RadioResponse(resp.getRaw());
+            RadioResponse radioResponse = new RadioResponse(resp.getRaw(), RLSoftwareEncodingType.FourBSixB);//This method is MMT-only so it uses hardcoded encoding
             if (radioResponse.isValid()) {
                 LOG.warn("tune_tryFrequency: saw response level {} at frequency {}", radioResponse.rssi, freqMHz);
                 return radioResponse.rssi;

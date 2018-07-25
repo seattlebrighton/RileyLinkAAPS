@@ -3,6 +3,7 @@ package info.nightscout.androidaps.plugins.PumpOmnipod.comm.message;
 import android.util.Log;
 
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RLMessage;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RLSoftwareEncodingType;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.HexDump;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.message.MessageBody;
@@ -13,7 +14,7 @@ import info.nightscout.androidaps.plugins.PumpMedtronic.comm.message.PacketType;
  */
 // FIXME: This needs to be changed. this is just copy of MedtronicPumpMessage, so I imagine this file will have different structure
 // in Omnipod I assume
-public class OmnipodMessage implements RLMessage {
+public class OmnipodMessage extends RLMessage {
 
 //    public PacketType packetType = PacketType.Carelink;
 //    public byte[] address = new byte[]{0, 0, 0};
@@ -40,6 +41,11 @@ public class OmnipodMessage implements RLMessage {
 
     public boolean isErrorResponse() {
         return false;
+    }
+
+    @Override
+    public RLSoftwareEncodingType getEncoding() {
+        return RLSoftwareEncodingType.Manchester;
     }
 
     @Override

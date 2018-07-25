@@ -7,7 +7,7 @@ package info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.comm
 public enum RileyLinkCommandType {
 
     GetState(1), //
-    GetVersion(2, false), //
+    GetVersion(2), //
     GetPacket(3), // aka Listen, receive
     Send(4), //
     SendAndListen(5), //
@@ -20,30 +20,11 @@ public enum RileyLinkCommandType {
     SetPreamble(12),
     ResetRadioConfig(13),
     GetStatistics(14),
-
     ;
 
     public byte code;
-    private boolean encoded = true;
-
 
     RileyLinkCommandType(int code) {
         this.code = (byte) code;
-    }
-
-
-    RileyLinkCommandType(int code, boolean encoded) {
-        this.code = (byte) code;
-        this.encoded = encoded;
-    }
-
-
-    public boolean isEncoded() {
-        return encoded;
-    }
-
-
-    public void setEncoded(boolean encoded) {
-        this.encoded = encoded;
     }
 }
