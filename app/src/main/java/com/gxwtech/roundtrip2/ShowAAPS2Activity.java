@@ -24,11 +24,11 @@ import java.util.Map;
 
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkUtil;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.MedtronicCommunicationManager;
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.BasalProfile;
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.BasalProfileEntry;
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.TempBasalPair;
+import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.BasalProfile;
+import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.BasalProfileEntry;
 import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.BatteryStatusDTO;
 import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.PumpSettingDTO;
+import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.TempBasalPair;
 import info.nightscout.androidaps.plugins.PumpMedtronic.defs.BatteryType;
 import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicDeviceType;
 import info.nightscout.androidaps.plugins.PumpMedtronic.util.MedtronicUtil;

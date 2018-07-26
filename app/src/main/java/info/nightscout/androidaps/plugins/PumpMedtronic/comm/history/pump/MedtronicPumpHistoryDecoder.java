@@ -1,4 +1,4 @@
-package info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history.pump;
+package info.nightscout.androidaps.plugins.PumpMedtronic.comm.history.pump;
 
 
 import android.util.Log;
@@ -12,11 +12,11 @@ import java.util.List;
 
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.HexDump;
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.BasalProfileEntry;
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history.MedtronicHistoryDecoder;
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history.MedtronicHistoryEntry;
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history.RawHistoryPage;
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history.RecordDecodeStatus;
+import info.nightscout.androidaps.plugins.PumpMedtronic.comm.history.MedtronicHistoryDecoder;
+import info.nightscout.androidaps.plugins.PumpMedtronic.comm.history.MedtronicHistoryEntry;
+import info.nightscout.androidaps.plugins.PumpMedtronic.comm.history.RawHistoryPage;
+import info.nightscout.androidaps.plugins.PumpMedtronic.comm.history.RecordDecodeStatus;
+import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.BasalProfileEntry;
 import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.BolusDTO;
 import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.BolusWizardDTO;
 import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicDeviceType;
@@ -52,7 +52,7 @@ import info.nightscout.androidaps.plugins.PumpMedtronic.util.MedtronicUtil;
 public class MedtronicPumpHistoryDecoder extends MedtronicHistoryDecoder {
 
     private static final Logger LOG = LoggerFactory.getLogger(MedtronicPumpHistoryDecoder.class);
-    private static final String TAG = "MdtPumpHistoryDecoder";
+    private static final String TAG = "MdtPump";
 
     //PumpValuesWriter pumpValuesWriter = null;
 
@@ -84,6 +84,12 @@ public class MedtronicPumpHistoryDecoder extends MedtronicHistoryDecoder {
         List<MedtronicHistoryEntry> outList = new ArrayList<MedtronicHistoryEntry>();
         String skipped = null;
         int elementStart = 0;
+
+        if (dataClear.size() == 0) {
+            Log.e(TAG, "Empty page.");
+            //return;
+        }
+
 
         do {
             int opCode = dataClear.get(counter);

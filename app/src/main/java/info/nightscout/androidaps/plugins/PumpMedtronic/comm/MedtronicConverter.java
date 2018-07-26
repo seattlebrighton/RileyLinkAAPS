@@ -1,4 +1,4 @@
-package info.nightscout.androidaps.plugins.PumpMedtronic.comm.message;
+package info.nightscout.androidaps.plugins.PumpMedtronic.comm;
 
 import com.gxwtech.roundtrip2.util.StringUtil;
 
@@ -13,10 +13,10 @@ import java.util.Map;
 
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.HexDump;
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.BasalProfile;
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.TempBasalPair;
+import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.BasalProfile;
 import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.BatteryStatusDTO;
 import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.PumpSettingDTO;
+import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.TempBasalPair;
 import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicCommandType;
 import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicDeviceType;
 import info.nightscout.androidaps.plugins.PumpMedtronic.defs.PumpConfigurationGroup;

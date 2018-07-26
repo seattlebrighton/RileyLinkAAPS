@@ -1,4 +1,4 @@
-package info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history;
+package info.nightscout.androidaps.plugins.PumpMedtronic.comm.history;
 
 import java.util.List;
 

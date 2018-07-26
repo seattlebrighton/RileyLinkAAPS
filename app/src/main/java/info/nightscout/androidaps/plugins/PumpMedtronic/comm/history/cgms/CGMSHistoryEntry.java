@@ -1,9 +1,9 @@
-package info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history.cgms;
+package info.nightscout.androidaps.plugins.PumpMedtronic.comm.history.cgms;
 
 import java.util.List;
 
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history.MedtronicHistoryEntry;
+import info.nightscout.androidaps.plugins.PumpMedtronic.comm.history.MedtronicHistoryEntry;
 
 
 /**

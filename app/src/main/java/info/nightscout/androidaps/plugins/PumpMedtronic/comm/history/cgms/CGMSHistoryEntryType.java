@@ -1,4 +1,4 @@
-package info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history.cgms;
+package info.nightscout.androidaps.plugins.PumpMedtronic.comm.history.cgms;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -22,7 +22,7 @@ import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.ServiceCommand;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.ServiceTransport;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.MedtronicCommunicationManager;
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.BasalProfile;
+import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.BasalProfile;
 import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicDeviceType;
 
 public class ShowAAPSActivity extends AppCompatActivity {
@@ -43,13 +43,13 @@ public class ShowAAPSActivity extends AppCompatActivity {
 
 
         //FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
+        //        fab.setOnClickListener(new View.OnClickListener() {
+        //            @Override
+        //            public void onClick(View view) {
+        //                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+        //                        .setAction("Action", null).show();
+        //            }
+        //        });
 
         // FIXME
         mBroadcastReceiver = new BroadcastReceiver() {
@@ -202,11 +202,11 @@ public class ShowAAPSActivity extends AppCompatActivity {
 
         final ServiceCommand command = ServiceClientActions.getPumpModel();
 
-//        ServiceTransport serviceTransport = sendPumpCommand(command);
-//
-//        String pumpModel = serviceTransport.getServiceResult().getMap().getString("PumpModel", "Unknown");
-//
-//        putOnDisplay("Mode2l: " + pumpModel);
+        //        ServiceTransport serviceTransport = sendPumpCommand(command);
+        //
+        //        String pumpModel = serviceTransport.getServiceResult().getMap().getString("PumpModel", "Unknown");
+        //
+        //        putOnDisplay("Mode2l: " + pumpModel);
 
 
         new Thread(new Runnable() {

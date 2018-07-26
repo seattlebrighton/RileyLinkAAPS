@@ -1,4 +1,4 @@
-package info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history.pump;
+package info.nightscout.androidaps.plugins.PumpMedtronic.comm.history.pump;
 
 import org.apache.commons.collections.CollectionUtils;
 

@@ -1,21 +1,27 @@
 package info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history2;
 
+import android.util.Log;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history.MedtronicHistoryEntry;
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history.RawHistoryPage;
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history.pump.MedtronicPumpHistoryDecoder;
+import info.nightscout.androidaps.plugins.PumpMedtronic.comm.history.MedtronicHistoryEntry;
+import info.nightscout.androidaps.plugins.PumpMedtronic.comm.history.RawHistoryPage;
+import info.nightscout.androidaps.plugins.PumpMedtronic.comm.history.pump.MedtronicPumpHistoryDecoder;
 import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicDeviceType;
 import info.nightscout.androidaps.plugins.PumpMedtronic.util.MedtronicUtil;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * Created by andy on 6/2/18.
@@ -54,7 +60,7 @@ public class MedtronicPumpHistoryDecoderTest {
         RawHistoryPage rawHistoryPage = new RawHistoryPage();
         rawHistoryPage.appendData(raw);
 
-        MedtronicUtil.setDeviceType(MedtronicDeviceType.Medtronic_522);
+        MedtronicUtil.setMedtronicPumpModel(MedtronicDeviceType.Medtronic_522);
 
         List<? extends MedtronicHistoryEntry> medtronicHistoryEntries = decoder.processPageAndCreateRecords(rawHistoryPage);
 
@@ -70,7 +76,7 @@ public class MedtronicPumpHistoryDecoderTest {
         RawHistoryPage rawHistoryPage = new RawHistoryPage();
         rawHistoryPage.appendData(raw);
 
-        MedtronicUtil.setDeviceType(MedtronicDeviceType.Medtronic_512);
+        MedtronicUtil.setMedtronicPumpModel(MedtronicDeviceType.Medtronic_512);
 
         List<? extends MedtronicHistoryEntry> medtronicHistoryEntries = decoder.processPageAndCreateRecords(rawHistoryPage);
 
@@ -86,7 +92,7 @@ public class MedtronicPumpHistoryDecoderTest {
         RawHistoryPage rawHistoryPage = new RawHistoryPage();
         rawHistoryPage.appendData(raw);
 
-        MedtronicUtil.setDeviceType(MedtronicDeviceType.Medtronic_512);
+        MedtronicUtil.setMedtronicPumpModel(MedtronicDeviceType.Medtronic_512);
 
         List<? extends MedtronicHistoryEntry> medtronicHistoryEntries = decoder.processPageAndCreateRecords(rawHistoryPage);
 
@@ -108,7 +114,7 @@ public class MedtronicPumpHistoryDecoderTest {
         //String subPath = "../../../Dropbox/workspaces/aaps/Roundtrip2RileyLinkAAPS/historyDebugging/";
         int pageNr = 11;  // 4 - weird 2byte date
         // pages with weird commands:
-        MedtronicUtil.setDeviceType(MedtronicDeviceType.Medtronic_522);
+        MedtronicUtil.setMedtronicPumpModel(MedtronicDeviceType.Medtronic_522);
 
         String fullPath = "/home/andy/Dropbox/workspaces/aaps/Roundtrip2RileyLinkAAPS/historyDebugging/" + "PumpHistoryPage-" + pageNr;
         // ------------------------------------------
@@ -120,17 +126,106 @@ public class MedtronicPumpHistoryDecoderTest {
         try {
             byte[] fileContents = Files.readAllBytes(filePath);
 
+            Log.d(TAG, "File found: " + (new File(fullPath).exists()));
+            Log.d(TAG, "File content size: " + fileContents.length);
+
             RawHistoryPage rawHistoryPage = new RawHistoryPage();
             rawHistoryPage.appendData(fileContents);
 
-            MedtronicUtil.setDeviceType(MedtronicDeviceType.Medtronic_512);
+            //MedtronicUtil.setMedtronicPumpModel(MedtronicDeviceType.Medtronic_512);
 
             List<? extends MedtronicHistoryEntry> medtronicHistoryEntries = decoder.processPageAndCreateRecords(rawHistoryPage);
 
-            LOG.info("testPageDecode: done");
+            LOG.info("testPageDecode: done ({} record found).", medtronicHistoryEntries.size());
 
         } catch (IOException e) {
             e.printStackTrace();
+        }
+
+
+    }
+
+
+    private static final String CLR = "/home/andy/Source/atech/aaps/decoding-carelink-test/";
+
+
+    @Test
+    public void runTest() {
+        DataSpecification dataSpecification;
+
+        dataSpecification = new DataSpecification(CLR, "analysis/522/578398/", "ReadHistoryData-page-%NR%.data", Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10), MedtronicDeviceType.Medtronic_522);
+
+        runTestWithParameters(dataSpecification, 0);
+    }
+
+
+    public void runTestWithParameters(DataSpecification dataSpec, int pageNr) {
+        //String path = "/home/andy/git/diabetes-aapk/decoding-carelink/analysis/";
+
+        // -----------------------------------------
+        //        String subPath = "578398/";
+        //        int pageNr = 6;
+        //        MedtronicUtil.setDeviceType(MedtronicDeviceType.Medtronic_522);
+        // -----------------------------------------
+        // /home/andy/Dropbox/workspaces/aaps/Roundtrip2RileyLinkAAPS/historyDebugging
+        //String subPath = "../../../Dropbox/workspaces/aaps/Roundtrip2RileyLinkAAPS/historyDebugging/";
+        //int pageNr = 11;  // 4 - weird 2byte date
+        // pages with weird commands:
+        MedtronicUtil.setMedtronicPumpModel(dataSpec.deviceType);
+
+        //String fullPath = "/home/andy/Dropbox/workspaces/aaps/Roundtrip2RileyLinkAAPS/historyDebugging/" + "PumpHistoryPage-" + pageNr;
+        // ------------------------------------------
+
+        String fileTemplate = dataSpec.rootDir + dataSpec.subDirectory + dataSpec.pageDefintion;
+
+        String fullPath = fileTemplate.replace("%NR%", "" + pageNr);
+
+        //String fullPath = path + subPath + "ReadHistoryData-page-" + pageNr + ".data";
+
+        Path filePath = Paths.get(fullPath);
+        try {
+            byte[] fileContents = Files.readAllBytes(filePath);
+
+            Log.d(TAG, "File found: " + (new File(fullPath).exists()));
+            Log.d(TAG, "File content size: " + fileContents.length);
+
+            RawHistoryPage rawHistoryPage = new RawHistoryPage();
+            rawHistoryPage.appendData(fileContents);
+
+            List<? extends MedtronicHistoryEntry> medtronicHistoryEntries = decoder.processPageAndCreateRecords(rawHistoryPage);
+
+            LOG.info("testPageDecode: done ({} record found).", medtronicHistoryEntries.size());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+
+    class DataSpecification {
+        String path = "/home/andy/git/diabetes-aapk/decoding-carelink/analysis/";
+
+        // -----------------------------------------
+        //        String subPath = "578398/";
+        //        int pageNr = 6;
+        //        MedtronicUtil.setDeviceType(MedtronicDeviceType.Medtronic_522);
+
+        public String rootDir;
+        public String subDirectory;
+        public String pageDefintion;
+        public List<Integer> pages;
+        public MedtronicDeviceType deviceType;
+
+
+        public DataSpecification(String rootDir, String subDirectory, String pageDefintion, List<Integer> pages, MedtronicDeviceType deviceType) {
+
+            this.rootDir = rootDir;
+            this.subDirectory = subDirectory;
+            this.pageDefintion = pageDefintion;
+            this.pages = pages;
+            this.deviceType = deviceType;
         }
 
 

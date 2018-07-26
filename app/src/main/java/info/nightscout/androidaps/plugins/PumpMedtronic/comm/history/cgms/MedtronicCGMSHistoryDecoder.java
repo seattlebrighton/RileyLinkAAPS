@@ -1,4 +1,4 @@
-package info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history.cgms;
+package info.nightscout.androidaps.plugins.PumpMedtronic.comm.history.cgms;
 
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
@@ -9,10 +9,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history.MedtronicHistoryDecoder;
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history.MedtronicHistoryEntry;
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history.RawHistoryPage;
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history.RecordDecodeStatus;
+import info.nightscout.androidaps.plugins.PumpMedtronic.comm.history.MedtronicHistoryDecoder;
+import info.nightscout.androidaps.plugins.PumpMedtronic.comm.history.MedtronicHistoryEntry;
+import info.nightscout.androidaps.plugins.PumpMedtronic.comm.history.RawHistoryPage;
+import info.nightscout.androidaps.plugins.PumpMedtronic.comm.history.RecordDecodeStatus;
 
 
 /**
