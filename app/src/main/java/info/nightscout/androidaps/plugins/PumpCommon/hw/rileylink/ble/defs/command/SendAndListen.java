@@ -8,7 +8,7 @@ import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.Riley
 
 public class SendAndListen extends RileyLinkCommand {
 
-    private byte sendChannge;
+    private byte sendChannel;
     private byte repeatCount;
     private int delayBetweenPackets_ms;
     private byte listenChannel;
@@ -21,7 +21,7 @@ public class SendAndListen extends RileyLinkCommand {
 
     public SendAndListen(
             RileyLinkFirmwareVersion version
-            , byte sendChannge
+            , byte sendChannel
             , byte repeatCount
             , byte delayBetweenPackets_ms
             , byte listenChannel
@@ -32,7 +32,7 @@ public class SendAndListen extends RileyLinkCommand {
     ) {
         this(
                 version
-                , sendChannge
+                , sendChannel
                 , repeatCount
                 , delayBetweenPackets_ms
                 , listenChannel
@@ -45,7 +45,7 @@ public class SendAndListen extends RileyLinkCommand {
 
     public SendAndListen(
             RileyLinkFirmwareVersion version
-            , byte sendChannge
+            , byte sendChannel
             , byte repeatCount
             , int delayBetweenPackets_ms
             , byte listenChannel
@@ -56,7 +56,7 @@ public class SendAndListen extends RileyLinkCommand {
 
     ) {
         super(version);
-        this.sendChannge = sendChannge;
+        this.sendChannel = sendChannel;
         this.repeatCount = repeatCount;
         this.delayBetweenPackets_ms = delayBetweenPackets_ms;
         this.listenChannel = listenChannel;
@@ -75,9 +75,9 @@ public class SendAndListen extends RileyLinkCommand {
     public byte[] getRaw() {
         ArrayList<Byte> bytes = new ArrayList<Byte>();
         bytes.add(this.getCommandType().code);
-        bytes.add(this.sendChannge);
+        bytes.add(this.sendChannel);
         bytes.add(this.retryCount);
-        if (this.version.getMajor() >= 2) { //delay is unsigned 16-bit integer
+        if (this.version.getCombinedVersion() >= 20000) { //delay is unsigned 16-bit integer
             byte[] delayBuff = ByteBuffer.allocate(4).putInt(delayBetweenPackets_ms).array();
             bytes.add(delayBuff[2]);
             bytes.add(delayBuff[3]);
@@ -89,7 +89,7 @@ public class SendAndListen extends RileyLinkCommand {
         bytes.add(timeoutBuff[2]);
         bytes.add(timeoutBuff[3]);
         bytes.add(retryCount);
-        if (this.version.getMajor() >= 2) { //2.x (and probably higher versions) support preamble extension
+        if (this.version.getCombinedVersion() >= 20000) { //2.x (and probably higher versions) support preamble extension
             byte[] preambleBuf = ByteBuffer.allocate(4).putInt(preambleExtension_ms).array();
             bytes.add(preambleBuf[2], preambleBuf[3]);
         }

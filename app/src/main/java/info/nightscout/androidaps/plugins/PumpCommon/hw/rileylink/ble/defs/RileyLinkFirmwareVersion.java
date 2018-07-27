@@ -25,12 +25,8 @@ public class RileyLinkFirmwareVersion {
 
     }
 
-    public int getMajor()
-    {
-        return this.major;
-    }
-    public int getMinor() {
-        return this.minor;
+    public int getCombinedVersion() {
+        return major * 10000 + minor * 100; //We reserve place for revisions of minor version
     }
 
     public static Boolean isVersionSupported(int major, int minor) {

@@ -45,7 +45,7 @@ public class RadioPacket {
                 throw new NotImplementedException(("Encoding not supported: " + RileyLinkUtil.getEncoding().toString() ));
         }
         // Starting with 2.0 we don't put ending 0
-        if (version.getMajor() >= 2)
+        if (version.getCombinedVersion() >= 20000)
             return encoded;
 
         byte[] withNullTerm = ByteUtil.concat(encoded, (byte) 0);

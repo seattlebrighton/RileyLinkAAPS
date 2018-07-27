@@ -10,17 +10,13 @@ import java.util.Random;
 
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkCommunicationManager;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RFSpy;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.RFSpyResponse;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.RadioPacket;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RLMessage;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RLMessageType;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkTargetFrequency;
-import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
 
 
 import info.nightscout.androidaps.plugins.PumpOmnipod.comm.command.AssignAddressCommand;
-import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.OmnipodMessage;
-import info.nightscout.utils.SP;
+import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.OmnipodPacket;
 
 /**
  * Created by andy on 6/29/18.
@@ -61,7 +57,7 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
     //FIXME: This one should be refactored as it sends/listens to raw packets and not messages
     @Override
     public <E extends RLMessage> E createResponseMessage(byte[] payload, Class<E> clazz) {
-        OmnipodMessage pumpMessage = new OmnipodMessage();
+        OmnipodPacket pumpMessage = new OmnipodPacket();
         return (E)pumpMessage;
     }
 
