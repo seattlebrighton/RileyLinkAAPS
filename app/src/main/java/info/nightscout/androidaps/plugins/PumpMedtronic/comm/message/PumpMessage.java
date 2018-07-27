@@ -3,7 +3,6 @@ package info.nightscout.androidaps.plugins.PumpMedtronic.comm.message;
 import android.util.Log;
 
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RLMessage;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RLSoftwareEncodingType;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.HexDump;
 import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicCommandType;
@@ -12,7 +11,7 @@ import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicCommandTyp
  * Created by geoff on 5/29/16.
  */
 // FIXME: Andy Message body problem, see comment in MessageBody
-public class PumpMessage extends RLMessage {
+public class PumpMessage implements RLMessage {
 
     public PacketType packetType = PacketType.Carelink;
     public byte[] address = new byte[]{0, 0, 0};
@@ -77,12 +76,6 @@ public class PumpMessage extends RLMessage {
         if (rxData.length > 5) {
             this.messageBody = MedtronicCommandType.constructMessageBody(commandType, ByteUtil.substring(rxData, 5, rxData.length - 5));
         }
-    }
-
-
-    @Override
-    public RLSoftwareEncodingType getEncoding() {
-        return RLSoftwareEncodingType.FourBSixB;
     }
 
     @Override

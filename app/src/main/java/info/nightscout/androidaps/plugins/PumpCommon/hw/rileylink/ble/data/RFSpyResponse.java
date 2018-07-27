@@ -1,6 +1,5 @@
 package info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data;
 
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RLSoftwareEncodingType;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.command.RileyLinkCommand;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.command.RileyLinkCommandType;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RFSpyRLResponse;
@@ -49,9 +48,9 @@ public class RFSpyResponse {
     }
 
 
-    public RadioResponse getRadioResponse(RLSoftwareEncodingType encoding) {
+    public RadioResponse getRadioResponse() {
         if (looksLikeRadioPacket()) {
-            radioResponse = new RadioResponse(command, raw, encoding);
+            radioResponse = new RadioResponse(command, raw);
         } else {
             radioResponse = new RadioResponse();
         }

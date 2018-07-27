@@ -29,7 +29,6 @@ import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.operations
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ThreadUtil;
 
-import static info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RLSoftwareEncodingType.Manchester;
 
 /**
  * Created by geoff on 5/26/16.
@@ -283,6 +282,7 @@ public String getBLEVersionCached() {
                 updateRegister(CC111XRegister.mdmcfg1, 0x62);
                 updateRegister(CC111XRegister.mdmcfg0, 0x1A);
                 updateRegister(CC111XRegister.deviatn, 0x13);
+                RileyLinkUtil.setEncoding(RLSoftwareEncodingType.FourBSixB);
             }
             break;
 
@@ -294,6 +294,7 @@ public String getBLEVersionCached() {
                 updateRegister(CC111XRegister.mdmcfg1, 0x61);
                 updateRegister(CC111XRegister.mdmcfg0, 0x7E);
                 updateRegister(CC111XRegister.deviatn, 0x15);
+                RileyLinkUtil.setEncoding(RLSoftwareEncodingType.FourBSixB);
 
             }
             break;
@@ -324,7 +325,8 @@ public String getBLEVersionCached() {
                 r = updateRegister(CC111XRegister.sync1, 0xA5);
                 r = updateRegister(CC111XRegister.sync0,0x5A );
 
-                r = setSoftwareEncoding(Manchester);
+                r = setSoftwareEncoding(RLSoftwareEncodingType.Manchester);
+                RileyLinkUtil.setEncoding(RLSoftwareEncodingType.Manchester);
                 r = setPreamble(0x6665);
 
             }

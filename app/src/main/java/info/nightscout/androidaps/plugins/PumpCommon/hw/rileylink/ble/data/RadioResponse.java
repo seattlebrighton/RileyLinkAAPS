@@ -4,8 +4,8 @@ import org.apache.commons.lang3.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RFTools;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RLSoftwareEncodingType;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.command.RileyLinkCommand;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.command.RileyLinkCommandType;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
@@ -24,20 +24,17 @@ public class RadioResponse {
     public byte[] decodedPayload = new byte[0];
     public byte receivedCRC;
     private RileyLinkCommand command;
-    private RLSoftwareEncodingType encoding;
 
 
     public RadioResponse() {
     }
 
 
-    public RadioResponse(byte[] rxData, RLSoftwareEncodingType encoding) {
-        this.encoding = encoding;
+    public RadioResponse(byte[] rxData) {
         init(rxData);
     }
 
-    public RadioResponse(RileyLinkCommand command, byte[] raw, RLSoftwareEncodingType encoding) {
-        this.encoding = encoding;
+    public RadioResponse(RileyLinkCommand command, byte[] raw) {
         this.command = command;
         init(raw);
     }
@@ -90,7 +87,7 @@ public class RadioResponse {
             }
             //boolean isEncoded = command==null || command.isEncoded();
 
-            switch (encoding) {
+            switch (RileyLinkUtil.getEncoding()) {
                 case Manchester:
                     decodedPayload = ByteUtil.substring(encodedPayload, 0, encodedPayload.length - 1);
                     decodedOK = true;
@@ -103,7 +100,7 @@ public class RadioResponse {
                     receivedCRC = decodeThis[decodeThis.length - 1];
                     break;
                 default:
-                    throw new NotImplementedException("this {" + encoding.toString() + "} encoding is not supported");
+                    throw new NotImplementedException("this {" + RileyLinkUtil.getEncoding().toString() + "} encoding is not supported");
             }
             byte calculatedCRC = CRC.crc8(decodedPayload);
             if (receivedCRC != calculatedCRC) {
