@@ -8,12 +8,16 @@ public class SetSoftwareEncoding extends RileyLinkCommand {
 
     public SetSoftwareEncoding(RileyLinkFirmwareVersion version, RLSoftwareEncodingType encoding) {
         super(version);
-        this.type = RileyLinkCommandType.SetSWEncoding;
         this.encoding = encoding;
     }
 
     @Override
+    public RileyLinkCommandType getCommandType() {
+        return RileyLinkCommandType.SetSWEncoding;
+    }
+
+    @Override
     public byte[] getRaw() {
-        return getByteArray(type.code, encoding.value);
+        return getByteArray(getCommandType().code, encoding.value);
     }
 }

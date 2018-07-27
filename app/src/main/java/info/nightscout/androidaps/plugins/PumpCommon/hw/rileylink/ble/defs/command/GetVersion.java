@@ -5,7 +5,11 @@ import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.Riley
 public class GetVersion extends RileyLinkCommand {
     public GetVersion(RileyLinkFirmwareVersion version) {
         super(version);
-        this.type = RileyLinkCommandType.GetVersion;
+    }
+
+    @Override
+    public RileyLinkCommandType getCommandType() {
+        return RileyLinkCommandType.GetVersion;
     }
 
     @Override

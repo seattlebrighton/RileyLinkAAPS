@@ -10,16 +10,13 @@ public abstract class RileyLinkCommand {
         this.version = version;
     }
 
-    protected RileyLinkCommandType type;
+    public abstract RileyLinkCommandType getCommandType();
 
     public abstract byte[] getRaw();
 
     protected byte[] getRawSimple() {
-        return getByteArray(type.code);
+        return getByteArray(getCommandType().code);
 
-    }
-    public RileyLinkCommandType getType() {
-        return type;
     }
 
     protected byte[] getByteArray(byte... input) {

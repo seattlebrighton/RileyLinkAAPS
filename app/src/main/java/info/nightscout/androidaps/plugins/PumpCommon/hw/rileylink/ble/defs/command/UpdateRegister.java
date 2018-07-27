@@ -10,13 +10,17 @@ public class UpdateRegister extends RileyLinkCommand {
 
     public UpdateRegister(RileyLinkFirmwareVersion version, CC111XRegister register, byte registerValue) {
         super(version);
-        this.type = RileyLinkCommandType.UpdateRegister;
         this.register = register;
         this.registerValue = registerValue;
     }
 
     @Override
+    public RileyLinkCommandType getCommandType() {
+        return RileyLinkCommandType.UpdateRegister;
+    }
+
+    @Override
     public byte[] getRaw() {
-        return getByteArray(type.code, register.value, registerValue);
+        return getByteArray(getCommandType().code, register.value, registerValue);
     }
 }

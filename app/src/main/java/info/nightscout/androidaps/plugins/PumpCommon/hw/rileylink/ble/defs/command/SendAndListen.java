@@ -1,12 +1,9 @@
 package info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.command;
 
-import org.apache.commons.lang3.NotImplementedException;
-
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.RadioPacket;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RLMessage;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkFirmwareVersion;
 
 public class SendAndListen extends RileyLinkCommand {
@@ -19,6 +16,7 @@ public class SendAndListen extends RileyLinkCommand {
     private byte retryCount;
     private int preambleExtension_ms;
     private RadioPacket packetToSend;
+
 
 
     public SendAndListen(
@@ -58,7 +56,6 @@ public class SendAndListen extends RileyLinkCommand {
 
     ) {
         super(version);
-        this.type = RileyLinkCommandType.SendAndListen;
         this.sendChannge = sendChannge;
         this.repeatCount = repeatCount;
         this.delayBetweenPackets_ms = delayBetweenPackets_ms;
@@ -70,9 +67,14 @@ public class SendAndListen extends RileyLinkCommand {
     }
 
     @Override
+    public RileyLinkCommandType getCommandType() {
+        return RileyLinkCommandType.SendAndListen;
+    }
+
+    @Override
     public byte[] getRaw() {
         ArrayList<Byte> bytes = new ArrayList<Byte>();
-        bytes.add(this.type.code);
+        bytes.add(this.getCommandType().code);
         bytes.add(this.sendChannge);
         bytes.add(this.retryCount);
         if (this.version.getMajor() >= 2) { //delay is unsigned 16-bit integer

@@ -43,7 +43,7 @@ public class RadioResponse {
     public boolean isValid() {
 
         //We should check for all listening commands, but only one is actually used
-        if (command!=null && command.getType() != RileyLinkCommandType.SendAndListen)
+        if (command!=null && command.getCommandType() != RileyLinkCommandType.SendAndListen)
         {
             return true;
         }
@@ -78,8 +78,8 @@ public class RadioResponse {
             // well, for non-radio commands we shouldn't even reach this point
             // but getVersion is kind of exception
             if (
-                    command.getType() != RileyLinkCommandType.SendAndListen
-                    && command.getType() != RileyLinkCommandType.SendAndListen
+                    command.getCommandType() != RileyLinkCommandType.SendAndListen
+                    && command.getCommandType() != RileyLinkCommandType.SendAndListen
                     ) {
                 decodedOK = true;
                 decodedPayload = encodedPayload;
