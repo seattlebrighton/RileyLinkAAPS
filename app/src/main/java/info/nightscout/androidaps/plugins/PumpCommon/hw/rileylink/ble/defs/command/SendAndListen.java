@@ -77,7 +77,7 @@ public class SendAndListen extends RileyLinkCommand {
         bytes.add(this.getCommandType().code);
         bytes.add(this.sendChannel);
         bytes.add(this.retryCount);
-        if (this.version.getCombinedVersion() >= 20000) { //delay is unsigned 16-bit integer
+        if (this.version.isSameVersion(RileyLinkFirmwareVersion.Version2AndHigher)) { //delay is unsigned 16-bit integer
             byte[] delayBuff = ByteBuffer.allocate(4).putInt(delayBetweenPackets_ms).array();
             bytes.add(delayBuff[2]);
             bytes.add(delayBuff[3]);
@@ -89,7 +89,7 @@ public class SendAndListen extends RileyLinkCommand {
         bytes.add(timeoutBuff[2]);
         bytes.add(timeoutBuff[3]);
         bytes.add(retryCount);
-        if (this.version.getCombinedVersion() >= 20000) { //2.x (and probably higher versions) support preamble extension
+        if (this.version.isSameVersion(RileyLinkFirmwareVersion.Version2AndHigher)) { //2.x (and probably higher versions) support preamble extension
             byte[] preambleBuf = ByteBuffer.allocate(4).putInt(preambleExtension_ms).array();
             bytes.add(preambleBuf[2], preambleBuf[3]);
         }

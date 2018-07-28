@@ -90,7 +90,7 @@ public String getBLEVersionCached() {
 
             //This throws an exception if version not supported, we should treat exceptions somehow
             // and show "Not supported firmware" message in UI
-            RileyLinkFirmwareVersion version = new RileyLinkFirmwareVersion(new String(response, 1, response.length - 1));
+            RileyLinkFirmwareVersion version = RileyLinkFirmwareVersion.UnknownVersion.getByVersionString(new String(response, 1, response.length - 1));
 
             this.firmwareVersion = version;
 
