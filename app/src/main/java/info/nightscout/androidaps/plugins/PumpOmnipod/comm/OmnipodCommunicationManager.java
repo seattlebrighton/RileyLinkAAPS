@@ -6,6 +6,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkCommunicationManager;
@@ -16,6 +19,9 @@ import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.Riley
 
 
 import info.nightscout.androidaps.plugins.PumpOmnipod.comm.command.AssignAddressCommand;
+import info.nightscout.androidaps.plugins.PumpOmnipod.comm.command.ConfigResponse;
+import info.nightscout.androidaps.plugins.PumpOmnipod.comm.command.MessageBlock;
+import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.OmnipodMessage;
 import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.OmnipodPacket;
 
 /**
@@ -24,6 +30,8 @@ import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.OmnipodPacket
 
 public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
 
+    private static final int defaultAddress = 0xFFFFFFFF;
+    private int messageNumber = 0;
 
     private static final Logger LOG = LoggerFactory.getLogger(OmnipodCommunicationManager.class);
     private boolean showPumpMessages;
@@ -73,10 +81,19 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
         return omnipodCommunicationManager;
     }
 
+
+    protected <T extends MessageBlock> T exchangeMessages(OmnipodMessage message, Integer addressOveride, Integer ackAddressOverride) {
+
+        return null;
+
+    }
+
     public Object initializePod() {
         Random rnd = new Random();
         int newAddress = rnd.nextInt();
         AssignAddressCommand assignAddress = new AssignAddressCommand(newAddress);
+        OmnipodMessage assignAddressMessage = new OmnipodMessage(defaultAddress, new MessageBlock[] {assignAddress}, messageNumber);
+        ConfigResponse config = exchangeMessages(assignAddressMessage, defaultAddress, newAddress);
 
 
 
