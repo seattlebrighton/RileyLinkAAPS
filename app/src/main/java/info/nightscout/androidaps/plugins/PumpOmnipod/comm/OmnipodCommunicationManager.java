@@ -18,11 +18,14 @@ import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RLMes
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkTargetFrequency;
 
 
+import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.PumpOmnipod.comm.command.AssignAddressCommand;
 import info.nightscout.androidaps.plugins.PumpOmnipod.comm.command.ConfigResponse;
 import info.nightscout.androidaps.plugins.PumpOmnipod.comm.command.MessageBlock;
 import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.OmnipodMessage;
 import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.OmnipodPacket;
+import info.nightscout.androidaps.plugins.PumpOmnipod.defs.PacketType;
+import info.nightscout.androidaps.plugins.PumpOmnipod.defs.PodState;
 
 /**
  * Created by andy on 6/29/18.
@@ -32,6 +35,8 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
 
     private static final int defaultAddress = 0xFFFFFFFF;
     private int messageNumber = 0;
+    private int packetNumber = 0;
+    private PodState podState;
 
     private static final Logger LOG = LoggerFactory.getLogger(OmnipodCommunicationManager.class);
     private boolean showPumpMessages;
@@ -82,10 +87,71 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
     }
 
 
-    protected <T extends MessageBlock> T exchangeMessages(OmnipodMessage message, Integer addressOveride, Integer ackAddressOverride) {
+    protected <T extends MessageBlock> T exchangeMessages(OmnipodMessage message, Integer addressOverride, Integer ackAddressOverride) {
+        int packetAddress = defaultAddress;
+        if (this.podState != null)
+            packetAddress = this.podState.Address;
+        if (addressOverride != null)
+            packetAddress = addressOverride;
+
+        Boolean firstPacket = true;
+        byte[] encodedMessage = message.getEncoded();
+        OmnipodPacket response = null;
+        while(encodedMessage.length > 0) {
+            PacketType packetType = firstPacket? PacketType.Pdm : PacketType.Con;
+            OmnipodPacket packet = new OmnipodPacket(packetAddress, packetType,packetNumber, encodedMessage);
+            byte[] dataToSend = packet.getTxData();
+            encodedMessage = ByteUtil.substring(encodedMessage, dataToSend.length - 1, encodedMessage.length - dataToSend.length);
+            firstPacket = false;
+            response = exchangePackets(packet);
+            //We actually ignore (ack) responses if it is not last packet to send
+        }
+        if (response.getPacketType() == PacketType.Ack) {
+            //we received ack instead of real response, something is wrong
+
+        }
+        OmnipodMessage receivedMessage = null;
+        byte[] receivedData = response.getTxData();
+        while(receivedMessage == null) {
+            receivedMessage = OmnipodMessage.TryDecode(receivedData);
+            if (receivedMessage == null) {
+                OmnipodPacket ackForCon = makeAckPacket(packetAddress, ackAddressOverride);
+                OmnipodPacket conPacket = exchangePackets(ackForCon, 3, 40);
+                if (conPacket.getPacketType() != PacketType.Con) {
+                    //We should throw an error as we expect only continuation packets
+                }
+                receivedData = ByteUtil.concat(receivedData, conPacket.getTxData());
+            }
+        }
+        incrementMessageNumber(2);
+
+        ackUntilQuiet(packetAddress, ackAddressOverride);
+        
+
+
 
         return null;
 
+    }
+
+    private void ackUntilQuiet(int packetAddress, Integer messageAddress) {
+
+    }
+
+    private void incrementMessageNumber(int increment) {
+
+    }
+
+    private OmnipodPacket exchangePackets(OmnipodPacket packet, int retries, int preambleExntension_ms) {
+        return null;
+    }
+
+    private OmnipodPacket makeAckPacket(int packetAddress, Integer ackAddressOverride) {
+        return null;
+    }
+
+    private OmnipodPacket exchangePackets(OmnipodPacket packet) {
+        return null;
     }
 
     public Object initializePod() {

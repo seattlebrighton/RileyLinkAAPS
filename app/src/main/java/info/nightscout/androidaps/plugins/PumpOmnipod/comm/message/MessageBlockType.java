@@ -16,19 +16,19 @@ public enum MessageBlockType {
     StatusResponse(0x1d),
     CancelDelivery(0x1f);
 
-    byte _value;
+    byte value;
 
     MessageBlockType(int value) {
-        this._value = (byte)value;
+        this.value = (byte)value;
     }
 
     public byte getValue() {
-        return _value;
+        return value;
     }
 
     public static MessageBlockType fromByte(byte input) {
         for (MessageBlockType type : values()) {
-            if (type._value == input) {
+            if (type.value == input) {
                 return type;
             }
         }

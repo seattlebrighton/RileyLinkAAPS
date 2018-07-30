@@ -12,10 +12,15 @@ public abstract class MessageBlock {
     //This method returns raw message representation
     //It should be rewritten in a derived class if raw representation of a concrete message
     //is something else than just message type concatenated with message data
-    public byte[] getRawMessage() throws IOException {
+    public byte[] getRawData() {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        stream.write(this.getType().getValue());
-        stream.write(rawData);
+        try {
+            stream.write(this.getType().getValue());
+            stream.write(rawData);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
         return stream.toByteArray();
     }
 }
