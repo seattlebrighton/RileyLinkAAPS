@@ -70,6 +70,7 @@ public abstract class RileyLinkService extends Service {
         this.context = context;
         RileyLinkUtil.setContext(this.context);
         determineRileyLinkTargetFrequency();
+        RileyLinkUtil.setRileyLinkService(this);
         RileyLinkUtil.setRileyLinkTargetFrequency(rileyLinkTargetFrequency);
         initRileyLinkServiceData();
     }
