@@ -63,9 +63,9 @@ public class MedtronicUtil extends RileyLinkUtil {
         byte lowByte = (byte) (shortValue & 0xFF);
 
         if (highByte > 0) {
-            return createByteArray(lowByte, highByte);
+            return createByteArray(highByte, lowByte);
         } else {
-            return returnFixedSize ? createByteArray(lowByte, highByte) : createByteArray(lowByte);
+            return returnFixedSize ? createByteArray(highByte, lowByte) : createByteArray(lowByte);
         }
 
     }
