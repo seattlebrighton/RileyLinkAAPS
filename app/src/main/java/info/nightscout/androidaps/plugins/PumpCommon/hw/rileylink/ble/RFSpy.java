@@ -15,12 +15,20 @@ import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.RFSpy
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.RadioPacket;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.RadioResponse;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.CC111XRegister;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RFSpyCommand;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkFirmwareVersion;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.command.RileyLinkCommand;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.command.RileyLinkCommandType;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RLSoftwareEncodingType;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RXFilterMode;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkTargetFrequency;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.command.SendAndListen;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.command.SetPreamble;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.command.SetSoftwareEncoding;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.command.UpdateRegister;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.operations.BLECommOperationResult;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ThreadUtil;
+
 
 /**
  * Created by geoff on 5/26/16.
@@ -44,11 +52,19 @@ public class RFSpy {
     private UUID radioVersionUUID = UUID.fromString(GattAttributes.CHARA_RADIO_VERSION);
     private UUID responseCountUUID = UUID.fromString(GattAttributes.CHARA_RADIO_RESPONSE_COUNT);
 
+    private RileyLinkFirmwareVersion firmwareVersion;
+    private String bleVersion; //We don't use it so no need of sofisticated logic
 
     public RFSpy(RileyLinkBLE rileyLinkBle) {
         this.rileyLinkBle = rileyLinkBle;
         reader = new RFSpyReader(rileyLinkBle);
     }
+public RileyLinkFirmwareVersion getRLVersionCached() {
+        return firmwareVersion;
+}
+public String getBLEVersionCached() {
+        return bleVersion;
+}
 
 
     // Call this after the RL services are discovered.
@@ -61,6 +77,25 @@ public class RFSpy {
             }
         });
         reader.start();
+    }
+
+    //Here should go generic RL initialisation + protocol adjustments depending on
+    //firmware version
+    public void initializeRileyLink() {
+        //We have to call raw version of communication to get firmware version
+        //So that we can adjust other commands accordingly afterwords
+        byte[] getVersionRaw = getByteArray(RileyLinkCommandType.GetVersion.code);
+        byte[] response = writeToDataRaw(getVersionRaw, 5000);
+        if (response != null && response[0] == (byte)0xDD) {
+
+            //This throws an exception if version not supported, we should treat exceptions somehow
+            // and show "Not supported firmware" message in UI
+            RileyLinkFirmwareVersion version = RileyLinkFirmwareVersion.UnknownVersion.getByVersionString(new String(response, 1, response.length - 1));
+
+            this.firmwareVersion = version;
+
+        }
+        bleVersion = getVersion();
     }
 
 
@@ -83,12 +118,7 @@ public class RFSpy {
         }
     }
 
-
-    // The caller has to know how long the RFSpy will be busy with what was sent to it.
-    private RFSpyResponse writeToData(RFSpyCommand command, byte[] body, int responseTimeout_ms) {
-
-        byte[] bytes = getCommandArray(command, body);
-
+    private byte[] writeToDataRaw(byte[] bytes, int responseTimeout_ms) {
         SystemClock.sleep(100);
         // FIXME drain read queue?
         byte[] junkInBuffer = reader.poll(0);
@@ -103,11 +133,20 @@ public class RFSpy {
         BLECommOperationResult writeCheck = rileyLinkBle.writeCharacteristic_blocking(radioServiceUUID, radioDataUUID, prepended);
         if (writeCheck.resultCode != BLECommOperationResult.RESULT_SUCCESS) {
             LOG.error("BLE Write operation failed, code=" + writeCheck.resultCode);
-            return new RFSpyResponse(); // will be a null (invalid) response
+            return null; // will be a null (invalid) response
         }
         SystemClock.sleep(100);
         //Log.i(TAG,ThreadUtil.sig()+String.format(" writeToData:(timeout %d) %s",(responseTimeout_ms),ByteUtil.shortHexString(prepended)));
         byte[] rawResponse = reader.poll(responseTimeout_ms);
+        return rawResponse;
+
+    }
+    // The caller has to know how long the RFSpy will be busy with what was sent to it.
+    private RFSpyResponse writeToData(RileyLinkCommand command, int responseTimeout_ms) {
+
+        byte[] bytes = command.getRaw();
+        byte[] rawResponse = writeToDataRaw(bytes, responseTimeout_ms);
+
         RFSpyResponse resp = new RFSpyResponse(command, rawResponse);
         if (rawResponse == null) {
             LOG.error("writeToData: No response from RileyLink");
@@ -120,9 +159,10 @@ public class RFSpy {
                 LOG.warn("writeToData: RileyLink reports OK");
             } else {
                 if (resp.looksLikeRadioPacket()) {
-                    RadioResponse radioResp = resp.getRadioResponse();
-                    byte[] responsePayload = radioResp.getPayload();
-                    LOG.info("writeToData: decoded radio response is " + ByteUtil.shortHexString(responsePayload));
+//                if (resp.looksLikeRadioPacket()) {
+//                    RadioResponse radioResp = resp.getRadioResponse();
+//                    byte[] responsePayload = radioResp.getPayload();
+                    LOG.info("writeToData: received radio response. Will decode at upper level");
                 }
                 //Log.i(TAG, "writeToData: raw response is " + ByteUtil.shortHexString(rawResponse));
             }
@@ -136,7 +176,7 @@ public class RFSpy {
     }
 
 
-    private byte[] getCommandArray(RFSpyCommand command, byte[] body) {
+    private byte[] getCommandArray(RileyLinkCommandType command, byte[] body) {
         int bodyLength = body == null ? 0 : body.length;
 
         byte[] output = new byte[bodyLength + 1];
@@ -153,58 +193,67 @@ public class RFSpy {
     }
 
 
-    public String getRadioVersion() {
-        RFSpyResponse resp = writeToData(RFSpyCommand.GetVersion, null, 4000);
-        if (resp == null) {
-            LOG.error("getRadioVersion returned null");
-            return "(null)";
-        } else {
-            return StringUtil.fromBytes(resp.getRadioResponse().decodedPayload);
-        }
-    }
+//    public RFSpyResponse transmit(RadioPacket radioPacket) {
+//
+//        return transmit(radioPacket, (byte) 0, (byte) 0, (byte) 0xFF);
+//    }
+//
+//
+//    public RFSpyResponse transmit(RadioPacket radioPacket, byte sendChannel, byte repeatCount, byte delay_ms) {
+//        // append checksum, encode data, send it.
+//        byte[] fullPacket = ByteUtil.concat(getByteArray(sendChannel, repeatCount, delay_ms), radioPacket.getEncoded());
+//        RFSpyResponse response = writeToData(RileyLinkCommandType.Send, fullPacket, delay_ms + EXPECTED_MAX_BLUETOOTH_LATENCY_MS);
+//        return response;
+//    }
 
 
-    public RFSpyResponse transmit(RadioPacket radioPacket) {
-
-        return transmit(radioPacket, (byte) 0, (byte) 0, (byte) 0xFF);
-    }
-
-
-    public RFSpyResponse transmit(RadioPacket radioPacket, byte sendChannel, byte repeatCount, byte delay_ms) {
-        // append checksum, encode data, send it.
-        byte[] fullPacket = ByteUtil.concat(getByteArray(sendChannel, repeatCount, delay_ms), radioPacket.getEncoded());
-        RFSpyResponse response = writeToData(RFSpyCommand.Send, fullPacket, delay_ms + EXPECTED_MAX_BLUETOOTH_LATENCY_MS);
-        return response;
-    }
+//    public RFSpyResponse receive(byte listenChannel, int timeout_ms, byte retryCount) {
+//        int receiveDelay = timeout_ms * (retryCount + 1);
+//        byte[] listen = getByteArray(listenChannel, (byte) ((timeout_ms >> 24) & 0x0FF), (byte) ((timeout_ms >> 16) & 0x0FF), (byte) ((timeout_ms >> 8) & 0x0FF), (byte) (timeout_ms & 0x0FF), retryCount);
+//        return writeToData(RileyLinkCommandType.GetPacket, listen, receiveDelay);
+//    }
 
 
-    public RFSpyResponse receive(byte listenChannel, int timeout_ms, byte retryCount) {
-        int receiveDelay = timeout_ms * (retryCount + 1);
-        byte[] listen = getByteArray(listenChannel, (byte) ((timeout_ms >> 24) & 0x0FF), (byte) ((timeout_ms >> 16) & 0x0FF), (byte) ((timeout_ms >> 8) & 0x0FF), (byte) (timeout_ms & 0x0FF), retryCount);
-        return writeToData(RFSpyCommand.GetPacket, listen, receiveDelay);
-    }
-
-
-    public RFSpyResponse transmitThenReceive(RadioPacket pkt, int timeout_ms) {
-        return transmitThenReceive(pkt, (byte) 0, (byte) 0, (byte) 0, (byte) 0, timeout_ms, (byte) 0);
-    }
-
+//    public RFSpyResponse transmitThenReceive(RadioPacket pkt, int timeout_ms) {
+//        return transmitThenReceive(pkt, (byte) 0, (byte) 0, (byte) 0, (byte) 0, timeout_ms, (byte) 0);
+//    }
+//    public RFSpyResponse transmitThenReceive(RadioPacket pkt, int timeout_ms, int repeatCount, int extendPreamble_ms) {
+//        return transmitThenReceive(pkt, (byte) 0, (byte) repeatCount, (byte) 0, (byte) 0, timeout_ms, (byte) 0);
+//    }
 
     public RFSpyResponse transmitThenReceive(RadioPacket pkt, byte sendChannel, byte repeatCount, byte delay_ms, byte listenChannel, int timeout_ms, byte retryCount) {
+        return transmitThenReceive( pkt,  sendChannel,  repeatCount,  delay_ms,  listenChannel,  timeout_ms,  retryCount, 0);
+
+    }
+
+    //FIXME: to be able to work with Omnipod we need to support preamble extensions so we should create a class for the SnedAndListen RL command
+    //To avoid snedAndListen command assembly magic
+    public RFSpyResponse transmitThenReceive(RadioPacket pkt, byte sendChannel, byte repeatCount, byte delay_ms, byte listenChannel, int timeout_ms, byte retryCount, int extendPreamble_ms) {
 
         int sendDelay = repeatCount * delay_ms;
         int receiveDelay = timeout_ms * (retryCount + 1);
-        byte[] sendAndListen = getByteArray(sendChannel, repeatCount, delay_ms, listenChannel, (byte) ((timeout_ms >> 24) & 0x0FF), (byte) ((timeout_ms >> 16) & 0x0FF), (byte) ((timeout_ms >> 8) & 0x0FF), (byte) (timeout_ms & 0x0FF), (byte) retryCount);
-        byte[] fullPacket = ByteUtil.concat(sendAndListen, pkt.getEncoded());
-        return writeToData(RFSpyCommand.SendAndListen, fullPacket, sendDelay + receiveDelay + EXPECTED_MAX_BLUETOOTH_LATENCY_MS);
+        //byte[] sendAndListen = getByteArray(sendChannel, repeatCount, delay_ms, listenChannel, (byte) ((timeout_ms >> 24) & 0x0FF), (byte) ((timeout_ms >> 16) & 0x0FF), (byte) ((timeout_ms >> 8) & 0x0FF), (byte) (timeout_ms & 0x0FF), (byte) retryCount);
+        //byte[] fullPacket = ByteUtil.concat(sendAndListen, pkt.getEncoded());
+        SendAndListen command = new SendAndListen(
+                firmwareVersion
+                , sendChannel
+                , repeatCount
+                , delay_ms
+                , listenChannel
+                , timeout_ms
+                , retryCount
+                ,pkt
+        );
+
+        return writeToData(command, sendDelay + receiveDelay + EXPECTED_MAX_BLUETOOTH_LATENCY_MS);
     }
 
 
     public RFSpyResponse updateRegister(CC111XRegister reg, int val) {
-        byte[] updateRegisterPkt = getByteArray(reg.value, (byte) val);
-        RFSpyResponse resp = writeToData(RFSpyCommand.UpdateRegister, updateRegisterPkt, EXPECTED_MAX_BLUETOOTH_LATENCY_MS);
+        RFSpyResponse resp = writeToData(new UpdateRegister(firmwareVersion, reg, (byte) val), EXPECTED_MAX_BLUETOOTH_LATENCY_MS);
         return resp;
     }
+
 
 
     public void setBaseFrequency(double freqMHz) {
@@ -233,6 +282,7 @@ public class RFSpy {
                 updateRegister(CC111XRegister.mdmcfg1, 0x62);
                 updateRegister(CC111XRegister.mdmcfg0, 0x1A);
                 updateRegister(CC111XRegister.deviatn, 0x13);
+                RileyLinkUtil.setEncoding(RLSoftwareEncodingType.FourBSixB);
             }
             break;
 
@@ -244,21 +294,65 @@ public class RFSpy {
                 updateRegister(CC111XRegister.mdmcfg1, 0x61);
                 updateRegister(CC111XRegister.mdmcfg0, 0x7E);
                 updateRegister(CC111XRegister.deviatn, 0x15);
+                RileyLinkUtil.setEncoding(RLSoftwareEncodingType.FourBSixB);
 
             }
             break;
-
             case Omnipod: {
-                LOG.debug("No region configuration for RfSpy and {}", frequency.name());
-            }
+                RFSpyResponse r = null;
+                //RL initialization for Omnipod is a copy/paste from OmniKit implementation.
+                //Last commit from original repository: 5c3beb4144
+                //so if something is terribly wrong, please check git diff PodCommsSession.swift  since that commit
+                r = updateRegister(CC111XRegister.pktctrl1, 0x20);
+                r = updateRegister(CC111XRegister.agcctrl0, 0x00);
+                r = updateRegister(CC111XRegister.fsctrl1, 0x06);
+                r = updateRegister(CC111XRegister.mdmcfg4, 0xCA);
+                r = updateRegister(CC111XRegister.mdmcfg3, 0xBC);
+                r = updateRegister(CC111XRegister.mdmcfg2, 0x06);
+                r = updateRegister(CC111XRegister.mdmcfg1, 0x70);
+                r = updateRegister(CC111XRegister.mdmcfg0, 0x11);
+                r = updateRegister(CC111XRegister.deviatn, 0x44);
+                r = updateRegister(CC111XRegister.mcsm0, 0x18);
+                r = updateRegister(CC111XRegister.foccfg, 0x17);
+                r = updateRegister(CC111XRegister.fscal3, 0xE9);
+                r = updateRegister(CC111XRegister.fscal2, 0x2A);
+                r = updateRegister(CC111XRegister.fscal1, 0x00);
+                r = updateRegister(CC111XRegister.fscal0, 0x1F);
 
+                r = updateRegister(CC111XRegister.test1, 0x31);
+                r = updateRegister(CC111XRegister.test0, 0x09);
+                r = updateRegister(CC111XRegister.paTable0, 0x84);
+                r = updateRegister(CC111XRegister.sync1, 0xA5);
+                r = updateRegister(CC111XRegister.sync0,0x5A );
+
+                r = setSoftwareEncoding(RLSoftwareEncodingType.Manchester);
+                RileyLinkUtil.setEncoding(RLSoftwareEncodingType.Manchester);
+                r = setPreamble(0x6665);
+
+            }
+            break;
             default:
-                // no configuration
+                LOG.debug("No region configuration for RfSpy and {}", frequency.name());
                 break;
 
         }
 
         this.selectedTargetFrequency = frequency;
+    }
+
+    private RFSpyResponse setPreamble(int preamble) {
+        RFSpyResponse resp = null;
+        try {
+            resp = writeToData(new SetPreamble(firmwareVersion, preamble), EXPECTED_MAX_BLUETOOTH_LATENCY_MS);
+        } catch (Exception e) {
+            e.toString();
+        }
+        return resp;
+    }
+
+    private RFSpyResponse setSoftwareEncoding(RLSoftwareEncodingType encoding) {
+        RFSpyResponse resp = writeToData(new SetSoftwareEncoding(firmwareVersion, encoding), EXPECTED_MAX_BLUETOOTH_LATENCY_MS);
+        return resp;
     }
 
 

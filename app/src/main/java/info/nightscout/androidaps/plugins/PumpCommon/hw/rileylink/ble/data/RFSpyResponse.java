@@ -1,6 +1,8 @@
 package info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data;
 
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RFSpyCommand;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.command.RileyLinkCommand;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.command.RileyLinkCommandType;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RFSpyRLResponse;
 
 /**
  * Created by geoff on 5/26/16.
@@ -9,9 +11,14 @@ public class RFSpyResponse {
     // 0xaa == timeout
     // 0xbb == interrupted
     // 0xcc == zero-data
+    // 0xdd == success
+    // 0x11 == invalidParam
+    // 0x22 == unknownCommand
+
     protected byte[] raw;
     protected RadioResponse radioResponse;
-    private RFSpyCommand command;
+    private RileyLinkCommand command;
+
 
 
     public RFSpyResponse() {
@@ -24,7 +31,7 @@ public class RFSpyResponse {
     }
 
 
-    public RFSpyResponse(RFSpyCommand command, byte[] rawResponse) {
+    public RFSpyResponse(RileyLinkCommand command, byte[] rawResponse) {
 
         this.command = command;
         init(rawResponse);
@@ -38,15 +45,15 @@ public class RFSpyResponse {
             raw = bytes;
         }
 
+    }
+
+
+    public RadioResponse getRadioResponse() {
         if (looksLikeRadioPacket()) {
             radioResponse = new RadioResponse(command, raw);
         } else {
             radioResponse = new RadioResponse();
         }
-    }
-
-
-    public RadioResponse getRadioResponse() {
         return radioResponse;
     }
 
@@ -69,11 +76,27 @@ public class RFSpyResponse {
         }
         return false;
     }
+    public boolean isInvalidParam() {
+        if ((raw.length == 1) || (raw.length == 2)) {
+            if (raw[0] == (byte) 0x11) {
+                return true;
+            }
+        }
+        return false;
+    }
+    public boolean isUnknownCommand() {
+        if ((raw.length == 1) || (raw.length == 2)) {
+            if (raw[0] == (byte) 0x22) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 
     public boolean isOK() {
         if ((raw.length == 1) || (raw.length == 2)) {
-            if (raw[0] == (byte) 0x01) {
+            if (raw[0] == (byte) 0x01 || raw[0] == (byte)0xDD) {
                 return true;
             }
         }
@@ -88,6 +111,15 @@ public class RFSpyResponse {
         return false;
     }
 
+    @Override
+    public String toString() {
+        if (raw.length > 2) {
+            return "Radio packet";
+        } else {
+            RFSpyRLResponse r = RFSpyRLResponse.fromByte(raw[0]);
+            return r.toString();
+        }
+    }
 
     public byte[] getRaw() {
         return raw;

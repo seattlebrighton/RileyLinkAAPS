@@ -201,7 +201,7 @@ public class RileyLinkScan extends AppCompatActivity {
                     mScanning = false;
                     mLEScanner.stopScan(mScanCallback);
                     Log.d(TAG, "scanLeDevice: Scanning Stop");
-                    //Toast.makeText(mContext, "Scanning finished", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, "Scanning finished", Toast.LENGTH_SHORT).show();
                     snackbar.dismiss();
                 }
             }, SCAN_PERIOD);
@@ -209,14 +209,14 @@ public class RileyLinkScan extends AppCompatActivity {
             mScanning = true;
             mLEScanner.startScan(mScanCallback);
             Log.d(TAG, "scanLeDevice: Scanning Start");
-            //Toast.makeText(this, "Scanning", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Scanning", Toast.LENGTH_SHORT).show();
             snackbar.show();
         } else {
             mScanning = false;
             mLEScanner.stopScan(mScanCallback);
 
             Log.d(TAG, "scanLeDevice: Scanning Stop");
-            //Toast.makeText(this, "Scanning finished", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Scanning finished", Toast.LENGTH_SHORT).show();
             snackbar.dismiss();
 
         }
@@ -230,11 +230,11 @@ public class RileyLinkScan extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    if (device.getName() != null && device.getName().length() > 0) {
+                    //if (device.getName() != null && device.getName().length() > 0) {
                         mLeDeviceListAdapter.addDevice(device);
                         mLeDeviceListAdapter.notifyDataSetChanged();
                         Log.d(TAG, "Found BLE" + device.getName());
-                    }
+                    //}
                 }
             });
         }
