@@ -18,7 +18,6 @@ import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RFSpy;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.RLMessage;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RLMessageType;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkTargetFrequency;
-import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.HexDump;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.Page;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history_old.Record;
@@ -642,7 +641,7 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
             LOG.debug("Set Bolus: Body - {}", HexDump.toHexStringDisplayable(body));
 
         PumpMessage msg = makePumpMessage(MedtronicCommandType.SetBolus, //
-                new CarelinkLongMessageBody(ByteUtil.concat((byte) body.length, body)));
+                new CarelinkLongMessageBody(body));
 
         PumpMessage pumpMessage = runCommandWithArgs(msg);
 
