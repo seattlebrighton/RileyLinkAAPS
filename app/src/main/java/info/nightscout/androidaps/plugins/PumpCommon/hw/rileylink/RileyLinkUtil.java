@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RileyLinkBLE;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RLSoftwareEncodingType;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkTargetFrequency;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.data.RLHistoryItem;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.defs.RileyLinkError;
@@ -51,11 +52,19 @@ public class RileyLinkUtil {
 
     // Broadcasts: RileyLinkBLE, RileyLinkService,
 
+    private static RLSoftwareEncodingType encoding;
 
     public static void setContext(Context contextIn) {
         RileyLinkUtil.context = contextIn;
     }
 
+    public static void setEncoding(RLSoftwareEncodingType encoding) {
+        RileyLinkUtil.encoding = encoding;
+    }
+    public static RLSoftwareEncodingType getEncoding() {
+        return encoding;
+
+    }
 
     public static void sendBroadcastMessage(String message) {
         Intent intent = new Intent(message);
@@ -216,5 +225,6 @@ public class RileyLinkUtil {
 
         return (Math.abs(diff) <= 0.000001);
     }
+
 
 }

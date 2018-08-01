@@ -1,6 +1,5 @@
 package info.nightscout.androidaps.plugins.PumpMedtronic.comm;
 
-import com.gxwtech.roundtrip2.util.StringUtil;
 
 import org.joda.time.IllegalFieldValueException;
 import org.joda.time.LocalDateTime;
@@ -13,6 +12,7 @@ import java.util.Map;
 
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.HexDump;
+import info.nightscout.androidaps.plugins.PumpCommon.utils.StringUtil;
 import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.BasalProfile;
 import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.BatteryStatusDTO;
 import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.PumpSettingDTO;
@@ -106,7 +106,7 @@ public class MedtronicConverter {
         int time_x;
         double vald;
 
-        for(int i = 0; i < rep.length; i += 3) {
+        for (int i = 0; i < rep.length; i += 3) {
 
 
             vald = MedtronicUtil.decodeBasalInsulin(rep[i + 1], rep[i]);
@@ -314,7 +314,7 @@ public class MedtronicConverter {
 
 
     public float getStrokesPerUnit(boolean isBasal) {
-        return isBasal ? 40.0f : 10.0f;
+        return isBasal ? 40.0f : pumpModel.getBolusStrokes();
     }
 
 
