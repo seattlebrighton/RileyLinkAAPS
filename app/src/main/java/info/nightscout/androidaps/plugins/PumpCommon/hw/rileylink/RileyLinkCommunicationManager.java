@@ -181,6 +181,9 @@ public abstract class RileyLinkCommunicationManager {
     public abstract boolean tryToConnectToDevice();
 
 
+    private static final int SCAN_TIMEOUT = 1500;
+
+
     // FIXME sorting, and time display
     public double scanForDevice(double[] frequencies) {
         LOG.info("Scanning for receiver ({})", receiverDeviceID);
@@ -197,7 +200,7 @@ public abstract class RileyLinkCommunicationManager {
             for(int j = 0; j < tries; j++) {
 
                 byte[] pumpMsgContent = createPumpMessageContent(RLMessageType.ReadSimpleData);
-                RFSpyResponse resp = rfspy.transmitThenReceive(new RadioPacket(pumpMsgContent), (byte) 0, (byte) 0, (byte) 0, (byte) 0, rfspy.EXPECTED_MAX_BLUETOOTH_LATENCY_MS, (byte) 0);
+                RFSpyResponse resp = rfspy.transmitThenReceive(new RadioPacket(pumpMsgContent), (byte) 0, (byte) 0, (byte) 0, (byte) 0, SCAN_TIMEOUT, (byte) 0);
                 if (resp.wasTimeout()) {
                     LOG.error("scanForPump: Failed to find pump at frequency {}", frequencies[i]);
                 } else if (resp.looksLikeRadioPacket()) {
@@ -254,7 +257,7 @@ public abstract class RileyLinkCommunicationManager {
         //RLMessage msg = makeRLMessage(RLMessageType.ReadSimpleData);
         byte[] pumpMsgContent = createPumpMessageContent(RLMessageType.ReadSimpleData);
         RadioPacket pkt = new RadioPacket(pumpMsgContent);
-        RFSpyResponse resp = rfspy.transmitThenReceive(pkt, (byte) 0, (byte) 0, (byte) 0, (byte) 0, rfspy.EXPECTED_MAX_BLUETOOTH_LATENCY_MS, (byte) 0);
+        RFSpyResponse resp = rfspy.transmitThenReceive(pkt, (byte) 0, (byte) 0, (byte) 0, (byte) 0, SCAN_TIMEOUT, (byte) 0);
         if (resp.wasTimeout()) {
             LOG.warn("tune_tryFrequency: no pump response at frequency {}", freqMHz);
         } else if (resp.looksLikeRadioPacket()) {

@@ -18,6 +18,8 @@ import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RXFil
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkTargetFrequency;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.operations.BLECommOperationResult;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
+import info.nightscout.androidaps.plugins.PumpCommon.utils.HexDump;
+import info.nightscout.androidaps.plugins.PumpCommon.utils.StringUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ThreadUtil;
 
 /**
@@ -91,7 +93,7 @@ public class RFSpy {
             LOG.error("getRadioVersion returned null");
             return "(null)";
         } else {
-            return info.nightscout.androidaps.plugins.PumpCommon.utils.StringUtil.fromBytes(resp.getRadioResponse().decodedPayload);
+            return StringUtil.fromBytes(resp.getRadioResponse().decodedPayload);
         }
     }
 
@@ -100,6 +102,7 @@ public class RFSpy {
     private RFSpyResponse writeToData(RFSpyCommand command, byte[] body, int responseTimeout_ms) {
 
         byte[] bytes = getCommandArray(command, body);
+
 
         SystemClock.sleep(100);
         // FIXME drain read queue?
@@ -112,6 +115,9 @@ public class RFSpy {
 
         // prepend length, and send it.
         byte[] prepended = ByteUtil.concat(new byte[]{(byte) (bytes.length)}, bytes);
+
+        LOG.debug("writeToData (command={},raw={})", command.name(), HexDump.toHexStringDisplayable(prepended));
+
         BLECommOperationResult writeCheck = rileyLinkBle.writeCharacteristic_blocking(radioServiceUUID, radioDataUUID, prepended);
         if (writeCheck.resultCode != BLECommOperationResult.RESULT_SUCCESS) {
             LOG.error("BLE Write operation failed, code=" + writeCheck.resultCode);
