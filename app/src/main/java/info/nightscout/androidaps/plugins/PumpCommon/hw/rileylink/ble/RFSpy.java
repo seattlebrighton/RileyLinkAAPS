@@ -11,20 +11,20 @@ import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.GattAttributes;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.RFSpyResponse;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.RadioPacket;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.RadioResponse;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.CC111XRegister;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkFirmwareVersion;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.command.RileyLinkCommand;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.command.RileyLinkCommandType;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RLSoftwareEncodingType;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RXFilterMode;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkFirmwareVersion;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkTargetFrequency;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.command.RileyLinkCommand;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.command.RileyLinkCommandType;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.command.SendAndListen;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.command.SetPreamble;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.command.SetSoftwareEncoding;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.command.UpdateRegister;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.operations.BLECommOperationResult;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
+import info.nightscout.androidaps.plugins.PumpCommon.utils.HexDump;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.StringUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ThreadUtil;
 
@@ -60,12 +60,12 @@ public class RFSpy {
 
 
     public RileyLinkFirmwareVersion getRLVersionCached() {
-            return firmwareVersion;
+        return firmwareVersion;
     }
 
 
     public String getBLEVersionCached() {
-            return bleVersion;
+        return bleVersion;
     }
 
 
@@ -88,11 +88,11 @@ public class RFSpy {
         //So that we can adjust other commands accordingly afterwords
         byte[] getVersionRaw = getByteArray(RileyLinkCommandType.GetVersion.code);
         byte[] response = writeToDataRaw(getVersionRaw, 5000);
-        if (response != null && response[0] == (byte)0xDD) {
+        if (response != null) { // && response[0] == (byte) 0xDD) {
 
             //This throws an exception if version not supported, we should treat exceptions somehow
             // and show "Not supported firmware" message in UI
-            RileyLinkFirmwareVersion version = RileyLinkFirmwareVersion.getByVersionString(new String(response, 1, response.length - 1));
+            RileyLinkFirmwareVersion version = RileyLinkFirmwareVersion.getByVersionString(StringUtil.fromBytes(response));
 
             this.firmwareVersion = version;
 
@@ -124,7 +124,7 @@ public class RFSpy {
     }
 
 
-private byte[] writeToDataRaw(byte[] bytes, int responseTimeout_ms) {
+    private byte[] writeToDataRaw(byte[] bytes, int responseTimeout_ms) {
         SystemClock.sleep(100);
         // FIXME drain read queue?
         byte[] junkInBuffer = reader.poll(0);
@@ -136,6 +136,9 @@ private byte[] writeToDataRaw(byte[] bytes, int responseTimeout_ms) {
 
         // prepend length, and send it.
         byte[] prepended = ByteUtil.concat(new byte[]{(byte) (bytes.length)}, bytes);
+
+        LOG.debug("writeToData (raw={})", HexDump.toHexStringDisplayable(prepended));
+
         BLECommOperationResult writeCheck = rileyLinkBle.writeCharacteristic_blocking(radioServiceUUID, radioDataUUID, prepended);
         if (writeCheck.resultCode != BLECommOperationResult.RESULT_SUCCESS) {
             LOG.error("BLE Write operation failed, code=" + writeCheck.resultCode);
@@ -147,6 +150,7 @@ private byte[] writeToDataRaw(byte[] bytes, int responseTimeout_ms) {
         return rawResponse;
 
     }
+
     // The caller has to know how long the RFSpy will be busy with what was sent to it.
     private RFSpyResponse writeToData(RileyLinkCommand command, int responseTimeout_ms) {
 
@@ -199,7 +203,7 @@ private byte[] writeToDataRaw(byte[] bytes, int responseTimeout_ms) {
         output[0] = command.code;
 
         if (body != null) {
-            for(int i = 0; i < body.length; i++) {
+            for (int i = 0; i < body.length; i++) {
                 output[i + 1] = body[i];
             }
         }
@@ -237,7 +241,7 @@ private byte[] writeToDataRaw(byte[] bytes, int responseTimeout_ms) {
 //    }
 
     public RFSpyResponse transmitThenReceive(RadioPacket pkt, byte sendChannel, byte repeatCount, byte delay_ms, byte listenChannel, int timeout_ms, byte retryCount) {
-        return transmitThenReceive( pkt,  sendChannel,  repeatCount,  delay_ms,  listenChannel,  timeout_ms,  retryCount, 0);
+        return transmitThenReceive(pkt, sendChannel, repeatCount, delay_ms, listenChannel, timeout_ms, retryCount, 0);
 
     }
 
@@ -257,7 +261,7 @@ private byte[] writeToDataRaw(byte[] bytes, int responseTimeout_ms) {
                 , listenChannel
                 , timeout_ms
                 , retryCount
-                ,pkt
+                , pkt
         );
 
         return writeToData(command, sendDelay + receiveDelay + EXPECTED_MAX_BLUETOOTH_LATENCY_MS);
@@ -268,7 +272,6 @@ private byte[] writeToDataRaw(byte[] bytes, int responseTimeout_ms) {
         RFSpyResponse resp = writeToData(new UpdateRegister(firmwareVersion, reg, (byte) val), EXPECTED_MAX_BLUETOOTH_LATENCY_MS);
         return resp;
     }
-
 
 
     public void setBaseFrequency(double freqMHz) {
@@ -338,7 +341,7 @@ private byte[] writeToDataRaw(byte[] bytes, int responseTimeout_ms) {
                 r = updateRegister(CC111XRegister.test0, 0x09);
                 r = updateRegister(CC111XRegister.paTable0, 0x84);
                 r = updateRegister(CC111XRegister.sync1, 0xA5);
-                r = updateRegister(CC111XRegister.sync0,0x5A );
+                r = updateRegister(CC111XRegister.sync0, 0x5A);
 
                 r = setSoftwareEncoding(RLSoftwareEncodingType.Manchester);
                 RileyLinkUtil.setEncoding(RLSoftwareEncodingType.Manchester);

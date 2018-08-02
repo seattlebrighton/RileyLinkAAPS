@@ -108,7 +108,7 @@ public class RileyLinkMedtronicService extends RileyLinkService {
             mHistoryPages = medtronicCommunicationManager.getAllHistoryPages();
             final boolean savePages = true;
             if (savePages) {
-                for(int i = 0; i < mHistoryPages.size(); i++) {
+                for (int i = 0; i < mHistoryPages.size(); i++) {
                     String filename = "PumpHistoryPage-" + i;
                     LOG.warn("Saving history page to file " + filename);
                     FileOutputStream outputStream;
@@ -135,7 +135,7 @@ public class RileyLinkMedtronicService extends RileyLinkService {
             Bundle bundle = new Bundle();
             bundle.putString(RT2Const.IPC.messageKey, RT2Const.IPC.MSG_PUMP_history);
             ArrayList<Bundle> packedPages = new ArrayList<>();
-            for(Page page : mHistoryPages) {
+            for (Page page : mHistoryPages) {
                 packedPages.add(page.pack());
             }
             bundle.putParcelableArrayList(RT2Const.IPC.MSG_PUMP_history_key, packedPages);
@@ -154,7 +154,7 @@ public class RileyLinkMedtronicService extends RileyLinkService {
             LOG.info("Fetching saved history");
             FileInputStream inputStream;
             ArrayList<Page> storedHistoryPages = new ArrayList<>();
-            for(int i = 0; i < 16; i++) {
+            for (int i = 0; i < 16; i++) {
 
                 String filename = "PumpHistoryPage-" + i;
                 try {
@@ -187,7 +187,7 @@ public class RileyLinkMedtronicService extends RileyLinkService {
                 Bundle bundle = new Bundle();
                 bundle.putString(RT2Const.IPC.messageKey, RT2Const.IPC.MSG_PUMP_history);
                 ArrayList<Bundle> packedPages = new ArrayList<>();
-                for(Page page : mHistoryPages) {
+                for (Page page : mHistoryPages) {
                     packedPages.add(page.pack());
                 }
                 bundle.putParcelableArrayList(RT2Const.IPC.MSG_PUMP_history_key, packedPages);
@@ -385,6 +385,10 @@ public class RileyLinkMedtronicService extends RileyLinkService {
                         reconfigureRileyLink(deviceAddress);
                     }
                     break;
+
+                case "WakeAndTune":
+                    ServiceTaskExecutor.startTask(new WakeAndTuneTask());
+
                 default:
                     LOG.error("handleIncomingServiceTransport: Failed to handle service command '" + serviceTransport.getOriginalCommandName() + "'");
                     break;
