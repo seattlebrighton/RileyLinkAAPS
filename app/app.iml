@@ -142,14 +142,14 @@
     <orderEntry type="library" exported="" name="com.getkeepsafe.relinker:relinker-1.2.1" level="project" />
     <orderEntry type="library" exported="" name="com.android.support:animated-vector-drawable-27.1.0" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="org.powermock:powermock-module-junit4-rule-agent:1.7.3@jar" level="project" />
-    <orderEntry type="library" exported="" scope="TEST" name="org.powermock:powermock-api-mockito2:1.7.3@jar" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="org.powermock:powermock-module-junit4:1.7.3@jar" level="project" />
+    <orderEntry type="library" exported="" scope="TEST" name="org.powermock:powermock-api-mockito2:1.7.3@jar" level="project" />
     <orderEntry type="library" exported="" name="junit:junit:4.12@jar" level="project" />
     <orderEntry type="library" exported="" name="com.android.support:support-core-utils-27.1.0" level="project" />
     <orderEntry type="library" exported="" name="android.arch.core:common:1.1.0@jar" level="project" />
     <orderEntry type="library" exported="" name="com.android.support:support-annotations:27.1.0@jar" level="project" />
-    <orderEntry type="library" exported="" scope="TEST" name="org.mockito:mockito-core:2.8.9@jar" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="org.objenesis:objenesis:2.5@jar" level="project" />
+    <orderEntry type="library" exported="" scope="TEST" name="org.mockito:mockito-core:2.8.9@jar" level="project" />
     <orderEntry type="library" exported="" name="com.github.tony19:logback-android-core:1.1.1-6@jar" level="project" />
     <orderEntry type="library" exported="" name="io.realm:realm-android-library-1.1.1" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="net.bytebuddy:byte-buddy:1.6.14@jar" level="project" />

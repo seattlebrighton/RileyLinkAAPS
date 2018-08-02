@@ -23,7 +23,6 @@ import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkConst
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RFSpy;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RileyLinkBLE;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.RFSpyResponse;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkFirmwareVersion;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkTargetFrequency;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.defs.RileyLinkError;
@@ -36,8 +35,6 @@ import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.tasks.
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.tasks.InitializePumpManagerTask;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.tasks.ServiceTask;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.tasks.ServiceTaskExecutor;
-import info.nightscout.androidaps.plugins.PumpCommon.utils.HexDump;
-import info.nightscout.androidaps.plugins.PumpMedtronic.util.MedtronicConst;
 import info.nightscout.utils.SP;
 
 import static info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkUtil.getRileyLinkCommunicationManager;
@@ -167,7 +164,7 @@ public abstract class RileyLinkService extends Service {
                             LOG.debug("RfSpy version (BLE113): " + bleVersion);
                             rileyLinkServiceData.versionBLE113 = bleVersion;
 
-                            LOG.debug("RfSpy Radio version (CC110): " + rlVersion.toString());
+                            LOG.debug("RfSpy Radio version (CC110): " + rlVersion.name());
                             rileyLinkServiceData.versionCC110 = rlVersion;
 
                             ServiceTask task = new InitializePumpManagerTask();
