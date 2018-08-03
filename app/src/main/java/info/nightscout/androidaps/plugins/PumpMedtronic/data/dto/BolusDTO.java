@@ -136,4 +136,10 @@ public class BolusDTO extends PumpTimeStampedRecord {
 
     }
 
+
+    @Override
+    public String toString() {
+        return "BolusDTO [type=" + bolusType.name() + ", " + getValue() + "]";
+    }
+
 }

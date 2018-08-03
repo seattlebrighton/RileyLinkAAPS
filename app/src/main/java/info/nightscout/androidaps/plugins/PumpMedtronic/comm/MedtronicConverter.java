@@ -231,6 +231,7 @@ public class MedtronicConverter {
         addSettingToMap("PCFG_MAX_BASAL", "" + decodeBasalInsulin(ByteUtil.makeUnsignedShort(rd[getSettingIndexMaxBasal()], rd[getSettingIndexMaxBasal() + 1])), PumpConfigurationGroup.Basal, map);
         addSettingToMap("CFG_BASE_CLOCK_MODE", rd[getSettingIndexTimeDisplayFormat()] == 0 ? "12h" : "24h", PumpConfigurationGroup.General, map);
         addSettingToMap("PCFG_INSULIN_CONCENTRATION", "" + (rd[9] != 0 ? 50 : 100), PumpConfigurationGroup.Insulin, map);
+        LOG.debug("Insulin concentration: " + rd[9]);
         addSettingToMap("PCFG_BASAL_PROFILES_ENABLED", parseResultEnable(rd[10]), PumpConfigurationGroup.Basal, map);
 
         if (rd[10] == 1) {
