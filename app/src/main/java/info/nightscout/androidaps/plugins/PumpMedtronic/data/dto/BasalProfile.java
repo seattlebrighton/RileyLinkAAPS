@@ -156,22 +156,31 @@ public class BasalProfile {
             LOG.warn("Raw Data is empty.");
             return entries; // an empty list
         }
-        int i = 0;
+        //int i = 0;
         boolean done = false;
         int r, st;
-        while (!done) {
 
+        for(int i = 0; i < mRawData.length - 2; i += 3) {
             r = MedtronicUtil.makeUnsignedShort(mRawData[i + 1], mRawData[i]); //readUnsignedByte(mRawData[i]);
             // What is mRawData[i+1]? Not used in decocare.
             st = readUnsignedByte(mRawData[i + 2]);
             entries.add(new BasalProfileEntry(r, st));
-            i = i + 3;
-            if (i >= MAX_RAW_DATA_SIZE) {
-                done = true;
-            } else if ((mRawData[i] == 0) && (mRawData[i + 1] == 0) && (mRawData[i + 2] == 0)) {
-                done = true;
-            }
         }
+
+
+        //        while (!done) {
+        //
+        //            r = MedtronicUtil.makeUnsignedShort(mRawData[i + 1], mRawData[i]); //readUnsignedByte(mRawData[i]);
+        //            // What is mRawData[i+1]? Not used in decocare.
+        //            st = readUnsignedByte(mRawData[i + 2]);
+        //            entries.add(new BasalProfileEntry(r, st));
+        //            i = i + 3;
+        //            if (i >= MAX_RAW_DATA_SIZE) {
+        //                done = true;
+        //            } else if ((mRawData[i] == 0) && (mRawData[i + 1] == 0) && (mRawData[i + 2] == 0)) {
+        //                done = true;
+        //            }
+        //        }
         return entries;
     }
 
