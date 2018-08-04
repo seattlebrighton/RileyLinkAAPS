@@ -1,13 +1,7 @@
 package info.nightscout.androidaps.plugins.PumpOmnipod.comm.message;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.CRC;
-import info.nightscout.androidaps.plugins.PumpOmnipod.comm.command.MessageBlock;
 
 public class OmnipodMessage {
 
@@ -39,6 +33,12 @@ public class OmnipodMessage {
         return rawData;
     }
 
+    public MessageBlock[] getMessageBlocks() {
+        return messageBlocks;
+    }
+    public int getSequenceNumber() {
+        return sequenceNumber;
+    }
 
     public static OmnipodMessage TryDecode(byte[] data) {
         return null;

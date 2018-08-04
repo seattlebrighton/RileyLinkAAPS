@@ -1,7 +1,8 @@
-package info.nightscout.androidaps.plugins.PumpOmnipod.comm.command;
+package info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.command;
 
 import java.nio.ByteBuffer;
 
+import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.MessageBlock;
 import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.MessageBlockType;
 
 public class AssignAddressCommand extends MessageBlock {

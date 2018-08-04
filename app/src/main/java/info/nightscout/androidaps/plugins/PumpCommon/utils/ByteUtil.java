@@ -26,6 +26,13 @@ public class ByteUtil {
         return (b < 0) ? b + 256 : b;
     }
 
+    public static byte[] getUInt16BigEndian(short b) {
+        byte[] bytes = new byte[2];
+        bytes[0] = highByte(b);
+        bytes[1] = lowByte(b);
+        return bytes;
+    }
+
     /* For Reference: static void System.arraycopy(Object src, int srcPos, Object dest, int destPos, int length) */
 
 

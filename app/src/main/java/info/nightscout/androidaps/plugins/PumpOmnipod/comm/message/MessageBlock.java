@@ -1,4 +1,4 @@
-package info.nightscout.androidaps.plugins.PumpOmnipod.comm.command;
+package info.nightscout.androidaps.plugins.PumpOmnipod.comm.message;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
