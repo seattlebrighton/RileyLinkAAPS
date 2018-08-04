@@ -6,6 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public enum RileyLinkFirmwareVersion {
+
     Version_0_0(0, 0, "0.0"), // just for defaulting
     Version_0_9(0, 9, "0.9"), //
     Version_1_0(1, 0, "1.0"), //
@@ -17,6 +18,7 @@ public enum RileyLinkFirmwareVersion {
     Version2(Version_2_0, Version_2_2), //
     Version2AndHigher(Version_2_0, Version_2_2, Version_3_0), //
     ;
+
     private static final String FIRMWARE_IDENTIFICATION_PREFIX = "subg_rfspy ";
     private static final Pattern _version_pattern = Pattern.compile(FIRMWARE_IDENTIFICATION_PREFIX + "([0-9]+)\\.([0-9]+)");
     private int major;
@@ -24,6 +26,7 @@ public enum RileyLinkFirmwareVersion {
     protected RileyLinkFirmwareVersion[] familyMembers;
     private String versionKey = "";
     static Map<String, RileyLinkFirmwareVersion> mapByVersion;
+
     static {
         mapByVersion = new HashMap<>();
         for (RileyLinkFirmwareVersion version : values()) {
@@ -32,14 +35,20 @@ public enum RileyLinkFirmwareVersion {
             }
         }
     }
+
+
     RileyLinkFirmwareVersion(int major, int minor, String versionKey) {
         this.major = major;
         this.minor = minor;
         this.versionKey = versionKey;
     }
+
+
     RileyLinkFirmwareVersion(RileyLinkFirmwareVersion... familyMembers) {
         this.familyMembers = familyMembers;
     }
+
+
     public static boolean isSameVersion(RileyLinkFirmwareVersion versionWeCheck, RileyLinkFirmwareVersion versionSources) {
         if (versionSources.familyMembers != null) {
             for (RileyLinkFirmwareVersion vrs : versionSources.familyMembers) {
@@ -52,15 +61,18 @@ public enum RileyLinkFirmwareVersion {
         return false;
     }
 
+
     public boolean isSameVersion(RileyLinkFirmwareVersion versionSources) {
         return isSameVersion(this, versionSources);
     }
-    public RileyLinkFirmwareVersion getByVersionString(String versionString)
+
+
+    public static RileyLinkFirmwareVersion getByVersionString(String versionString) {
         if (versionString != null) {
             Matcher m = _version_pattern.matcher(versionString);
             if (m.find()) {
-                major = Integer.parseInt(m.group(1));
-                minor = Integer.parseInt(m.group(2));
+                int major = Integer.parseInt(m.group(1));
+                int minor = Integer.parseInt(m.group(2));
                 String versionKey = major + "." + minor;
                 if (mapByVersion.containsKey(versionKey)) {
                     return mapByVersion.get(versionKey);
@@ -70,15 +82,19 @@ public enum RileyLinkFirmwareVersion {
                 }
             }
         }
+
         return RileyLinkFirmwareVersion.UnknownVersion;
     }
-    private RileyLinkFirmwareVersion defaultToLowestMajorVersion(int major) {
-        if (mapByVersion.containsKey(major + ".0"))
-        {
+
+
+    private static RileyLinkFirmwareVersion defaultToLowestMajorVersion(int major) {
+        if (mapByVersion.containsKey(major + ".0")) {
             return mapByVersion.get(major + ".0");
         }
         return UnknownVersion;
     }
+
+
     @Override
     public String toString() {
         return FIRMWARE_IDENTIFICATION_PREFIX + versionKey;
