@@ -25,5 +25,17 @@ public enum PacketType {
         }
         return null;
     }
+    public int MaxBodyLength() {
+        switch(this) {
+            case Ack:
+                return 4;
+            case Con:
+            case Pdm:
+            case Pod:
+                return 31;
+            default:
+                return 0;
+        }
+    }
 
 }

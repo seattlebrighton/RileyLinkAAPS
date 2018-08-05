@@ -232,7 +232,15 @@ public String getBLEVersionCached() {
 
     //FIXME: to be able to work with Omnipod we need to support preamble extensions so we should create a class for the SnedAndListen RL command
     //To avoid snedAndListen command assembly magic
-    public RFSpyResponse transmitThenReceive(RadioPacket pkt, byte sendChannel, byte repeatCount, byte delay_ms, byte listenChannel, int timeout_ms, byte retryCount, int extendPreamble_ms) {
+    public RFSpyResponse transmitThenReceive(
+            RadioPacket pkt
+            , byte sendChannel
+            , byte repeatCount
+            , byte delay_ms
+            , byte listenChannel
+            , int timeout_ms
+            , byte retryCount
+            , int extendPreamble_ms) {
 
         int sendDelay = repeatCount * delay_ms;
         int receiveDelay = timeout_ms * (retryCount + 1);
@@ -246,7 +254,9 @@ public String getBLEVersionCached() {
                 , listenChannel
                 , timeout_ms
                 , retryCount
+                , extendPreamble_ms
                 , pkt
+
         );
 
         return writeToData(command, sendDelay + receiveDelay + EXPECTED_MAX_BLUETOOTH_LATENCY_MS);

@@ -1,10 +1,10 @@
 package info.nightscout.androidaps.plugins.PumpOmnipod.comm.message;
 
-import android.util.Log;
+import org.apache.commons.lang3.NotImplementedException;
 
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RLMessage;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
-import info.nightscout.androidaps.plugins.PumpCommon.utils.HexDump;
+import info.nightscout.androidaps.plugins.PumpCommon.utils.CRC;
 import info.nightscout.androidaps.plugins.PumpOmnipod.defs.PacketType;
 
 /**
@@ -16,11 +16,33 @@ public class OmnipodPacket implements RLMessage {
 
     private int packetAddress = 0;
     private PacketType packetType = PacketType.Invalid;
-    private int packetNumber = 0;
+    private int sequenceNumber = 0;
     private byte[] encodedMessage = null;
+    private Boolean _isValid = false;
 
-    public OmnipodPacket() {
-
+    public OmnipodPacket(byte[] encoded) {
+        if (encoded.length < 7) {
+            //FIXME: Throw not enough data exception
+        }
+        this.packetAddress = ByteUtil.toInt(
+                new Integer(encoded[0])
+                , new Integer(encoded[1])
+                , new Integer(encoded[2])
+                , new Integer(encoded[3])
+                , ByteUtil.BitConversion.BIG_ENDIAN);
+        this.packetType = PacketType.fromByte((byte)(encoded[4] >> 5));
+        if (this.packetType == null) {
+            //FIXME: Log invalid packet type
+            return;
+        }
+        this.sequenceNumber = encoded[4] & 0b11111;
+        int crc = CRC.crc8(ByteUtil.substring(encoded,0, encoded.length - 1));
+        if (crc != encoded[encoded.length - 1]) {
+            //FIXME: Log CRC mismatch
+            return;
+        }
+        this.encodedMessage = ByteUtil.substring(encoded, 5, encoded.length - 1 - 5);
+        _isValid = true;
     }
 
     public PacketType getPacketType() {
@@ -31,23 +53,32 @@ public class OmnipodPacket implements RLMessage {
 
         this.packetAddress = packetAddress;
         this.packetType = packetType;
-        this.packetNumber = packetNumber;
+        this.sequenceNumber = packetNumber;
         this.encodedMessage = encodedMessage;
+        if (encodedMessage.length > packetType.MaxBodyLength())
+            this.encodedMessage = ByteUtil.substring(encodedMessage, 0,  packetType.MaxBodyLength());
+        this._isValid = true;
     }
 
+    public int getAddress() {
+        return packetAddress;
+    }
+    public int getSequenceNumber() {
+        return sequenceNumber;
+    }
 
     public boolean isErrorResponse() {
-        return false;
+        throw new NotImplementedException("isErrorResponse");
     }
 
     @Override
     public byte[] getTxData() {
-        return new byte[0];
+        throw new NotImplementedException("getTxData");
     }
 
     @Override
     public boolean isValid() {
-        return false;
+        return _isValid;
     }
 
 

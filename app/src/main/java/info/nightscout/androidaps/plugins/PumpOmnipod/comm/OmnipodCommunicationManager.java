@@ -2,7 +2,6 @@ package info.nightscout.androidaps.plugins.PumpOmnipod.comm;
 
 import android.content.Context;
 
-import org.apache.commons.lang3.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,7 +70,7 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
     //FIXME: This one should be refactored as it sends/listens to raw packets and not messages
     @Override
     public <E extends RLMessage> E createResponseMessage(byte[] payload, Class<E> clazz) {
-        OmnipodPacket pumpMessage = new OmnipodPacket();
+        OmnipodPacket pumpMessage = new OmnipodPacket(payload);
         return (E)pumpMessage;
     }
 
@@ -174,25 +173,55 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
 
     }
 
-
-
-    // FIXME: ===== Let's implement these!
-
-    private void ackUntilQuiet(int packetAddress, Integer messageAddress) {
-        throw new NotImplementedException("ackUntilQuiet");
-
+    private void ackUntilQuiet(Integer packetAddress, Integer messageAddress) {
+        OmnipodPacket ack = makeAckPacket(packetAddress, messageAddress);
+        Boolean quiet = false;
+        while(!quiet) {
+            OmnipodPacket response = sendAndListen(ack, 600, 5, 40, OmnipodPacket.class);
+            if (response == null)
+                quiet = true;
+        }
+        incrementPacketNumber(1);
     }
+
+
 
     private OmnipodPacket exchangePackets(OmnipodPacket packet) {
-        throw new NotImplementedException("exchangePackets");
+        return exchangePackets(
+                packet
+                , 0
+                , 165
+                ,20000
+                , 127
+        );
     }
 
-    private OmnipodPacket exchangePackets(OmnipodPacket packet, int retries, int preambleExntension_ms) {
-        throw new NotImplementedException("exchangePackets");
+    private OmnipodPacket exchangePackets(
+            OmnipodPacket packet
+            , int repeatCount
+            , int responseTimeout_ms
+            , int exchangeTimeout_ms
+            , int preambleExntension_ms) {
+        int radioRetriesCount = 20;
+        long timeoutTime = System.currentTimeMillis() + exchangeTimeout_ms;
+        while(System.currentTimeMillis() < timeoutTime) {
+            OmnipodPacket response = sendAndListen(packet, responseTimeout_ms, repeatCount, preambleExntension_ms, OmnipodPacket.class);
+            if (response == null)
+                continue;
+            if (response.getAddress() != packet.getAddress()) {
+                continue;
+            }
+            if (response.getSequenceNumber() != ((packetNumber + 1) & 0b11111))
+                continue;
+
+            incrementPacketNumber(2);
+            return response;
+
+        }
+        //FIXME: throw timeout (no response) exception
+        return null;
     }
 
-
-// FIXME: ===== Let's implement these! ==== END
 
     public Object initializePod() {
         Random rnd = new Random();
