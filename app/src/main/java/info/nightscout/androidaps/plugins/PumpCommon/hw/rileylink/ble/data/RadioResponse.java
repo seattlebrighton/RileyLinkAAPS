@@ -76,10 +76,8 @@ public class RadioResponse {
             // for non-radio commands we just return the raw response
             // well, for non-radio commands we shouldn't even reach this point
             // but getVersion is kind of exception
-            if (
-                    command.getCommandType() != RileyLinkCommandType.SendAndListen
-                            && command.getCommandType() != RileyLinkCommandType.SendAndListen
-                    ) {
+            if (command != null && //
+                    command.getCommandType() != RileyLinkCommandType.SendAndListen) {
                 decodedOK = true;
                 decodedPayload = encodedPayload;
                 return;
