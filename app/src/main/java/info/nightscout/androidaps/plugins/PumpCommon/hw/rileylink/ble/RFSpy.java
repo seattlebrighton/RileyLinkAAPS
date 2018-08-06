@@ -14,8 +14,8 @@ import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.GattA
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.RFSpyResponse;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.RadioPacket;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.CC111XRegister;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RLSoftwareEncodingType;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RXFilterMode;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkEncodingType;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkFirmwareVersion;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkTargetFrequency;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.command.RileyLinkCommand;
@@ -295,7 +295,7 @@ public String getBLEVersionCached() {
                 updateRegister(CC111XRegister.mdmcfg1, 0x62);
                 updateRegister(CC111XRegister.mdmcfg0, 0x1A);
                 updateRegister(CC111XRegister.deviatn, 0x13);
-                RileyLinkUtil.setEncoding(RLSoftwareEncodingType.FourBSixB);
+                //RileyLinkUtil.setEncoding(RileyLinkEncodingType.FourByteSixByte);
             }
             break;
 
@@ -307,7 +307,7 @@ public String getBLEVersionCached() {
                 updateRegister(CC111XRegister.mdmcfg1, 0x61);
                 updateRegister(CC111XRegister.mdmcfg0, 0x7E);
                 updateRegister(CC111XRegister.deviatn, 0x15);
-                RileyLinkUtil.setEncoding(RLSoftwareEncodingType.FourBSixB);
+                //RileyLinkUtil.setEncoding(RileyLinkEncodingType.FourByteSixByte);
 
             }
             break;
@@ -338,8 +338,8 @@ public String getBLEVersionCached() {
                 r = updateRegister(CC111XRegister.sync1, 0xA5);
                 r = updateRegister(CC111XRegister.sync0, 0x5A);
 
-                r = setSoftwareEncoding(RLSoftwareEncodingType.Manchester);
-                RileyLinkUtil.setEncoding(RLSoftwareEncodingType.Manchester);
+                r = setSoftwareEncoding(RileyLinkEncodingType.Manchester);
+                RileyLinkUtil.setEncoding(RileyLinkEncodingType.Manchester);
                 r = setPreamble(0x6665);
 
             }
@@ -363,7 +363,7 @@ public String getBLEVersionCached() {
         return resp;
     }
 
-    private RFSpyResponse setSoftwareEncoding(RLSoftwareEncodingType encoding) {
+    private RFSpyResponse setSoftwareEncoding(RileyLinkEncodingType encoding) {
         RFSpyResponse resp = writeToData(new SetSoftwareEncoding(firmwareVersion, encoding), EXPECTED_MAX_BLUETOOTH_LATENCY_MS);
         return resp;
     }

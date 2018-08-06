@@ -43,8 +43,7 @@ public class RadioResponse {
     public boolean isValid() {
 
         //We should check for all listening commands, but only one is actually used
-        if (command!=null && command.getCommandType() != RileyLinkCommandType.SendAndListen)
-        {
+        if (command != null && command.getCommandType() != RileyLinkCommandType.SendAndListen) {
             return true;
         }
 
@@ -79,7 +78,7 @@ public class RadioResponse {
             // but getVersion is kind of exception
             if (
                     command.getCommandType() != RileyLinkCommandType.SendAndListen
-                    && command.getCommandType() != RileyLinkCommandType.SendAndListen
+                            && command.getCommandType() != RileyLinkCommandType.SendAndListen
                     ) {
                 decodedOK = true;
                 decodedPayload = encodedPayload;
@@ -93,7 +92,7 @@ public class RadioResponse {
                     decodedOK = true;
                     receivedCRC = encodedPayload[encodedPayload.length - 1];
                     break;
-                case FourBSixB:
+                case FourByteSixByte:
                     byte[] decodeThis = RFTools.decode4b6b(encodedPayload);
                     decodedOK = true;
                     decodedPayload = ByteUtil.substring(decodeThis, 0, decodeThis.length - 1);

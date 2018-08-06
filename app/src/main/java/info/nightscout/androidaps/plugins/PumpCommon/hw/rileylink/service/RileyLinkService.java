@@ -23,6 +23,7 @@ import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkConst
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RFSpy;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RileyLinkBLE;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkEncodingType;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkFirmwareVersion;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkTargetFrequency;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.defs.RileyLinkError;
@@ -73,8 +74,12 @@ public abstract class RileyLinkService extends Service {
         RileyLinkUtil.setContext(this.context);
         determineRileyLinkTargetFrequency();
         RileyLinkUtil.setRileyLinkTargetFrequency(rileyLinkTargetFrequency);
+        RileyLinkUtil.setEncoding(getEncoding());
         initRileyLinkServiceData();
     }
+
+
+    public abstract RileyLinkEncodingType getEncoding();
 
 
     /**
