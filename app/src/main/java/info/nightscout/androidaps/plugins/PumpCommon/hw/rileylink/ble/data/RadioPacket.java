@@ -38,11 +38,11 @@ public class RadioPacket {
             case Manchester://We have this encoding in RL firmware
                 encoded = withCRC;
                 break;
-            case FourBSixB:
+            case FourByteSixByte:
                 encoded = RFTools.encode4b6b(withCRC);
                 break;
             default:
-                throw new NotImplementedException(("Encoding not supported: " + RileyLinkUtil.getEncoding().toString() ));
+                throw new NotImplementedException(("Encoding not supported: " + RileyLinkUtil.getEncoding().toString()));
         }
         // Starting with 2.0 we don't put ending 0
         if (version.isSameVersion(RileyLinkFirmwareVersion.Version2AndHigher))
