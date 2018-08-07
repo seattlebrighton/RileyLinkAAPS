@@ -25,6 +25,7 @@ import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkConst
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RFSpy;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RileyLinkBLE;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkEncodingType;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkTargetFrequency;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.defs.RileyLinkTargetDevice;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.RileyLinkService;
@@ -53,6 +54,10 @@ public class RileyLinkOmnipodService extends RileyLinkService {
     OmnipodCommunicationManager omnipodCommunicationManager;
     private IBinder mBinder = new LocalBinder();
 
+    @Override
+    public RileyLinkEncodingType getEncoding() {
+        return RileyLinkEncodingType.FourByteSixByte;
+    }
 
     public RileyLinkOmnipodService() {
         super(MainApp.instance().getApplicationContext());
