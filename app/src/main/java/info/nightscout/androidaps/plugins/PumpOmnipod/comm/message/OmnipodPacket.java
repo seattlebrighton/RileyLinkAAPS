@@ -71,9 +71,20 @@ public class OmnipodPacket implements RLMessage {
         throw new NotImplementedException("isErrorResponse");
     }
 
+    public byte[] getEncodedMessage() {
+        return encodedMessage;
+    }
+
+
     @Override
     public byte[] getTxData() {
-        throw new NotImplementedException("getTxData");
+        byte[] output = new byte[0];
+        output = ByteUtil.concat(output, ByteUtil.getBytesFromInt(this.packetAddress));
+        output = ByteUtil.concat(output, (byte)((this.packetType.getValue() << 5) + sequenceNumber & 0b11111));
+        output = ByteUtil.concat(output, encodedMessage);
+        output = ByteUtil.concat(output, CRC.crc8(output));
+        return output;
+
     }
 
     @Override

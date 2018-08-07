@@ -1,5 +1,7 @@
 package info.nightscout.androidaps.plugins.PumpOmnipod.comm.message;
 
+import java.util.ArrayList;
+
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.CRC;
 
@@ -41,6 +43,55 @@ public class OmnipodMessage {
     }
 
     public static OmnipodMessage TryDecode(byte[] data) {
-        return null;
+        if (data.length < 10) {
+            //FIXME: Throw exception of not enough data or at least log
+            return null;
+        }
+
+        int address = ByteUtil.toInt(new Integer(data[0])
+                , new Integer(data[1])
+                , new Integer(data[2])
+                , new Integer(data[3])
+                , ByteUtil.BitConversion.BIG_ENDIAN
+                );
+        byte b9 = data[4];
+        byte bodyLength = data[5];
+        if (data.length - 8 < bodyLength) {
+            //FIXME: Throw or log: not enough data
+            return null;
+        }
+        int sequenceNumber = (b9 >> 2) & 0b11111;
+        int crc = ByteUtil.toInt(data[data.length - 2], data[data.length - 1]);
+        int calculatedCrc = CRC.crc16(ByteUtil.substring(data, 0, data.length - 2));
+        if (crc != calculatedCrc) {
+            //FIXME: Throw or log CRC error
+            return null;
+        }
+        MessageBlock[] blocks = decodeBlocks(ByteUtil.substring(data, 6, data.length - 6 - 2));
+        if (blocks == null || blocks.length == 0) {
+            //FIXME: Throw/log no blocks decoded
+            return null;
+        }
+
+        OmnipodMessage result = new OmnipodMessage(address, blocks, sequenceNumber);
+        return result;
+    }
+
+    private static MessageBlock[] decodeBlocks(byte[] data) {
+        ArrayList<MessageBlock> blocks = new  ArrayList<MessageBlock>();
+        int index = 0;
+        while (index < data.length) {
+            MessageBlockType blockType = MessageBlockType.fromByte(data[index]);
+            MessageBlock block = blockType.Decode(data);
+            if (block == null) {
+                //FIXME: Throw/log: unknown block
+                return null;
+            }
+            blocks.add(block);
+            index += block.getRawData().length;
+        }
+
+        MessageBlock[] result = new MessageBlock[blocks.size()];
+        return blocks.toArray(result);
     }
 }

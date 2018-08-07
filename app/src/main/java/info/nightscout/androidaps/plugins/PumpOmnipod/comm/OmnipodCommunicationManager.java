@@ -111,16 +111,16 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
             return null;
         }
         OmnipodMessage receivedMessage = null;
-        byte[] receivedData = response.getTxData();
+        byte[] receivedMessageData = response.getEncodedMessage();
         while(receivedMessage == null) {
-            receivedMessage = OmnipodMessage.TryDecode(receivedData);
+            receivedMessage = OmnipodMessage.TryDecode(receivedMessageData);
             if (receivedMessage == null) {
                 OmnipodPacket ackForCon = makeAckPacket(packetAddress, ackAddressOverride);
                 OmnipodPacket conPacket = exchangePackets(ackForCon, 3, 40);
                 if (conPacket.getPacketType() != PacketType.Con) {
                     //FIXME: We should throw an error as we expect only continuation packets
                 }
-                receivedData = ByteUtil.concat(receivedData, conPacket.getTxData());
+                receivedMessageData = ByteUtil.concat(receivedMessageData, conPacket.getEncodedMessage());
             }
         }
         incrementMessageNumber(2);
@@ -199,14 +199,25 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
     private OmnipodPacket exchangePackets(
             OmnipodPacket packet
             , int repeatCount
+            , int preambleExtension_ms) {
+        return exchangePackets(
+                packet
+                , repeatCount
+                , 165
+                , 20000
+                , preambleExtension_ms);
+    }
+    private OmnipodPacket exchangePackets(
+            OmnipodPacket packet
+            , int repeatCount
             , int responseTimeout_ms
             , int exchangeTimeout_ms
-            , int preambleExntension_ms) {
+            , int preambleExtension_ms) {
         int radioRetriesCount = 20;
         long timeoutTime = System.currentTimeMillis() + exchangeTimeout_ms;
         while(System.currentTimeMillis() < timeoutTime) {
-            OmnipodPacket response = sendAndListen(packet, responseTimeout_ms, repeatCount, preambleExntension_ms, OmnipodPacket.class);
-            if (response == null)
+            OmnipodPacket response = sendAndListen(packet, responseTimeout_ms, repeatCount, preambleExtension_ms, OmnipodPacket.class);
+            if (response == null || response.isValid() == false)
                 continue;
             if (response.getAddress() != packet.getAddress()) {
                 continue;

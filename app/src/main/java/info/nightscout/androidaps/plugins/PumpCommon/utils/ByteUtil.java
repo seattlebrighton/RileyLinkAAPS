@@ -1,5 +1,6 @@
 package info.nightscout.androidaps.plugins.PumpCommon.utils;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +32,9 @@ public class ByteUtil {
         bytes[0] = highByte(b);
         bytes[1] = lowByte(b);
         return bytes;
+    }
+    public static byte[] getBytesFromInt(int value) {
+        return ByteBuffer.allocate(4).putInt(value).array();
     }
 
     /* For Reference: static void System.arraycopy(Object src, int srcPos, Object dest, int destPos, int length) */
