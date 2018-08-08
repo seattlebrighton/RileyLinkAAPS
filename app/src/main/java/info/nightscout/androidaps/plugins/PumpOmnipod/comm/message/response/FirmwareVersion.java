@@ -12,4 +12,8 @@ public class FirmwareVersion {
         this.patch = patch;
     }
 
+    @Override
+    public String toString() {
+        return "" + major + "." + minor + "." + patch;
+    }
 }

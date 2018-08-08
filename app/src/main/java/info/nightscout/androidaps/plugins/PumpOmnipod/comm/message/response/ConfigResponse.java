@@ -1,7 +1,5 @@
 package info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.response;
 
-import org.apache.commons.lang3.NotImplementedException;
-
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.MessageBlock;
 import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.MessageBlockType;
@@ -24,34 +22,40 @@ public class ConfigResponse extends MessageBlock {
         int length = rawData[1] + 2;
         switch (length) {
             case 0x17:
-                this.pairingState = PairingState.fromByte(rawData[9]);
-                this.pmVersion = new FirmwareVersion(rawData[2], rawData[3], rawData[4]);
-                this.piVersion = new FirmwareVersion(rawData[5], rawData[6], rawData[7]);
-                this.lot = ByteUtil.toInt(
-                        new Integer(rawData[10])
-                        , new Integer(rawData[11])
-                        , new Integer(rawData[12])
-                        , new Integer(rawData[13])
-                        , ByteUtil.BitConversion.BIG_ENDIAN);
-                this.tid = ByteUtil.toInt(
-                        new Integer(rawData[14])
-                        , new Integer(rawData[15])
-                        , new Integer(rawData[16])
-                        , new Integer(rawData[17])
-                        , ByteUtil.BitConversion.BIG_ENDIAN);
-                this.address = ByteUtil.toInt(
-                        new Integer(rawData[19])
-                        , new Integer(rawData[20])
-                        , new Integer(rawData[21])
-                        , new Integer(rawData[22])
-                        , ByteUtil.BitConversion.BIG_ENDIAN);
-
+                initializeMembers(2, rawData);
                 break;
             case 0x1D:
+                initializeMembers(9, rawData);
                 break;
         }
         this.rawData = ByteUtil.substring(rawData, 1, length - 1);
     }
+
+    private void initializeMembers(int startOffset, byte[] data) {
+        this.pairingState = PairingState.fromByte(data[startOffset + 7]);
+        this.pmVersion = new FirmwareVersion(data[startOffset + 0], data[startOffset + 1], data[startOffset + 2]);
+        this.piVersion = new FirmwareVersion(data[startOffset + 3], data[startOffset + 4], data[startOffset + 5]);
+        this.lot = ByteUtil.toInt(
+                new Integer(data[startOffset + 8])
+                , new Integer(data[startOffset + 9])
+                , new Integer(data[startOffset + 10])
+                , new Integer(data[11])
+                , ByteUtil.BitConversion.BIG_ENDIAN);
+        this.tid = ByteUtil.toInt(
+                new Integer(data[startOffset + 12])
+                , new Integer(data[startOffset + 13])
+                , new Integer(data[startOffset + 14])
+                , new Integer(data[startOffset + 15])
+                , ByteUtil.BitConversion.BIG_ENDIAN);
+        this.address = ByteUtil.toInt(
+                new Integer(data[startOffset + 17])
+                , new Integer(data[startOffset + 18])
+                , new Integer(data[startOffset + 19])
+                , new Integer(data[startOffset + 20])
+                , ByteUtil.BitConversion.BIG_ENDIAN);
+
+    }
+
     @Override
     public MessageBlockType getType() {
         return MessageBlockType.ConfigResponse;

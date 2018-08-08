@@ -67,10 +67,6 @@ public class OmnipodPacket implements RLMessage {
         return sequenceNumber;
     }
 
-    public boolean isErrorResponse() {
-        throw new NotImplementedException("isErrorResponse");
-    }
-
     public byte[] getEncodedMessage() {
         return encodedMessage;
     }

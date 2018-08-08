@@ -139,7 +139,7 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
             if (error.getErrorResponseType() == ErrorResponseType.BadNonce) {
                 //FIXME: Log that we have nonce out-of-sync
                 if (podState != null) {
-                    this.podState.ResyncNonce(error.getNonceSearchKey(), this.podState.CurrentNonce, message.getSequenceNumber());
+                    this.podState.ResyncNonce(error.getNonceSearchKey(), this.podState.getCurrentNonce(), message.getSequenceNumber());
                 }
             }
             //FIXME: we should log and throw the error

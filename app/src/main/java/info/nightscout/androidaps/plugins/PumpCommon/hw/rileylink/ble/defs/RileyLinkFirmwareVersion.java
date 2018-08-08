@@ -78,7 +78,6 @@ public enum RileyLinkFirmwareVersion {
                     return mapByVersion.get(versionKey);
                 } else {
                     return defaultToLowestMajorVersion(major); // just in case there is new release that we don't cover example: 2.3 etc
-                    //throw new NotImplementedException(String.format("RileyLink firmware version %d.%dnot supported", major, minor));
                 }
             }
         }

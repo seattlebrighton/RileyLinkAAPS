@@ -1,14 +1,22 @@
 package info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.response;
 
-import org.apache.commons.lang3.NotImplementedException;
-
+import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.MessageBlock;
 import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.MessageBlockType;
 
 public class ErrorResponse extends MessageBlock {
     public ErrorResponse(byte[] rawData) {
         super(rawData);
-        throw new NotImplementedException("ErrorResponse");
+        this.errorResponseType = ErrorResponseType.fromByte(rawData[2]);
+        this.nonceSearchKey = ByteUtil.toInt(
+                new Integer(rawData[3])
+                , new Integer(rawData[4])
+                , new Integer(rawData[5])
+                , new Integer(rawData[6])
+                , ByteUtil.BitConversion.BIG_ENDIAN);
+        int length = rawData[1] + 2;
+        this.rawData = ByteUtil.substring(rawData, 1, length - 1);
+
     }
 
     @Override
