@@ -38,7 +38,6 @@ public abstract class RileyLinkCommunicationManager {
     protected RileyLinkServiceData rileyLinkServiceData;
     protected RileyLinkTargetFrequency targetFrequency;
     long nextWakeUpRequired = 0L;
-    long nextWakeUpRequired = 0L;
     private double[] scanFrequencies;
     // internal flag
     private boolean showPumpMessages = true;
