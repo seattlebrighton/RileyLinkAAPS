@@ -385,6 +385,10 @@ public class RileyLinkMedtronicService extends RileyLinkService {
                         reconfigureRileyLink(deviceAddress);
                     }
                     break;
+
+                case "WakeAndTune":
+                    ServiceTaskExecutor.startTask(new WakeAndTuneTask());
+
                 default:
                     LOG.error("handleIncomingServiceTransport: Failed to handle service command '" + serviceTransport.getOriginalCommandName() + "'");
                     break;

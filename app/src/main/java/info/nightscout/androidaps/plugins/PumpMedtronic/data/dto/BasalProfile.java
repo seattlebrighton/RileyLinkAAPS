@@ -33,7 +33,7 @@ public class BasalProfile {
     private static final Logger LOG = LoggerFactory.getLogger(BasalProfile.class);
 
     private static final boolean DEBUG_BASALPROFILE = false;
-    protected static final int MAX_RAW_DATA_SIZE = (48 * 3) + 1;
+    public static final int MAX_RAW_DATA_SIZE = (48 * 3) + 1;
     protected byte[] mRawData; // store as byte array to make transport (via parcel) easier
 
 
@@ -161,6 +161,10 @@ public class BasalProfile {
         int r, st;
 
         for(int i = 0; i < mRawData.length - 2; i += 3) {
+
+            if ((mRawData[i] == 0) && (mRawData[i + 1] == 0) && (mRawData[i + 2] == 0))
+                break;
+
             r = MedtronicUtil.makeUnsignedShort(mRawData[i + 1], mRawData[i]); //readUnsignedByte(mRawData[i]);
             // What is mRawData[i+1]? Not used in decocare.
             st = readUnsignedByte(mRawData[i + 2]);

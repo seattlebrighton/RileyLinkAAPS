@@ -53,7 +53,7 @@ public class BasalProfileUTest {
                 Log.d(TAG, String.format("testParser entry #%d: rate: %.3f, start %d:%d", i, e.rate, e.startTime.getHourOfDay(), e.startTime.getMinuteOfHour()));
             }
 
-            Assert.assertEquals(4, entries.size());
+            Assert.assertEquals(21, entries.size());
             return;
         }
     }

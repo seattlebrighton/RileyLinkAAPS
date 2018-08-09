@@ -23,7 +23,7 @@ public class PumpSettingDTO {
 
     @Override
     public String toString() {
-        return "key=" + key + ",value=" + value + ",group=" + configurationGroup.name();
+        return "PumpSettingDTO [key=" + key + ",value=" + value + ",group=" + configurationGroup.name() + "]";
     }
 
 }

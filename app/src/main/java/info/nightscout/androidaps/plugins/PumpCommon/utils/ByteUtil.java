@@ -70,6 +70,14 @@ public class ByteUtil {
     }
 
 
+    public static byte[] substring(byte[] a, int start) {
+        int len = a.length - start;
+        byte[] rval = new byte[len];
+        System.arraycopy(a, start, rval, 0, len);
+        return rval;
+    }
+
+
     public static String shortHexString(byte[] ra) {
         String rval = "";
         if (ra == null) {

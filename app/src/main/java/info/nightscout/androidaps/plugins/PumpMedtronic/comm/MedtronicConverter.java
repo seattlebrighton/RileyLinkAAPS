@@ -1,6 +1,5 @@
 package info.nightscout.androidaps.plugins.PumpMedtronic.comm;
 
-import com.gxwtech.roundtrip2.util.StringUtil;
 
 import org.joda.time.IllegalFieldValueException;
 import org.joda.time.LocalDateTime;
@@ -13,6 +12,7 @@ import java.util.Map;
 
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.HexDump;
+import info.nightscout.androidaps.plugins.PumpCommon.utils.StringUtil;
 import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.BasalProfile;
 import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.BatteryStatusDTO;
 import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.PumpSettingDTO;
@@ -57,7 +57,9 @@ public class MedtronicConverter {
                 return decodeBatteryStatus(rawContent);
             }
 
-            case GetBasalProfileSTD: {
+            case GetBasalProfileSTD:
+            case GetBasalProfileA:
+            case GetBasalProfileB: {
                 return new BasalProfile(rawContent);
             }
 
@@ -108,7 +110,6 @@ public class MedtronicConverter {
 
         for(int i = 0; i < rep.length; i += 3) {
 
-
             vald = MedtronicUtil.decodeBasalInsulin(rep[i + 1], rep[i]);
 
             time_x = rep[i + 2];
@@ -118,13 +119,6 @@ public class MedtronicConverter {
             if ((i != 0) && (time_x == 0)) {
                 break;
             }
-
-            //String value = i18nControl.getMessage("CFG_BASE_FROM") + "=" + atd.getTimeString() + ", "
-            //        + i18nControl.getMessage("CFG_BASE_AMOUNT") + "=" + vald;
-
-            //writeSetting(key, value, value, PumpConfigurationGroup.Basal);
-
-
         }
 
         return basalProfile;
@@ -231,6 +225,7 @@ public class MedtronicConverter {
         addSettingToMap("PCFG_MAX_BASAL", "" + decodeBasalInsulin(ByteUtil.makeUnsignedShort(rd[getSettingIndexMaxBasal()], rd[getSettingIndexMaxBasal() + 1])), PumpConfigurationGroup.Basal, map);
         addSettingToMap("CFG_BASE_CLOCK_MODE", rd[getSettingIndexTimeDisplayFormat()] == 0 ? "12h" : "24h", PumpConfigurationGroup.General, map);
         addSettingToMap("PCFG_INSULIN_CONCENTRATION", "" + (rd[9] != 0 ? 50 : 100), PumpConfigurationGroup.Insulin, map);
+        LOG.debug("Insulin concentration: " + rd[9]);
         addSettingToMap("PCFG_BASAL_PROFILES_ENABLED", parseResultEnable(rd[10]), PumpConfigurationGroup.Basal, map);
 
         if (rd[10] == 1) {
@@ -314,7 +309,7 @@ public class MedtronicConverter {
 
 
     public float getStrokesPerUnit(boolean isBasal) {
-        return isBasal ? 40.0f : 10.0f;
+        return isBasal ? 40.0f : pumpModel.getBolusStrokes();
     }
 
 

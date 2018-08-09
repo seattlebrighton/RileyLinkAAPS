@@ -172,6 +172,7 @@ public abstract class RileyLinkCommunicationManager {
         }
     }
 
+    private static final int SCAN_TIMEOUT = 1500;
 
     /**
      * Do device connection, with wakeup
@@ -179,9 +180,6 @@ public abstract class RileyLinkCommunicationManager {
      * @return
      */
     public abstract boolean tryToConnectToDevice();
-
-
-    private static final int SCAN_TIMEOUT = 1500;
 
 
     // FIXME sorting, and time display

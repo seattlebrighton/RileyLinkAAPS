@@ -357,7 +357,7 @@ public class ShowAAPS2Activity extends AppCompatActivity {
             case "RefreshData.GetSettings": {
                 Map<String, PumpSettingDTO> settings = (Map<String, PumpSettingDTO>) data;
 
-                putOnDisplay("Settings on pump:");
+                putOnDisplay("Settings on pump: (" + settings.size() + "/" + settings.values().size() + ")");
                 LOG.debug("Settings on front: " + settings);
                 for(PumpSettingDTO entry : settings.values()) {
                     putOnDisplay(entry.key + " = " + entry.value);
