@@ -78,7 +78,6 @@ public class PumpMessage implements RLMessage {
         }
     }
 
-
     @Override
     public byte[] getTxData() {
         byte[] rval = ByteUtil.concat(new byte[]{(byte) packetType.getValue()}, address);
