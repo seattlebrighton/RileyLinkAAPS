@@ -5,10 +5,6 @@ import android.content.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
 
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkCommunicationManager;
@@ -16,8 +12,6 @@ import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RFSpy;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RLMessage;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RLMessageType;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkTargetFrequency;
-
-
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.PumpOmnipod.comm.command.AssignAddressCommand;
 import info.nightscout.androidaps.plugins.PumpOmnipod.comm.command.ConfigResponse;
@@ -34,26 +28,26 @@ import info.nightscout.androidaps.plugins.PumpOmnipod.defs.PodState;
 public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
 
     private static final int defaultAddress = 0xFFFFFFFF;
+    private static final Logger LOG = LoggerFactory.getLogger(OmnipodCommunicationManager.class);
+    static OmnipodCommunicationManager omnipodCommunicationManager;
     private int messageNumber = 0;
     private int packetNumber = 0;
     private PodState podState;
-
-    private static final Logger LOG = LoggerFactory.getLogger(OmnipodCommunicationManager.class);
     private boolean showPumpMessages;
-    static OmnipodCommunicationManager omnipodCommunicationManager;
 
     public OmnipodCommunicationManager(Context context, RFSpy rfspy) {
         super(context, rfspy, RileyLinkTargetFrequency.Omnipod);
         omnipodCommunicationManager = this;
     }
 
+    public static OmnipodCommunicationManager getInstance() {
+        return omnipodCommunicationManager;
+    }
 
     @Override
     protected void configurePumpSpecificSettings() {
 
     }
-
-
 
     @Override
     public boolean tryToConnectToDevice() {
@@ -67,25 +61,18 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
     }
 
 
-    //FIXME: This one should be refactored as it sends/listens to raw packets and not messages
-    @Override
-    public <E extends RLMessage> E createResponseMessage(byte[] payload, Class<E> clazz) {
-        OmnipodPacket pumpMessage = new OmnipodPacket();
-        return (E)pumpMessage;
-    }
-
-
 //    // All pump communications go through this function.
 //    protected PodMessage sendAndListen(RLMessage msg, int timeout_ms) {
 //
 //        return sendAndListen(msg, timeout_ms, PodMessage.class);
 //    }
 
-
-    public static OmnipodCommunicationManager getInstance() {
-        return omnipodCommunicationManager;
+    //FIXME: This one should be refactored as it sends/listens to raw packets and not messages
+    @Override
+    public <E extends RLMessage> E createResponseMessage(byte[] payload, Class<E> clazz) {
+        OmnipodPacket pumpMessage = new OmnipodPacket();
+        return (E) pumpMessage;
     }
-
 
     protected <T extends MessageBlock> T exchangeMessages(OmnipodMessage message, Integer addressOverride, Integer ackAddressOverride) {
         int packetAddress = defaultAddress;
@@ -97,9 +84,9 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
         Boolean firstPacket = true;
         byte[] encodedMessage = message.getEncoded();
         OmnipodPacket response = null;
-        while(encodedMessage.length > 0) {
-            PacketType packetType = firstPacket? PacketType.Pdm : PacketType.Con;
-            OmnipodPacket packet = new OmnipodPacket(packetAddress, packetType,packetNumber, encodedMessage);
+        while (encodedMessage.length > 0) {
+            PacketType packetType = firstPacket ? PacketType.Pdm : PacketType.Con;
+            OmnipodPacket packet = new OmnipodPacket(packetAddress, packetType, packetNumber, encodedMessage);
             byte[] dataToSend = packet.getTxData();
             encodedMessage = ByteUtil.substring(encodedMessage, dataToSend.length - 1, encodedMessage.length - dataToSend.length);
             firstPacket = false;
@@ -112,7 +99,7 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
         }
         OmnipodMessage receivedMessage = null;
         byte[] receivedData = response.getTxData();
-        while(receivedMessage == null) {
+        while (receivedMessage == null) {
             receivedMessage = OmnipodMessage.TryDecode(receivedData);
             if (receivedMessage == null) {
                 OmnipodPacket ackForCon = makeAckPacket(packetAddress, ackAddressOverride);
@@ -126,8 +113,6 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
         incrementMessageNumber(2);
 
         ackUntilQuiet(packetAddress, ackAddressOverride);
-        
-
 
 
         return null;
@@ -158,10 +143,8 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
         Random rnd = new Random();
         int newAddress = rnd.nextInt();
         AssignAddressCommand assignAddress = new AssignAddressCommand(newAddress);
-        OmnipodMessage assignAddressMessage = new OmnipodMessage(defaultAddress, new MessageBlock[] {assignAddress}, messageNumber);
+        OmnipodMessage assignAddressMessage = new OmnipodMessage(defaultAddress, new MessageBlock[]{assignAddress}, messageNumber);
         ConfigResponse config = exchangeMessages(assignAddressMessage, defaultAddress, newAddress);
-
-
 
 
         return null;

@@ -1,8 +1,7 @@
 package info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data;
 
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.command.RileyLinkCommand;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.command.RileyLinkCommandType;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RFSpyRLResponse;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.command.RileyLinkCommand;
 
 /**
  * Created by geoff on 5/26/16.
@@ -18,7 +17,6 @@ public class RFSpyResponse {
     protected byte[] raw;
     protected RadioResponse radioResponse;
     private RileyLinkCommand command;
-
 
 
     public RFSpyResponse() {
@@ -76,6 +74,7 @@ public class RFSpyResponse {
         }
         return false;
     }
+
     public boolean isInvalidParam() {
         if ((raw.length == 1) || (raw.length == 2)) {
             if (raw[0] == (byte) 0x11) {
@@ -84,6 +83,7 @@ public class RFSpyResponse {
         }
         return false;
     }
+
     public boolean isUnknownCommand() {
         if ((raw.length == 1) || (raw.length == 2)) {
             if (raw[0] == (byte) 0x22) {
@@ -96,7 +96,7 @@ public class RFSpyResponse {
 
     public boolean isOK() {
         if ((raw.length == 1) || (raw.length == 2)) {
-            if (raw[0] == (byte) 0x01 || raw[0] == (byte)0xDD) {
+            if (raw[0] == (byte) 0x01 || raw[0] == (byte) 0xDD) {
                 return true;
             }
         }

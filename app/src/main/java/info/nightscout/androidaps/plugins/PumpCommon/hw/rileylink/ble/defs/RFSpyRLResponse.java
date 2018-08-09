@@ -15,12 +15,11 @@ public enum RFSpyRLResponse {
     Success(0xDD),
     OldSuccess(0x01),
     InvalidParam(0x11),
-    UnknownCommand(0x22),
-    ;
+    UnknownCommand(0x22),;
     byte value;
 
     RFSpyRLResponse(int value) {
-        this.value = (byte)value;
+        this.value = (byte) value;
     }
 
     public static RFSpyRLResponse fromByte(byte input) {

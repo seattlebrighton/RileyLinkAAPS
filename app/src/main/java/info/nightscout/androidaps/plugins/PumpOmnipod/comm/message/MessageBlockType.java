@@ -19,11 +19,7 @@ public enum MessageBlockType {
     byte value;
 
     MessageBlockType(int value) {
-        this.value = (byte)value;
-    }
-
-    public byte getValue() {
-        return value;
+        this.value = (byte) value;
     }
 
     public static MessageBlockType fromByte(byte input) {
@@ -33,5 +29,9 @@ public enum MessageBlockType {
             }
         }
         return null;
+    }
+
+    public byte getValue() {
+        return value;
     }
 }

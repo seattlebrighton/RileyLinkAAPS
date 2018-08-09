@@ -18,7 +18,6 @@ public class SendAndListen extends RileyLinkCommand {
     private RadioPacket packetToSend;
 
 
-
     public SendAndListen(
             RileyLinkFirmwareVersion version
             , byte sendChannel
@@ -82,7 +81,7 @@ public class SendAndListen extends RileyLinkCommand {
             bytes.add(delayBuff[2]);
             bytes.add(delayBuff[3]);
         } else {
-            bytes.add((byte)delayBetweenPackets_ms);
+            bytes.add((byte) delayBetweenPackets_ms);
         }
         bytes.add(this.listenChannel);
         byte[] timeoutBuff = ByteBuffer.allocate(4).putInt(timeout_ms).array();
@@ -95,7 +94,7 @@ public class SendAndListen extends RileyLinkCommand {
         }
 
         byte[] rawBytesToSend = packetToSend.getEncoded();
-        for(int i = 0; i < rawBytesToSend.length; i++) {
+        for (int i = 0; i < rawBytesToSend.length; i++) {
             bytes.add(rawBytesToSend[i]);
         }
 

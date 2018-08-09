@@ -16,7 +16,7 @@ public class SetPreamble extends RileyLinkCommand {
             throw new NotImplementedException("Old firmware does not support SetPreamble command");
         }
 
-            if (preamble < 0 || preamble > 0xFFFF) {
+        if (preamble < 0 || preamble > 0xFFFF) {
             throw new Exception("preamble value is out of range");
         }
         this.preamble = preamble;

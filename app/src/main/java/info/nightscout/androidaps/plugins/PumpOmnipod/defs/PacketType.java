@@ -10,11 +10,7 @@ public enum PacketType {
     byte value;
 
     PacketType(int value) {
-        this.value = (byte)value;
-    }
-
-    public byte getValue() {
-        return value;
+        this.value = (byte) value;
     }
 
     public static PacketType fromByte(byte input) {
@@ -24,6 +20,10 @@ public enum PacketType {
             }
         }
         return null;
+    }
+
+    public byte getValue() {
+        return value;
     }
 
 }

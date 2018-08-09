@@ -19,8 +19,7 @@ public enum RileyLinkCommandType {
     SetSWEncoding(11),
     SetPreamble(12),
     ResetRadioConfig(13),
-    GetStatistics(14),
-    ;
+    GetStatistics(14),;
 
     public byte code;
 

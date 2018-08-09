@@ -13,14 +13,13 @@ import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.GattAttributes;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.RFSpyResponse;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.RadioPacket;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.RadioResponse;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.CC111XRegister;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkFirmwareVersion;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.command.RileyLinkCommand;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.command.RileyLinkCommandType;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RLSoftwareEncodingType;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RXFilterMode;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkFirmwareVersion;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkTargetFrequency;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.command.RileyLinkCommand;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.command.RileyLinkCommandType;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.command.SendAndListen;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.command.SetPreamble;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.command.SetSoftwareEncoding;
@@ -54,12 +53,14 @@ public class RFSpy {
         this.rileyLinkBle = rileyLinkBle;
         reader = new RFSpyReader(rileyLinkBle);
     }
-public RileyLinkFirmwareVersion getRLVersionCached() {
+
+    public RileyLinkFirmwareVersion getRLVersionCached() {
         return firmwareVersion;
-}
-public String getBLEVersionCached() {
+    }
+
+    public String getBLEVersionCached() {
         return bleVersion;
-}
+    }
 
 
     // Call this after the RL services are discovered.
@@ -81,7 +82,7 @@ public String getBLEVersionCached() {
         //So that we can adjust other commands accordingly afterwords
         byte[] getVersionRaw = getByteArray(RileyLinkCommandType.GetVersion.code);
         byte[] response = writeToDataRaw(getVersionRaw, 5000);
-        if (response != null && response[0] == (byte)0xDD) {
+        if (response != null && response[0] == (byte) 0xDD) {
 
             //This throws an exception if version not supported, we should treat exceptions somehow
             // and show "Not supported firmware" message in UI
@@ -136,6 +137,7 @@ public String getBLEVersionCached() {
         return rawResponse;
 
     }
+
     // The caller has to know how long the RFSpy will be busy with what was sent to it.
     private RFSpyResponse writeToData(RileyLinkCommand command, int responseTimeout_ms) {
 
@@ -217,7 +219,7 @@ public String getBLEVersionCached() {
 //    }
 
     public RFSpyResponse transmitThenReceive(RadioPacket pkt, byte sendChannel, byte repeatCount, byte delay_ms, byte listenChannel, int timeout_ms, byte retryCount) {
-        return transmitThenReceive( pkt,  sendChannel,  repeatCount,  delay_ms,  listenChannel,  timeout_ms,  retryCount, 0);
+        return transmitThenReceive(pkt, sendChannel, repeatCount, delay_ms, listenChannel, timeout_ms, retryCount, 0);
 
     }
 
@@ -237,7 +239,7 @@ public String getBLEVersionCached() {
                 , listenChannel
                 , timeout_ms
                 , retryCount
-                ,pkt
+                , pkt
         );
 
         return writeToData(command, sendDelay + receiveDelay + EXPECTED_MAX_BLUETOOTH_LATENCY_MS);
@@ -248,7 +250,6 @@ public String getBLEVersionCached() {
         RFSpyResponse resp = writeToData(new UpdateRegister(firmwareVersion, reg, (byte) val), EXPECTED_MAX_BLUETOOTH_LATENCY_MS);
         return resp;
     }
-
 
 
     public void setBaseFrequency(double freqMHz) {
@@ -318,7 +319,7 @@ public String getBLEVersionCached() {
                 r = updateRegister(CC111XRegister.test0, 0x09);
                 r = updateRegister(CC111XRegister.paTable0, 0x84);
                 r = updateRegister(CC111XRegister.sync1, 0xA5);
-                r = updateRegister(CC111XRegister.sync0,0x5A );
+                r = updateRegister(CC111XRegister.sync0, 0x5A);
 
                 r = setSoftwareEncoding(RLSoftwareEncodingType.Manchester);
                 RileyLinkUtil.setEncoding(RLSoftwareEncodingType.Manchester);
