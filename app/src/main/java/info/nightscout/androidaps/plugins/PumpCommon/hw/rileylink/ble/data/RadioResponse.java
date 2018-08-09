@@ -40,8 +40,7 @@ public class RadioResponse {
 
     public boolean isValid() {
 
-        if (command!=null && !command.isEncoded())
-        {
+        if (command != null && !command.isEncoded()) {
             return true;
         }
 
@@ -71,7 +70,7 @@ public class RadioResponse {
         byte[] encodedPayload = ByteUtil.substring(rxData, 2, rxData.length - 2);
         try {
 
-            boolean isEncoded = command==null || command.isEncoded();
+            boolean isEncoded = command == null || command.isEncoded();
 
             if (isEncoded) {
                 byte[] decodeThis = RFTools.decode4b6b(encodedPayload);
@@ -82,8 +81,7 @@ public class RadioResponse {
                 if (receivedCRC != calculatedCRC) {
                     LOG.error(String.format("RadioResponse: CRC mismatch, calculated 0x%02x, received 0x%02x", calculatedCRC, receivedCRC));
                 }
-            }
-            else {
+            } else {
                 decodedOK = true;
                 decodedPayload = encodedPayload;
             }

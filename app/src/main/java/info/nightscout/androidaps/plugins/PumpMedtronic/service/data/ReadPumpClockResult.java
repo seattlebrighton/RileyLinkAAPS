@@ -25,15 +25,6 @@ public class ReadPumpClockResult extends ServiceResult {
         map.putString("ServiceMessageType", "ReadPumpClockResult");
     }
 
-
-    public void setTime(LocalDateTime pumpTime) {
-        Bundle map = getMap();
-        DateTimeFormatter fmt = DateTimeFormat.forStyle("FF");
-        map.putString("PumpTime", fmt.print(pumpTime));
-        setMap(map);
-    }
-
-
     public LocalDateTime getTime() {
         LocalDateTime rval = new LocalDateTime(1900, 1, 1, 1, 1);
         Bundle map = getMap();
@@ -51,6 +42,12 @@ public class ReadPumpClockResult extends ServiceResult {
         return rval;
     }
 
+    public void setTime(LocalDateTime pumpTime) {
+        Bundle map = getMap();
+        DateTimeFormatter fmt = DateTimeFormat.forStyle("FF");
+        map.putString("PumpTime", fmt.print(pumpTime));
+        setMap(map);
+    }
 
     public String getTimeString() {
         Bundle map = getMap();

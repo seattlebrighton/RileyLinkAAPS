@@ -111,7 +111,7 @@ public class PumpMessage implements RLMessage {
 
         // check Old Way
         boolean oldWay = false;
-        for(int i = (length + 1); i < data.length; i++) {
+        for (int i = (length + 1); i < data.length; i++) {
             if (data[i] != 0x00) {
                 oldWay = true;
             }

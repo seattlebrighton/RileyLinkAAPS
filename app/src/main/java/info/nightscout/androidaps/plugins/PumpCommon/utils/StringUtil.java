@@ -25,7 +25,7 @@ public class StringUtil {
         int sz = ra.size();
         String rval = "";
         int n;
-        for(n = 0; n < sz; n++) {
+        for (n = 0; n < sz; n++) {
             rval = rval + ra.get(n);
             if (n < sz - 1) {
                 rval = rval + joiner;

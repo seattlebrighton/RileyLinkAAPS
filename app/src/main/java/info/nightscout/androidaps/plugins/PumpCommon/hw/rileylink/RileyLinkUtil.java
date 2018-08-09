@@ -36,7 +36,7 @@ import info.nightscout.androidaps.plugins.PumpMedtronic.driver.MedtronicPumpStat
 public class RileyLinkUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(RileyLinkUtil.class);
-
+    static ServiceTask currentTask;
     private static Context context;
     private static RileyLinkBLE rileyLinkBLE;
     private static RileyLinkServiceData rileyLinkServiceData;
@@ -47,37 +47,31 @@ public class RileyLinkUtil {
     private static RileyLinkCommunicationManager rileyLinkCommunicationManager;
     private static RileyLinkIPCConnection rileyLinkIPCConnection;
     private static MedtronicDeviceType medtronicPumpModel;
-    private static RileyLinkTargetFrequency rileyLinkTargetFrequency;
     // BAD dependencies in Classes: RileyLinkService
 
     // Broadcasts: RileyLinkBLE, RileyLinkService,
-
+    private static RileyLinkTargetFrequency rileyLinkTargetFrequency;
 
     public static void setContext(Context contextIn) {
         context = contextIn;
     }
-
 
     public static void sendBroadcastMessage(String message) {
         Intent intent = new Intent(message);
         LocalBroadcastManager.getInstance(RileyLinkUtil.context).sendBroadcast(intent);
     }
 
+    public static RileyLinkServiceState getServiceState() {
+        return RileyLinkUtil.rileyLinkServiceData.serviceState;
+    }
 
     public static void setServiceState(RileyLinkServiceState newState) {
         setServiceState(newState, null);
     }
 
-
-    public static RileyLinkServiceState getServiceState() {
-        return RileyLinkUtil.rileyLinkServiceData.serviceState;
-    }
-
-
     public static RileyLinkError getError() {
         return RileyLinkUtil.rileyLinkServiceData.errorCode;
     }
-
 
     public static void setServiceState(RileyLinkServiceState newState, RileyLinkError errorCode) {
         RileyLinkUtil.rileyLinkServiceData.serviceState = newState;
@@ -88,85 +82,67 @@ public class RileyLinkUtil {
         RileyLinkUtil.historyRileyLink.add(new RLHistoryItem(rileyLinkServiceData.serviceState, rileyLinkServiceData.errorCode));
     }
 
+    public static RileyLinkBLE getRileyLinkBLE() {
+        return RileyLinkUtil.rileyLinkBLE;
+    }
 
     public static void setRileyLinkBLE(RileyLinkBLE rileyLinkBLEIn) {
         RileyLinkUtil.rileyLinkBLE = rileyLinkBLEIn;
     }
 
-
-    public static RileyLinkBLE getRileyLinkBLE() {
-        return RileyLinkUtil.rileyLinkBLE;
-    }
-
-
     public static RileyLinkServiceData getRileyLinkServiceData() {
         return RileyLinkUtil.rileyLinkServiceData;
     }
-
 
     public static void setRileyLinkServiceData(RileyLinkServiceData rileyLinkServiceData) {
         RileyLinkUtil.rileyLinkServiceData = rileyLinkServiceData;
     }
 
-
     public static void setPumpType(PumpType pumpType) {
         RileyLinkUtil.pumpType = pumpType;
-    }
-
-
-    public static void setPumpStatus(MedtronicPumpStatus medtronicPumpStatus) {
-
-        RileyLinkUtil.medtronicPumpStatus = medtronicPumpStatus;
     }
 
     //    public static void addHistoryEntry(RLHistoryItem rlHistoryItem) {
     //        historyRileyLink.add(rlHistoryItem);
     //    }
 
+    public static void setPumpStatus(MedtronicPumpStatus medtronicPumpStatus) {
+
+        RileyLinkUtil.medtronicPumpStatus = medtronicPumpStatus;
+    }
 
     public static MedtronicPumpStatus getMedtronicPumpStatus() {
 
         return RileyLinkUtil.medtronicPumpStatus;
     }
 
-
     public static boolean hasPumpBeenTunned() {
         return RileyLinkUtil.rileyLinkServiceData.tuneUpDone;
     }
-
 
     public static void tuneUpPump() {
         RileyLinkUtil.rileyLinkService.doTuneUpDevice(); // FIXME thread
     }
 
+    public static RileyLinkService getRileyLinkService() {
+        return RileyLinkUtil.rileyLinkService;
+    }
 
     public static void setRileyLinkService(RileyLinkService rileyLinkService) {
         RileyLinkUtil.rileyLinkService = rileyLinkService;
     }
 
-
-    public static RileyLinkService getRileyLinkService() {
-        return RileyLinkUtil.rileyLinkService;
+    public static RileyLinkCommunicationManager getRileyLinkCommunicationManager() {
+        return RileyLinkUtil.rileyLinkCommunicationManager;
     }
-
 
     public static void setRileyLinkCommunicationManager(RileyLinkCommunicationManager rileyLinkCommunicationManager) {
         RileyLinkUtil.rileyLinkCommunicationManager = rileyLinkCommunicationManager;
     }
 
-
-    public static RileyLinkCommunicationManager getRileyLinkCommunicationManager() {
-        return RileyLinkUtil.rileyLinkCommunicationManager;
-    }
-
-
     public static boolean sendNotification(ServiceNotification notification, Integer clientHashcode) {
         return RileyLinkUtil.rileyLinkService.sendNotification(notification, clientHashcode);
     }
-
-
-    static ServiceTask currentTask;
-
 
     public static void setCurrentTask(ServiceTask task) {
         if (currentTask == null) {
@@ -211,6 +187,9 @@ public class RileyLinkUtil {
         return RileyLinkUtil.medtronicPumpModel != null;
     }
 
+    public static MedtronicDeviceType getMedtronicPumpModel() {
+        return RileyLinkUtil.medtronicPumpModel;
+    }
 
     public static void setMedtronicPumpModel(MedtronicDeviceType medtronicPumpModel) {
         if (medtronicPumpModel != null && medtronicPumpModel != MedtronicDeviceType.Unknown_Device) {
@@ -218,18 +197,11 @@ public class RileyLinkUtil {
         }
     }
 
-
-    public static MedtronicDeviceType getMedtronicPumpModel() {
-        return RileyLinkUtil.medtronicPumpModel;
+    public static RileyLinkTargetFrequency getRileyLinkTargetFrequency() {
+        return RileyLinkUtil.rileyLinkTargetFrequency;
     }
-
 
     public static void setRileyLinkTargetFrequency(RileyLinkTargetFrequency rileyLinkTargetFrequency) {
         RileyLinkUtil.rileyLinkTargetFrequency = rileyLinkTargetFrequency;
-    }
-
-
-    public static RileyLinkTargetFrequency getRileyLinkTargetFrequency() {
-        return RileyLinkUtil.rileyLinkTargetFrequency;
     }
 }

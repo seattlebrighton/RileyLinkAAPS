@@ -59,17 +59,14 @@ public class PumpHistoryEntry extends MedtronicHistoryEntry {
             return opCode;
     }
 
+    public void setOpCode(Integer opCode) {
+        this.opCode = opCode;
+    }
 
     @Override
     public String getToStringStart() {
         return "PumpHistoryRecord [type=" + entryType.name() + " [" + getOpCode() + ", 0x" + HexDump.getCorrectHexValue((byte) getOpCode()) + "]";
     }
-
-
-    public void setOpCode(Integer opCode) {
-        this.opCode = opCode;
-    }
-
 
     public PumpTimeStampedRecord getHistoryEntryDetails() {
         return historyEntryDetails;

@@ -184,27 +184,7 @@ public enum MedtronicCommandType implements Serializable //, MinimedCommandTypeI
 
     ;
 
-    public byte commandCode = 0;
-    private int recordLength = 64;
-
-    MinimedTargetType targetType;
-    MedtronicDeviceType devices;
-
-    public String commandDescription = "";
-
-    public byte[] commandParameters = null;
-    public int commandParametersCount = 0;
-
-    public int maxRecords = 1;
-    public int command_type = 0;
-    public int allowedRetries = 2;
-    public int maxAllowedTime = 2000;
-    public MinimedCommandParameterType parameterType;
-    public int minimalBufferSizeToStartReading = 14;
-    public int expectedLength = 0;
-
     static Map<Byte, MedtronicCommandType> mapByCode;
-
 
     static {
         MedtronicCommandType.RFPowerOn.maxAllowedTime = 17000;
@@ -214,10 +194,25 @@ public enum MedtronicCommandType implements Serializable //, MinimedCommandTypeI
 
         mapByCode = new HashMap<>();
 
-        for(MedtronicCommandType medtronicCommandType : values()) {
+        for (MedtronicCommandType medtronicCommandType : values()) {
             mapByCode.put(medtronicCommandType.getCommandCode(), medtronicCommandType);
         }
     }
+
+    public byte commandCode = 0;
+    public String commandDescription = "";
+    public byte[] commandParameters = null;
+    public int commandParametersCount = 0;
+    public int maxRecords = 1;
+    public int command_type = 0;
+    public int allowedRetries = 2;
+    public int maxAllowedTime = 2000;
+    public MinimedCommandParameterType parameterType;
+    public int minimalBufferSizeToStartReading = 14;
+    public int expectedLength = 0;
+    MinimedTargetType targetType;
+    MedtronicDeviceType devices;
+    private int recordLength = 64;
 
 
     MedtronicCommandType(int code, String description, MinimedTargetType targetType, MedtronicDeviceType devices, MinimedCommandParameterType parameterType) {
@@ -283,7 +278,7 @@ public enum MedtronicCommandType implements Serializable //, MinimedCommandTypeI
     private static HashMap<MedtronicDeviceType, String> getDeviceTypesArray(MedtronicDeviceType... types) {
         HashMap<MedtronicDeviceType, String> hashMap = new HashMap<MedtronicDeviceType, String>();
 
-        for(MedtronicDeviceType type : types) {
+        for (MedtronicDeviceType type : types) {
             hashMap.put(type, null);
         }
 
@@ -294,7 +289,7 @@ public enum MedtronicCommandType implements Serializable //, MinimedCommandTypeI
     private static byte[] getByteArray(int... data) {
         byte[] array = new byte[data.length];
 
-        for(int i = 0; i < data.length; i++) {
+        for (int i = 0; i < data.length; i++) {
             array[i] = (byte) data[i];
         }
 
@@ -351,57 +346,6 @@ public enum MedtronicCommandType implements Serializable //, MinimedCommandTypeI
         }
     }
 
-
-    /**
-     * Get Full Command Description
-     *
-     * @return command description
-     */
-    public String getFullCommandDescription() {
-        return "Command [name=" + this.name() + ", id=" + this.commandCode + ",description=" + this.commandDescription + "] ";
-    }
-
-
-    public boolean canReturnData() {
-        System.out.println("CanReturnData: ]id=" + this.name() + "max=" + this.maxRecords + "recLen=" + recordLength);
-        return (this.maxRecords * this.recordLength) > 0;
-    }
-
-
-    public int getRecordLength() {
-        return recordLength;
-    }
-
-
-    public int getMaxRecords() {
-        return maxRecords;
-    }
-
-
-    public byte getCommandCode() {
-        return commandCode;
-    }
-
-
-    public int getCommandParametersCount() {
-        if (this.commandParameters == null) {
-            return 0;
-        } else {
-            return this.commandParameters.length;
-        }
-    }
-
-
-    public byte[] getCommandParameters() {
-        return commandParameters;
-    }
-
-
-    public boolean hasCommandParameters() {
-        return (getCommandParametersCount() > 0);
-    }
-
-
     public static MessageBody constructMessageBody(MedtronicCommandType messageType, byte[] bodyData) {
         switch (messageType) {
             case CommandACK:
@@ -410,7 +354,6 @@ public enum MedtronicCommandType implements Serializable //, MinimedCommandTypeI
                 return new UnknownMessageBody(bodyData);
         }
     }
-
 
     public static MedtronicCommandType getSettings(MedtronicDeviceType medtronicPumpModel) {
         if (medtronicPumpModel == MedtronicDeviceType.Medtronic_511)
@@ -421,16 +364,57 @@ public enum MedtronicCommandType implements Serializable //, MinimedCommandTypeI
             return MedtronicCommandType.Settings;
     }
 
+    /**
+     * Get Full Command Description
+     *
+     * @return command description
+     */
+    public String getFullCommandDescription() {
+        return "Command [name=" + this.name() + ", id=" + this.commandCode + ",description=" + this.commandDescription + "] ";
+    }
+
+    public boolean canReturnData() {
+        System.out.println("CanReturnData: ]id=" + this.name() + "max=" + this.maxRecords + "recLen=" + recordLength);
+        return (this.maxRecords * this.recordLength) > 0;
+    }
+
+    public int getRecordLength() {
+        return recordLength;
+    }
+
+    public int getMaxRecords() {
+        return maxRecords;
+    }
+
+    public byte getCommandCode() {
+        return commandCode;
+    }
+
+    public int getCommandParametersCount() {
+        if (this.commandParameters == null) {
+            return 0;
+        } else {
+            return this.commandParameters.length;
+        }
+    }
+
+    public byte[] getCommandParameters() {
+        return commandParameters;
+    }
+
+    public boolean hasCommandParameters() {
+        return (getCommandParametersCount() > 0);
+    }
+
+    public String toString() {
+        return name();
+    }
+
 
     public enum MinimedCommandParameterType {
         NoParameters, //
         FixedParameters, //
         SubCommands //
-    }
-
-
-    public String toString() {
-        return name();
     }
 
 }

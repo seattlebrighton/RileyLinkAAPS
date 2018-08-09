@@ -27,14 +27,9 @@ import info.nightscout.androidaps.plugins.PumpCommon.utils.ThreadUtil;
  */
 public class RFSpy {
 
-    private static final Logger LOG = LoggerFactory.getLogger(RFSpy.class);
-
-
     public static final long RILEYLINK_FREQ_XTAL = 24000000;
-
-
     public static final int EXPECTED_MAX_BLUETOOTH_LATENCY_MS = 7500; // 1500
-
+    private static final Logger LOG = LoggerFactory.getLogger(RFSpy.class);
     private RileyLinkBLE rileyLinkBle;
     private RFSpyReader reader;
     private RileyLinkTargetFrequency selectedTargetFrequency;
@@ -144,7 +139,7 @@ public class RFSpy {
         output[0] = command.code;
 
         if (body != null) {
-            for(int i = 0; i < body.length; i++) {
+            for (int i = 0; i < body.length; i++) {
                 output[i + 1] = body[i];
             }
         }

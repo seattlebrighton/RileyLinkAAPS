@@ -22,10 +22,11 @@ import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicDeviceType
 public class MedtronicUtil extends RileyLinkUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(MedtronicUtil.class);
+    static int ENVELOPE_SIZE = 4; // 0xA7 S1 S2 S3 CMD PARAM_COUNT [PARAMS]
+    static int CRC_SIZE = 1;
     //private static MedtronicDeviceType deviceType;
     private static boolean lowLevelDebug = true;
     private static MedtronicDeviceType deviceType;
-
 
     public static LocalTime getTimeFrom30MinInterval(int interval) {
         if (interval % 2 == 0) {
@@ -35,17 +36,14 @@ public class MedtronicUtil extends RileyLinkUtil {
         }
     }
 
-
     public static int getIntervalFromMinutes(int minutes) {
         return minutes / 30;
     }
-
 
     public static int makeUnsignedShort(int b2, int b1) {
         int k = (b2 & 0xff) << 8 | b1 & 0xff;
         return k;
     }
-
 
     public static byte[] getByteArrayFromUnsignedShort(int shortValue, boolean returnFixedSize) {
         byte highByte = (byte) (shortValue >> 8 & 0xFF);
@@ -59,17 +57,15 @@ public class MedtronicUtil extends RileyLinkUtil {
 
     }
 
-
     public static byte[] createByteArray(byte... data) {
         return data;
     }
-
 
     public static byte[] createByteArray(List<Byte> data) {
 
         byte[] array = new byte[data.size()];
 
-        for(int i = 0; i < data.size(); i++) {
+        for (int i = 0; i < data.size(); i++) {
             array[i] = data.get(i);
         }
 
@@ -77,42 +73,34 @@ public class MedtronicUtil extends RileyLinkUtil {
         return array;
     }
 
-
     public static double decodeBasalInsulin(int i, int j) {
         return decodeBasalInsulin(makeUnsignedShort(i, j));
     }
-
 
     public static double decodeBasalInsulin(int i) {
         return (double) i / 40.0d;
     }
 
-
     public static byte[] getBasalStrokes(double amount) {
         return getBasalStrokes(amount, false);
     }
-
 
     public static byte[] getBasalStrokes(double amount, boolean returnFixedSize) {
         return getStrokes(amount, 40, returnFixedSize);
     }
 
-
     public static int getBasalStrokesInt(double amount) {
         return getStrokesInt(amount, 40);
     }
-
 
     public static byte[] getBolusStrokes(double amount) {
         return getStrokes(amount, getMedtronicPumpModel().getBolusStrokes(), false);
     }
 
-
     public static byte[] createCommandBody(byte[] input) {
 
         return ByteUtil.concat((byte) input.length, input);
     }
-
 
     public static byte[] getStrokes(double amount, int strokesPerUnit, boolean returnFixedSize) {
 
@@ -121,7 +109,6 @@ public class MedtronicUtil extends RileyLinkUtil {
         return getByteArrayFromUnsignedShort(strokes, false);
 
     }
-
 
     public static int getStrokesInt(double amount, int strokesPerUnit) {
 
@@ -145,12 +132,6 @@ public class MedtronicUtil extends RileyLinkUtil {
         return strokes;
 
     }
-
-
-    static int ENVELOPE_SIZE = 4; // 0xA7 S1 S2 S3 CMD PARAM_COUNT [PARAMS]
-
-    static int CRC_SIZE = 1;
-
 
     public static byte[] buildCommandPayload(MessageType commandType, byte[] parameters) {
         return buildCommandPayload(commandType.getValue(), parameters);
@@ -184,7 +165,7 @@ public class MedtronicUtil extends RileyLinkUtil {
         } else {
             sendPayloadBuffer.put((byte) parameters.length); // size
 
-            for(byte val : parameters) {
+            for (byte val : parameters) {
                 sendPayloadBuffer.put(val);
             }
         }
@@ -212,13 +193,11 @@ public class MedtronicUtil extends RileyLinkUtil {
         MedtronicUtil.lowLevelDebug = lowLevelDebug;
     }
 
+    public static MedtronicDeviceType getDeviceType() {
+        return deviceType;
+    }
 
     public static void setDeviceType(MedtronicDeviceType deviceType) {
         MedtronicUtil.deviceType = deviceType;
-    }
-
-
-    public static MedtronicDeviceType getDeviceType() {
-        return deviceType;
     }
 }

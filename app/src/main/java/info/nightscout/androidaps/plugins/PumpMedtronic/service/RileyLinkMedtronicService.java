@@ -64,13 +64,11 @@ public class RileyLinkMedtronicService extends RileyLinkService {
     // saved settings
     //private String pumpIDString;
     //private byte[] pumpIDBytes;
-
+    private static ServiceTask currentTask = null;
+    public MedtronicCommunicationManager medtronicCommunicationManager;
     // cache of most recently received set of pump history pages. Probably shouldn't be here.
     ArrayList<Page> mHistoryPages;
     PumpHistoryManager pumpHistoryManager;
-
-    public MedtronicCommunicationManager medtronicCommunicationManager;
-    private static ServiceTask currentTask = null;
 
 
     public RileyLinkMedtronicService() {
@@ -105,7 +103,7 @@ public class RileyLinkMedtronicService extends RileyLinkService {
             mHistoryPages = medtronicCommunicationManager.getAllHistoryPages();
             final boolean savePages = true;
             if (savePages) {
-                for(int i = 0; i < mHistoryPages.size(); i++) {
+                for (int i = 0; i < mHistoryPages.size(); i++) {
                     String filename = "PumpHistoryPage-" + i;
                     LOG.warn("Saving history page to file " + filename);
                     FileOutputStream outputStream;
@@ -132,7 +130,7 @@ public class RileyLinkMedtronicService extends RileyLinkService {
             Bundle bundle = new Bundle();
             bundle.putString(RT2Const.IPC.messageKey, RT2Const.IPC.MSG_PUMP_history);
             ArrayList<Bundle> packedPages = new ArrayList<>();
-            for(Page page : mHistoryPages) {
+            for (Page page : mHistoryPages) {
                 packedPages.add(page.pack());
             }
             bundle.putParcelableArrayList(RT2Const.IPC.MSG_PUMP_history_key, packedPages);
@@ -151,7 +149,7 @@ public class RileyLinkMedtronicService extends RileyLinkService {
             LOG.info("Fetching saved history");
             FileInputStream inputStream;
             ArrayList<Page> storedHistoryPages = new ArrayList<>();
-            for(int i = 0; i < 16; i++) {
+            for (int i = 0; i < 16; i++) {
 
                 String filename = "PumpHistoryPage-" + i;
                 try {
@@ -184,7 +182,7 @@ public class RileyLinkMedtronicService extends RileyLinkService {
                 Bundle bundle = new Bundle();
                 bundle.putString(RT2Const.IPC.messageKey, RT2Const.IPC.MSG_PUMP_history);
                 ArrayList<Bundle> packedPages = new ArrayList<>();
-                for(Page page : mHistoryPages) {
+                for (Page page : mHistoryPages) {
                     packedPages.add(page.pack());
                 }
                 bundle.putParcelableArrayList(RT2Const.IPC.MSG_PUMP_history_key, packedPages);

@@ -29,12 +29,12 @@ import info.nightscout.androidaps.plugins.PumpMedtronic.util.MedtronicUtil;
  * m is the start time-of-day for the basal rate period (in 30 minute increments?)
  */
 public class BasalProfile {
+    protected static final int MAX_RAW_DATA_SIZE = (48 * 3) + 1;
     //private static final String TAG = "BasalProfile";
     private static final Logger LOG = LoggerFactory.getLogger(BasalProfile.class);
-
     private static final boolean DEBUG_BASALPROFILE = false;
-    protected static final int MAX_RAW_DATA_SIZE = (48 * 3) + 1;
     protected byte[] mRawData; // store as byte array to make transport (via parcel) easier
+    List<BasalProfileEntry> listEntries;
 
 
     public BasalProfile() {
@@ -46,6 +46,34 @@ public class BasalProfile {
         setRawData(data);
     }
 
+    // this asUINT8 should be combined with Record.asUINT8, and placed in a new util class.
+    protected static int readUnsignedByte(byte b) {
+        return (b < 0) ? b + 256 : b;
+    }
+
+    public static void testParser() {
+        byte[] testData = new byte[]{32, 0, 0, 38, 0, 13, 44, 0, 19, 38, 0, 28, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  /* from decocare:
+  _test_schedule = {'total': 22.50, 'schedule': [
+    { 'start': '12:00A', 'rate': 0.80 },
+    { 'start': '6:30A', 'rate': 0.95 },
+    { 'start': '9:30A', 'rate': 1.10 },
+    { 'start': '2:00P', 'rate': 0.95 },
+  ]}
+  */
+        BasalProfile profile = new BasalProfile();
+        profile.setRawData(testData);
+        List<BasalProfileEntry> entries = profile.getEntries();
+        if (entries.isEmpty()) {
+            LOG.error("testParser: failed");
+        } else {
+            for (int i = 0; i < entries.size(); i++) {
+                BasalProfileEntry e = entries.get(i);
+                LOG.debug(String.format("testParser entry #%d: rate: %.2f, start %d:%d", i, e.rate, e.startTime.getHourOfDay(), e.startTime.getMinuteOfHour()));
+            }
+        }
+
+    }
 
     public void init() {
         mRawData = new byte[MAX_RAW_DATA_SIZE];
@@ -53,13 +81,6 @@ public class BasalProfile {
         mRawData[1] = 0;
         mRawData[2] = 0x3f;
     }
-
-
-    // this asUINT8 should be combined with Record.asUINT8, and placed in a new util class.
-    protected static int readUnsignedByte(byte b) {
-        return (b < 0) ? b + 256 : b;
-    }
-
 
     public boolean setRawData(byte[] data) {
         if (data == null) {
@@ -75,11 +96,10 @@ public class BasalProfile {
         return true;
     }
 
-
     public void dumpBasalProfile() {
         LOG.debug("Basal Profile entries:");
         List<BasalProfileEntry> entries = getEntries();
-        for(int i = 0; i < entries.size(); i++) {
+        for (int i = 0; i < entries.size(); i++) {
             BasalProfileEntry entry = entries.get(i);
             String startString = entry.startTime.toString("HH:mm");
             LOG.debug(String.format("Entry %d, rate=%.3f (0x%02X), start=%s (0x%02X)", i + 1, entry.rate, entry.rate_raw, startString, entry.startTime_raw));
@@ -87,11 +107,10 @@ public class BasalProfile {
         }
     }
 
-
     public String getBasalProfileAsString() {
         StringBuffer sb = new StringBuffer("Basal Profile entries:\n");
         List<BasalProfileEntry> entries = getEntries();
-        for(int i = 0; i < entries.size(); i++) {
+        for (int i = 0; i < entries.size(); i++) {
             BasalProfileEntry entry = entries.get(i);
             String startString = entry.startTime.toString("HH:mm");
 
@@ -100,7 +119,6 @@ public class BasalProfile {
 
         return sb.toString();
     }
-
 
     // TODO: this function must be expanded to include changes in which profile is in use.
     // and changes to the profiles themselves.
@@ -147,7 +165,6 @@ public class BasalProfile {
         return rval;
     }
 
-
     public List<BasalProfileEntry> getEntries() {
         List<BasalProfileEntry> entries = new ArrayList<>();
 
@@ -174,10 +191,6 @@ public class BasalProfile {
         return entries;
     }
 
-
-    List<BasalProfileEntry> listEntries;
-
-
     /**
      * This is used to prepare new profile
      *
@@ -190,12 +203,11 @@ public class BasalProfile {
         listEntries.add(entry);
     }
 
-
     public byte[] generateRawData() {
 
         List<Byte> outData = new ArrayList<>();
 
-        for(BasalProfileEntry profileEntry : listEntries) {
+        for (BasalProfileEntry profileEntry : listEntries) {
 
             byte[] strokes = MedtronicUtil.getBasalStrokes(profileEntry.rate, true);
 
@@ -216,32 +228,6 @@ public class BasalProfile {
 
         return this.mRawData;
     }
-
-
-    public static void testParser() {
-        byte[] testData = new byte[]{32, 0, 0, 38, 0, 13, 44, 0, 19, 38, 0, 28, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-  /* from decocare:
-  _test_schedule = {'total': 22.50, 'schedule': [
-    { 'start': '12:00A', 'rate': 0.80 },
-    { 'start': '6:30A', 'rate': 0.95 },
-    { 'start': '9:30A', 'rate': 1.10 },
-    { 'start': '2:00P', 'rate': 0.95 },
-  ]}
-  */
-        BasalProfile profile = new BasalProfile();
-        profile.setRawData(testData);
-        List<BasalProfileEntry> entries = profile.getEntries();
-        if (entries.isEmpty()) {
-            LOG.error("testParser: failed");
-        } else {
-            for(int i = 0; i < entries.size(); i++) {
-                BasalProfileEntry e = entries.get(i);
-                LOG.debug(String.format("testParser entry #%d: rate: %.2f, start %d:%d", i, e.rate, e.startTime.getHourOfDay(), e.startTime.getMinuteOfHour()));
-            }
-        }
-
-    }
-
 
     public byte[] getRawData() {
         return this.mRawData;

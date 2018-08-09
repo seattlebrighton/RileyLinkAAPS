@@ -36,52 +36,39 @@ public class MedtronicPumpStatus extends PumpStatus {
     public String rileyLinkAddress = null;
     public Integer maxBolus;
     public Integer maxBasal;
-    private String[] frequencies;
-    private boolean isFrequencyUS = false;
-
-    String regexMac = "([\\da-fA-F]{1,2}(?:\\:|$)){6}";
-    String regexSN = "[0-9]{6}";
-
-    private Map<String, PumpType> medtronicPumpMap = null;
+    public long timeIndex;
+    public Date time;
+    public double remainUnits = 0;
+    public int remainBattery = 0;
+    public double currentBasal = 0;
 
     // fixme
+    public int tempBasalInProgress = 0;
+    public int tempBasalRatio = 0;
+    public int tempBasalRemainMin = 0;
+    public Date tempBasalStart;
+    public Date last_bolus_time;
+    public double last_bolus_amount = 0;
+    String regexMac = "([\\da-fA-F]{1,2}(?:\\:|$)){6}";
+    String regexSN = "[0-9]{6}";
+    private String[] frequencies;
+    private boolean isFrequencyUS = false;
+    private Map<String, PumpType> medtronicPumpMap = null;
 
+    public MedtronicPumpStatus(PumpDescription pumpDescription) {
+        super(pumpDescription);
+    }
 
     public long getTimeIndex() {
         return (long) Math.ceil(time.getTime() / 60000d);
     }
 
 
+    // fixme
+
     public void setTimeIndex(long timeIndex) {
         this.timeIndex = timeIndex;
     }
-
-
-    public long timeIndex;
-
-    public Date time;
-
-    public double remainUnits = 0;
-    public int remainBattery = 0;
-
-    public double currentBasal = 0;
-
-    public int tempBasalInProgress = 0;
-    public int tempBasalRatio = 0;
-    public int tempBasalRemainMin = 0;
-    public Date tempBasalStart;
-
-    public Date last_bolus_time;
-    public double last_bolus_amount = 0;
-
-
-    // fixme
-
-
-    public MedtronicPumpStatus(PumpDescription pumpDescription) {
-        super(pumpDescription);
-    }
-
 
     @Override
     public void initSettings() {

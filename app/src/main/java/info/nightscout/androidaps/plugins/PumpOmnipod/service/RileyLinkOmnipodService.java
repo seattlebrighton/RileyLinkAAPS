@@ -9,13 +9,6 @@ import android.support.annotation.Nullable;
 
 import com.gxwtech.roundtrip2.MainApp;
 import com.gxwtech.roundtrip2.RT2Const;
-import com.gxwtech.roundtrip2.RoundtripService.Tasks.FetchPumpHistoryTask;
-import com.gxwtech.roundtrip2.RoundtripService.Tasks.ReadBolusWizardCarbProfileTask;
-import com.gxwtech.roundtrip2.RoundtripService.Tasks.ReadISFProfileTask;
-import com.gxwtech.roundtrip2.RoundtripService.Tasks.ReadPumpClockTask;
-import com.gxwtech.roundtrip2.RoundtripService.Tasks.RetrieveHistoryPageTask;
-import com.gxwtech.roundtrip2.RoundtripService.Tasks.UpdatePumpStatusTask;
-import com.gxwtech.roundtrip2.RoundtripService.medtronic.PumpData.PumpHistoryManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,14 +22,7 @@ import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.Riley
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.defs.RileyLinkTargetDevice;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.RileyLinkService;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.RileyLinkServiceData;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.ServiceResult;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.ServiceTransport;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.tasks.ServiceTask;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.tasks.ServiceTaskExecutor;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.tasks.WakeAndTuneTask;
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.MedtronicCommunicationManager;
-import info.nightscout.androidaps.plugins.PumpMedtronic.service.RileyLinkMedtronicService;
-import info.nightscout.androidaps.plugins.PumpMedtronic.util.MedtronicConst;
 import info.nightscout.androidaps.plugins.PumpOmnipod.comm.OmnipodCommunicationManager;
 import info.nightscout.utils.SP;
 
@@ -143,17 +129,16 @@ public class RileyLinkOmnipodService extends RileyLinkService {
     //    return mBinder;
     //}
 
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return rileyLinkIPCConnection.doOnBind(intent);
+    }
 
     public class LocalBinder extends Binder {
         public RileyLinkOmnipodService getServiceInstance() {
             return RileyLinkOmnipodService.this;
         }
-    }
-
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        return rileyLinkIPCConnection.doOnBind(intent);
     }
 
 

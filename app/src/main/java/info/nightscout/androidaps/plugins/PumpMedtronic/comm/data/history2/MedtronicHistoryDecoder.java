@@ -70,7 +70,7 @@ public abstract class MedtronicHistoryDecoder {
 
         List<? extends MedtronicHistoryEntry> minimedHistoryRecords = processPageAndCreateRecords(dataPage);
 
-        for(MedtronicHistoryEntry record : minimedHistoryRecords) {
+        for (MedtronicHistoryEntry record : minimedHistoryRecords) {
             decodeRecord(record);
         }
 
@@ -117,7 +117,7 @@ public abstract class MedtronicHistoryDecoder {
         unknownOpCodes = new HashMap<Integer, Integer>();
         mapStatistics = new HashMap<RecordDecodeStatus, Map<String, String>>();
 
-        for(RecordDecodeStatus stat : RecordDecodeStatus.values()) {
+        for (RecordDecodeStatus stat : RecordDecodeStatus.values()) {
             mapStatistics.put(stat, new HashMap<String, String>());
         }
     }
@@ -143,7 +143,7 @@ public abstract class MedtronicHistoryDecoder {
     protected void showStatistics() {
         StringBuilder sb = new StringBuilder();
 
-        for(Map.Entry unknownEntry : unknownOpCodes.entrySet()) {
+        for (Map.Entry unknownEntry : unknownOpCodes.entrySet()) {
             StringUtil.appendToStringBuilder(sb, "" + unknownEntry.getKey(), ", ");
         }
 
@@ -153,14 +153,14 @@ public abstract class MedtronicHistoryDecoder {
             LOG.debug("Unknown Op Codes: {}", sb.toString());
         }
 
-        for(Map.Entry<RecordDecodeStatus, Map<String, String>> entry : mapStatistics.entrySet()) {
+        for (Map.Entry<RecordDecodeStatus, Map<String, String>> entry : mapStatistics.entrySet()) {
             sb = new StringBuilder();
 
             if (entry.getKey() != RecordDecodeStatus.OK) {
                 if (entry.getValue().size() == 0)
                     continue;
 
-                for(Map.Entry<String, String> entrysub : entry.getValue().entrySet()) {
+                for (Map.Entry<String, String> entrysub : entry.getValue().entrySet()) {
                     StringUtil.appendToStringBuilder(sb, entrysub.getKey(), ", ");
                 }
 

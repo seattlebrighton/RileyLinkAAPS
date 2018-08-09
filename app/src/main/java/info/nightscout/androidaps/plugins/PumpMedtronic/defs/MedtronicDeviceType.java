@@ -59,24 +59,13 @@ public enum MedtronicDeviceType {
     //
     All;
 
-    private String pumpModel;
-    private boolean isFamily;
-    private MedtronicDeviceType[] familyMembers = null;
-
-
-    MedtronicConverterType pumpConverter;
-    MedtronicConverterType cgmsConverter;
-
-    //String smallReservoirPump;
-    //String bigReservoirPump;
-
     static Map<String, MedtronicDeviceType> mapByDescription;
 
     static {
 
         mapByDescription = new HashMap<>();
 
-        for(MedtronicDeviceType minimedDeviceType : values()) {
+        for (MedtronicDeviceType minimedDeviceType : values()) {
 
             if (!minimedDeviceType.isFamily) {
                 mapByDescription.put(minimedDeviceType.pumpModel, minimedDeviceType);
@@ -84,6 +73,15 @@ public enum MedtronicDeviceType {
         }
 
     }
+
+    MedtronicConverterType pumpConverter;
+    MedtronicConverterType cgmsConverter;
+    private String pumpModel;
+
+    //String smallReservoirPump;
+    //String bigReservoirPump;
+    private boolean isFamily;
+    private MedtronicDeviceType[] familyMembers = null;
 
 
     MedtronicDeviceType(MedtronicConverterType pumpConverter, MedtronicConverterType cgmsConverter, String pumpModel) {
@@ -104,7 +102,7 @@ public enum MedtronicDeviceType {
 
     public static boolean isSameDevice(MedtronicDeviceType deviceWeCheck, MedtronicDeviceType deviceSources) {
         if (deviceSources.isFamily) {
-            for(MedtronicDeviceType mdt : deviceSources.familyMembers) {
+            for (MedtronicDeviceType mdt : deviceSources.familyMembers) {
                 if (mdt == deviceWeCheck)
                     return true;
             }
@@ -115,27 +113,6 @@ public enum MedtronicDeviceType {
         return false;
     }
 
-
-    public boolean isFamily() {
-        return isFamily;
-    }
-
-
-    public MedtronicDeviceType[] getFamilyMembers() {
-        return familyMembers;
-    }
-
-
-    public MedtronicConverterType getCGMSConverterType() {
-        return cgmsConverter;
-    }
-
-
-    public MedtronicConverterType getPumpConverterType() {
-        return pumpConverter;
-    }
-
-
     public static MedtronicDeviceType getByDescription(String desc) {
         if (mapByDescription.containsKey(desc)) {
             return mapByDescription.get(desc);
@@ -144,11 +121,25 @@ public enum MedtronicDeviceType {
         }
     }
 
-
     public static boolean isLargerFormat(MedtronicDeviceType model) {
         return isSameDevice(model, Medtronic_523andHigher);
     }
 
+    public boolean isFamily() {
+        return isFamily;
+    }
+
+    public MedtronicDeviceType[] getFamilyMembers() {
+        return familyMembers;
+    }
+
+    public MedtronicConverterType getCGMSConverterType() {
+        return cgmsConverter;
+    }
+
+    public MedtronicConverterType getPumpConverterType() {
+        return pumpConverter;
+    }
 
     public int getBolusStrokes() {
         return (isLargerFormat(this)) ? 40 : 10;

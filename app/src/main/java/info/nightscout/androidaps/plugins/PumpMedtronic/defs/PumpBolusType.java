@@ -88,32 +88,6 @@ public enum PumpBolusType //implements CodeEnumWithTranslation
         this.valueTemplate = valueTemplate;
     }
 
-
-    public String getTranslation() {
-        return translation;
-    }
-
-
-    public void setTranslation(String translation) {
-        this.translation = translation;
-    }
-
-
-    public int getCode() {
-        return code;
-    }
-
-
-    public String getI18nKey() {
-        return i18nKey;
-    }
-
-
-    public String getName() {
-        return this.name();
-    }
-
-
     public static PumpBolusType getByCode(int code) {
         if (codeMapping.containsKey(code)) {
             return codeMapping.get(code);
@@ -122,7 +96,6 @@ public enum PumpBolusType //implements CodeEnumWithTranslation
         }
     }
 
-
     /**
      * Get Descriptions (array)
      *
@@ -130,5 +103,25 @@ public enum PumpBolusType //implements CodeEnumWithTranslation
      */
     public static String[] getDescriptions() {
         return descriptions;
+    }
+
+    public String getTranslation() {
+        return translation;
+    }
+
+    public void setTranslation(String translation) {
+        this.translation = translation;
+    }
+
+    public int getCode() {
+        return code;
+    }
+
+    public String getI18nKey() {
+        return i18nKey;
+    }
+
+    public String getName() {
+        return this.name();
     }
 }

@@ -14,30 +14,29 @@ abstract public class Record {
     //protected String recordTypeName = this.getClass().getSimpleName();
 
 
+    public Record() {
+
+    }
+
+    protected static int asUINT8(byte b) {
+        return (b < 0) ? b + 256 : b;
+    }
+
     public String getRecordTypeName() {
         return this.getClass().getSimpleName();
     }
-
 
     public String getShortTypeName() {
         return this.getClass().getSimpleName();
     }
 
-
     public void setPumpModel(MedtronicDeviceType model) {
         this.model = model;
     }
 
-
     public int getFoundAtOffset() {
         return foundAtOffset;
     }
-
-
-    public Record() {
-
-    }
-
 
     public boolean parseWithOffset(byte[] data, MedtronicDeviceType model, int foundAtOffset) {
         // keep track of where the record was found for later analysis
@@ -56,37 +55,26 @@ abstract public class Record {
         return didParse;
     }
 
-
     public void captureRawBytes(byte[] data) {
         this.rawbytes = new byte[getLength()];
         System.arraycopy(data, 0, this.rawbytes, 0, getLength() - 1);
     }
 
-
     public boolean parseFrom(byte[] data, MedtronicDeviceType model) {
         return true;
     }
-
 
     public PumpTimeStamp getTimestamp() {
         return new PumpTimeStamp();
     }
 
-
     public int getLength() {
         return 1;
     }
 
-
     public byte getRecordOp() {
         return recordOp;
     }
-
-
-    protected static int asUINT8(byte b) {
-        return (b < 0) ? b + 256 : b;
-    }
-
 
     public Bundle dictionaryRepresentation() {
         Bundle rval = new Bundle();

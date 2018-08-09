@@ -115,7 +115,7 @@ public enum MessageType {
 
         boolean foundErrors = false;
 
-        for(MessageType messageType : values()) {
+        for (MessageType messageType : values()) {
 
             if (mapByValue.containsKey(messageType.getValue())) {
                 // leave this check in case someone adds any new commands
@@ -152,12 +152,6 @@ public enum MessageType {
         }
     }
 
-
-    public byte getValue() {
-        return this.mtype;
-    }
-
-
     public static MessageType getByValue(byte msgType) {
 
         if (mapByValue.containsKey(msgType)) {
@@ -165,5 +159,9 @@ public enum MessageType {
         } else {
             return MessageType.Invalid;
         }
+    }
+
+    public byte getValue() {
+        return this.mtype;
     }
 }

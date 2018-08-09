@@ -17,7 +17,6 @@ public class CRC {
             203, 80, 190, 37, 19, 136, 127, 228, 210, 73, 149, 14, 56, 163, 84, 207, 249, 98, 140, 23, 33, 186, 77, 214, 224, 123};
 
 
-
     public static byte crc8(byte[] data, int len) {
         byte result = 0;
         if (data == null) {
@@ -26,7 +25,7 @@ public class CRC {
         if (len > data.length) {
             len = data.length;
         }
-        for(int i = 0; i < len; i++) {
+        for (int i = 0; i < len; i++) {
             int tmp = result;
             int tmp2 = tmp ^ data[i];
             int tmp3 = tmp2 & 0xFF;
@@ -51,9 +50,9 @@ public class CRC {
         int polynomial = 0x1021;
         if (data != null) {
             if (data.length > 0) {
-                for(int j = 0; j < data.length; j++) {
+                for (int j = 0; j < data.length; j++) {
                     byte b = data[j];
-                    for(int i = 0; i < 8; i++) {
+                    for (int i = 0; i < 8; i++) {
                         boolean bit = ((b >> (7 - i) & 1) == 1);
                         boolean c15 = ((crc >> 15 & 1) == 1);
                         crc <<= 1;

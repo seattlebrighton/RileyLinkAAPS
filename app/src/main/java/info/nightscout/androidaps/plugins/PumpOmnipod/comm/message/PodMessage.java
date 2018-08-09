@@ -7,7 +7,6 @@ import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.HexDump;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.message.MessageBody;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.message.PacketType;
-import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicCommandType;
 import info.nightscout.androidaps.plugins.PumpOmnipod.defs.OmnipodCommandType;
 
 /**
@@ -115,7 +114,7 @@ public class PodMessage implements RLMessage {
 
         // check Old Way
         boolean oldWay = false;
-        for(int i = (length + 1); i < data.length; i++) {
+        for (int i = (length + 1); i < data.length; i++) {
             if (data[i] != 0x00) {
                 oldWay = true;
             }
@@ -165,7 +164,7 @@ public class PodMessage implements RLMessage {
 //                sb.append("NOT Acknowledged");
 //                showData = false;
 //            } else
-                {
+            {
                 sb.append(commandType.name());
             }
         } else {

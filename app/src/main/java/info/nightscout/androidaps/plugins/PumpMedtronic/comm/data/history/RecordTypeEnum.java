@@ -181,21 +181,12 @@ public enum RecordTypeEnum {
 
     ;
 
+    private static final String TAG = "RecordTypeEnum";
     private static Map<Byte, RecordTypeEnum> mapByOpCode = null;
     private byte opcode;
     private Class mRecordClass;
     private int length;
     private String shortTypeName;
-
-
-    public byte opcode() {
-        return opcode;
-    }
-
-
-    public Class recordClass() {
-        return mRecordClass;
-    }
 
 
     RecordTypeEnum(int b, Class c) {
@@ -215,9 +206,8 @@ public enum RecordTypeEnum {
         this(b, IgnoredHistoryEntry.class, length);
     }
 
-
     public static RecordTypeEnum fromByte(byte b) {
-        for(RecordTypeEnum en : RecordTypeEnum.values()) {
+        for (RecordTypeEnum en : RecordTypeEnum.values()) {
             if (en.opcode() == b) {
                 return en;
             }
@@ -225,9 +215,19 @@ public enum RecordTypeEnum {
         return Null;
     }
 
+    public static <T extends Record> T getRecordClassInstance(Bundle bundle, MedtronicDeviceType model) {
+        byte opcode = bundle.getByte("_opcode");
+        RecordTypeEnum e = RecordTypeEnum.fromByte(opcode);
+        return e.getRecordClassInstance(model);
+    }
 
-    private static final String TAG = "RecordTypeEnum";
+    public byte opcode() {
+        return opcode;
+    }
 
+    public Class recordClass() {
+        return mRecordClass;
+    }
 
     public <T extends Record> T getRecordClassInstance(MedtronicDeviceType model) {
         Constructor<T> ctor;
@@ -259,14 +259,6 @@ public enum RecordTypeEnum {
         }
         return record;
     }
-
-
-    public static <T extends Record> T getRecordClassInstance(Bundle bundle, MedtronicDeviceType model) {
-        byte opcode = bundle.getByte("_opcode");
-        RecordTypeEnum e = RecordTypeEnum.fromByte(opcode);
-        return e.getRecordClassInstance(model);
-    }
-
 
     public int getLength() {
         return length;

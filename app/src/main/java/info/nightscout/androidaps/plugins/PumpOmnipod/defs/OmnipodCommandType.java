@@ -20,19 +20,19 @@ public enum OmnipodCommandType {
 
     OmnipodCommandType(int commandCode) {
 
-        this.commandCode = (byte)commandCode;
+        this.commandCode = (byte) commandCode;
     }
 
     public static OmnipodCommandType getByCode(byte rxDatum) {
         return null;
     }
 
-    public byte getCommandCode() {
-        return commandCode;
-    }
-
     // TODO
     public static MessageBody constructMessageBody(OmnipodCommandType commandType, byte[] substring) {
         return null;
+    }
+
+    public byte getCommandCode() {
+        return commandCode;
     }
 }

@@ -38,32 +38,30 @@ public class ServiceTransport extends ServiceMessage {
         setSenderHashcode(0);
     }
 
+    public Integer getSenderHashcode() {
+        return map.getInt("senderHashCode", 0);
+    }
 
     public void setSenderHashcode(Integer senderHashcode) {
         map.putInt("senderHashcode", senderHashcode);
     }
 
-
-    public Integer getSenderHashcode() {
-        return map.getInt("senderHashCode", 0);
+    public ServiceCommand getServiceCommand() {
+        return new ServiceCommand(map.getBundle("ServiceCommand"));
     }
-
 
     public void setServiceCommand(ServiceCommand serviceCommand) {
         map.putBundle("ServiceCommand", serviceCommand.getMap());
         this.serviceTransportType = ServiceTransportType.ServiceCommand;
     }
 
-
-    public ServiceCommand getServiceCommand() {
-        return new ServiceCommand(map.getBundle("ServiceCommand"));
-    }
-
-
     public boolean hasServiceCommand() {
         return (getMap().containsKey("ServiceCommand"));
     }
 
+    public String getTransportType() {
+        return map.getString("transportType", "unknown");
+    }
 
     // On remote end, this will be converted to the "action" of a local Intent,
     // so can be used for separating types of messages to different internal handlers.
@@ -71,38 +69,27 @@ public class ServiceTransport extends ServiceMessage {
         map.putString("transportType", transportType);
     }
 
-
-    public String getTransportType() {
-        return map.getString("transportType", "unknown");
+    public ServiceResult getServiceResult() {
+        return new ServiceResult(map.getBundle("ServiceResult"));
     }
-
 
     public void setServiceResult(ServiceResult serviceResult) {
         map.putBundle("ServiceResult", serviceResult.getMap());
         this.serviceTransportType = ServiceTransportType.ServiceResult;
     }
 
-
-    public ServiceResult getServiceResult() {
-        return new ServiceResult(map.getBundle("ServiceResult"));
-    }
-
-
     public boolean hasServiceResult() {
         return (getMap().containsKey("ServiceResult"));
     }
-
-
-    public void setServiceNotification(ServiceNotification notification) {
-        map.putBundle("ServiceNotification", notification.getMap());
-        this.serviceTransportType = ServiceTransportType.ServiceNotification;
-    }
-
 
     public ServiceNotification getServiceNotification() {
         return new ServiceNotification(map.getBundle("ServiceNotification"));
     }
 
+    public void setServiceNotification(ServiceNotification notification) {
+        map.putBundle("ServiceNotification", notification.getMap());
+        this.serviceTransportType = ServiceTransportType.ServiceNotification;
+    }
 
     public boolean hasServiceNotification() {
         return (map.containsKey("ServiceNotification"));

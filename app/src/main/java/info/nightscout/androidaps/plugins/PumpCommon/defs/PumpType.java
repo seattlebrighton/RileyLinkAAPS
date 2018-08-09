@@ -120,6 +120,16 @@ public enum PumpType {
     TandemTSlimX2("Tandem t:slim X2", TandemTSlim), //
     ;
 
+    private static Map<String, PumpType> mapByDescription;
+
+    static {
+        mapByDescription = new HashMap<>();
+
+        for (PumpType pumpType : values()) {
+            mapByDescription.put(pumpType.getDescription(), pumpType);
+        }
+    }
+
     private String description;
     private float bolusSize;
     private DoseStepSize specialBolusSize;
@@ -131,17 +141,7 @@ public enum PumpType {
     private float baseBasalStep; //
     private DoseStepSize baseBasalSpecialSteps; //
     private PumpCapability pumpCapability;
-
     private PumpType parent;
-    private static Map<String, PumpType> mapByDescription;
-
-    static {
-        mapByDescription = new HashMap<>();
-
-        for (PumpType pumpType : values()) {
-            mapByDescription.put(pumpType.getDescription(), pumpType);
-        }
-    }
 
 
     PumpType(String description, PumpType parent) {
@@ -179,6 +179,13 @@ public enum PumpType {
         this.pumpCapability = pumpCapability;
     }
 
+    public static PumpType getByDescription(String desc) {
+        if (mapByDescription.containsKey(desc)) {
+            return mapByDescription.get(desc);
+        } else {
+            return PumpType.GenericAAPS;
+        }
+    }
 
     public String getDescription() {
         return description;
@@ -196,65 +203,45 @@ public enum PumpType {
         return isParentSet() ? parent.bolusSize : bolusSize;
     }
 
-
     public DoseStepSize getSpecialBolusSize() {
         return isParentSet() ? parent.specialBolusSize : specialBolusSize;
     }
-
 
     public DoseSettings getExtendedBolusSettings() {
         return isParentSet() ? parent.extendedBolusSettings : extendedBolusSettings;
     }
 
-
     public PumpTempBasalType getPumpTempBasalType() {
         return isParentSet() ? parent.pumpTempBasalType : pumpTempBasalType;
     }
-
 
     public DoseSettings getTbrSettings() {
         return isParentSet() ? parent.tbrSettings : tbrSettings;
     }
 
-
     public float getBaseBasalMinValue() {
         return isParentSet() ? parent.baseBasalMinValue : baseBasalMinValue;
     }
-
 
     public Float getBaseBasalMaxValue() {
         return isParentSet() ? parent.baseBasalMaxValue : baseBasalMaxValue;
     }
 
-
     public float getBaseBasalStep() {
         return isParentSet() ? parent.baseBasalStep : baseBasalStep;
     }
-
 
     public DoseStepSize getBaseBasalSpecialSteps() {
         return isParentSet() ? parent.baseBasalSpecialSteps : baseBasalSpecialSteps;
     }
 
-
     public PumpType getParent() {
         return parent;
     }
 
-
     private boolean isParentSet() {
         return this.parent != null;
     }
-
-
-    public static PumpType getByDescription(String desc) {
-        if (mapByDescription.containsKey(desc)) {
-            return mapByDescription.get(desc);
-        } else {
-            return PumpType.GenericAAPS;
-        }
-    }
-
 
     public String getFullDescription(String i18nTemplate) {
 
