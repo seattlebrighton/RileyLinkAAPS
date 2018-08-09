@@ -22,11 +22,10 @@ import info.nightscout.androidaps.plugins.PumpCommon.utils.ThreadUtil;
 public class RFSpyReader {
 
     private static final Logger LOG = LoggerFactory.getLogger(RFSpyReader.class);
-
+    AsyncTask<Void, Void, Void> readerTask;
     //private Context context;
     private RileyLinkBLE rileyLinkBle;
     private Semaphore waitForRadioData = new Semaphore(0, true);
-    AsyncTask<Void, Void, Void> readerTask;
     private LinkedBlockingQueue<byte[]> mDataQueue = new LinkedBlockingQueue<>();
     private int acquireCount = 0;
     private int releaseCount = 0;

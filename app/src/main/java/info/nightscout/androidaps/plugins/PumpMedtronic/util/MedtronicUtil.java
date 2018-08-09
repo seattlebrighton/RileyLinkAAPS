@@ -28,6 +28,8 @@ import info.nightscout.androidaps.plugins.PumpMedtronic.service.RileyLinkMedtron
 public class MedtronicUtil extends RileyLinkUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(MedtronicUtil.class);
+    static int ENVELOPE_SIZE = 4; // 0xA7 S1 S2 S3 CMD PARAM_COUNT [PARAMS]
+    static int CRC_SIZE = 1;
     //private static MedtronicDeviceType deviceType;
     private static boolean lowLevelDebug = true;
     private static PumpDeviceState pumpDeviceState;
@@ -185,11 +187,6 @@ public class MedtronicUtil extends RileyLinkUtil {
     }
 
 
-    static int ENVELOPE_SIZE = 4; // 0xA7 S1 S2 S3 CMD PARAM_COUNT [PARAMS]
-
-    static int CRC_SIZE = 1;
-
-
     public static byte[] buildCommandPayload(MessageType commandType, byte[] parameters) {
         return buildCommandPayload(commandType.getValue(), parameters);
     }
@@ -251,14 +248,14 @@ public class MedtronicUtil extends RileyLinkUtil {
     }
 
 
-    public static void setPumpDeviceState(PumpDeviceState pumpDeviceState) {
-        MedtronicUtil.pumpDeviceState = pumpDeviceState;
-        //MainApp.bus().post(new EventMedtronicDeviceStatusChange(pumpDeviceState));
+    public static PumpDeviceState getPumpDeviceState() {
+        return pumpDeviceState;
     }
 
 
-    public static PumpDeviceState getPumpDeviceState() {
-        return pumpDeviceState;
+    public static void setPumpDeviceState(PumpDeviceState pumpDeviceState) {
+        MedtronicUtil.pumpDeviceState = pumpDeviceState;
+        //MainApp.bus().post(new EventMedtronicDeviceStatusChange(pumpDeviceState));
     }
 
 
@@ -268,15 +265,15 @@ public class MedtronicUtil extends RileyLinkUtil {
     }
 
 
+    public static MedtronicDeviceType getMedtronicPumpModel() {
+        return MedtronicUtil.medtronicPumpModel;
+    }
+
+
     public static void setMedtronicPumpModel(MedtronicDeviceType medtronicPumpModel) {
         if (medtronicPumpModel != null && medtronicPumpModel != MedtronicDeviceType.Unknown_Device) {
             MedtronicUtil.medtronicPumpModel = medtronicPumpModel;
         }
-    }
-
-
-    public static MedtronicDeviceType getMedtronicPumpModel() {
-        return MedtronicUtil.medtronicPumpModel;
     }
 
 
@@ -295,23 +292,23 @@ public class MedtronicUtil extends RileyLinkUtil {
     }
 
 
-    public static void setPumpStatus(MedtronicPumpStatus medtronicPumpStatus) {
-        MedtronicUtil.medtronicPumpStatus = medtronicPumpStatus;
-    }
-
-
     public static MedtronicPumpStatus getPumpStatus() {
         return MedtronicUtil.medtronicPumpStatus;
     }
 
 
-    public static void setCurrentCommand(MedtronicCommandType currentCommand) {
-        MedtronicUtil.currentCommand = currentCommand;
+    public static void setPumpStatus(MedtronicPumpStatus medtronicPumpStatus) {
+        MedtronicUtil.medtronicPumpStatus = medtronicPumpStatus;
     }
 
 
     public static MedtronicCommandType getCurrentCommand() {
         return MedtronicUtil.currentCommand;
+    }
+
+
+    public static void setCurrentCommand(MedtronicCommandType currentCommand) {
+        MedtronicUtil.currentCommand = currentCommand;
     }
 
 
@@ -322,13 +319,13 @@ public class MedtronicUtil extends RileyLinkUtil {
     }
 
 
-    public static void setSettings(Map<String, PumpSettingDTO> settings) {
-        MedtronicUtil.settings = settings;
+    public static Map<String, PumpSettingDTO> getSettings() {
+        return settings;
     }
 
 
-    public static Map<String, PumpSettingDTO> getSettings() {
-        return settings;
+    public static void setSettings(Map<String, PumpSettingDTO> settings) {
+        MedtronicUtil.settings = settings;
     }
 
 

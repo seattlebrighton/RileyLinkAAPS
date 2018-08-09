@@ -15,7 +15,6 @@ public enum PacketType {
     Sensor(0xa8) //
     ;
 
-    private byte value = 0;
     public static Map<Byte, PacketType> mapByValue;
 
     static {
@@ -26,19 +25,23 @@ public enum PacketType {
         }
     }
 
+    private byte value = 0;
+
 
     PacketType(int value) {
         this.value = (byte) value;
     }
 
 
-    public byte getValue() {
-        return value;
+    public static PacketType getByValue(short value) {
+        if (mapByValue.containsKey(value))
+            return mapByValue.get(value);
+        else
+            return PacketType.Invalid;
     }
 
 
-    public static PacketType getByValue(short value) {
-        if (mapByValue.containsKey(value)) return mapByValue.get(value);
-        else return PacketType.Invalid;
+    public byte getValue() {
+        return value;
     }
 }

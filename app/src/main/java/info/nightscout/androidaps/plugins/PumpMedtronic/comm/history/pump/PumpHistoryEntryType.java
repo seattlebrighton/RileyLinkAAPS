@@ -81,7 +81,7 @@ public enum PumpHistoryEntryType //implements CodeEnum
     ChangeChildBlockEnable(0x23, "ChangeChildBlockEnable"),  // 8?
     ChangeMaxBolus(0x24), // 8?
     EventUnknown_MM522_0x25(0x25), // 8?
-    ToggleRemote(0x26, "EnableDisableRemote", 2, 5, 0), //  2, 5, 14
+    ToggleRemote(0x26, "EnableDisableRemote", 2, 5, 14), //  2, 5, 14   V6:2,5,14
     ChangeRemoteId(0x27, "ChangeRemoteID"), // ??
 
     ChangeMaxBasal(0x2c), //
@@ -98,7 +98,7 @@ public enum PumpHistoryEntryType //implements CodeEnum
     EventUnknown_MM512_0x38(0x38), //
     EventUnknown_MM512_0x39(0x39), //
     EventUnknown_MM512_0x3b(0x3b), //
-    ChangeParadigmLinkID(0x3c), // V3 ?
+    ChangeParadigmLinkID(0x3c, 2, 5, 14), // V3 ?  V6: 2,5,14
 
     BGReceived(0x3f, "BGReceived", 2, 5, 3), // Ian3F
     JournalEntryMealMarker(0x40, 2, 5, 2),  //
@@ -189,20 +189,6 @@ public enum PumpHistoryEntryType //implements CodeEnum
     //
     // }
 
-    private int opCode;
-    private String description;
-    private int headLength = 0;
-    private int dateLength;
-    private int bodyLength;
-    private int totalLength;
-    // private MinimedDeviceType deviceType;
-
-    // special rules need to be put in list from highest to lowest (e.g.:
-    // 523andHigher=12, 515andHigher=10 and default (set in cnstr) would be 8)
-    private List<SpecialRule> specialRulesHead;
-    private List<SpecialRule> specialRulesBody;
-    private boolean hasSpecialRules = false;
-
     private static Map<Integer, PumpHistoryEntryType> opCodeMap = new HashMap<Integer, PumpHistoryEntryType>();
 
     static {
@@ -213,14 +199,18 @@ public enum PumpHistoryEntryType //implements CodeEnum
         setSpecialRulesForEntryTypes();
     }
 
-
-    static void setSpecialRulesForEntryTypes() {
-        EndResultTotals.addSpecialRuleBody(new SpecialRule(MedtronicDeviceType.Medtronic_523andHigher, 3));
-        Bolus.addSpecialRuleHead(new SpecialRule(MedtronicDeviceType.Medtronic_523andHigher, 8));
-        BolusWizardChange.addSpecialRuleBody(new SpecialRule(MedtronicDeviceType.Medtronic_522andHigher, 143));
-        BolusWizardBolusEstimate.addSpecialRuleBody(new SpecialRule(MedtronicDeviceType.Medtronic_523andHigher, 15));
-        BolusReminder.addSpecialRuleBody(new SpecialRule(MedtronicDeviceType.Medtronic_523andHigher, 2));
-    }
+    private int opCode;
+    private String description;
+    private int headLength = 0;
+    private int dateLength;
+    // private MinimedDeviceType deviceType;
+    private int bodyLength;
+    private int totalLength;
+    // special rules need to be put in list from highest to lowest (e.g.:
+    // 523andHigher=12, 515andHigher=10 and default (set in cnstr) would be 8)
+    private List<SpecialRule> specialRulesHead;
+    private List<SpecialRule> specialRulesBody;
+    private boolean hasSpecialRules = false;
 
 
     PumpHistoryEntryType(int opCode, String name) {
@@ -253,8 +243,22 @@ public enum PumpHistoryEntryType //implements CodeEnum
     }
 
 
-    public int getCode() {
-        return this.opCode;
+    static void setSpecialRulesForEntryTypes() {
+        EndResultTotals.addSpecialRuleBody(new SpecialRule(MedtronicDeviceType.Medtronic_523andHigher, 3));
+        Bolus.addSpecialRuleHead(new SpecialRule(MedtronicDeviceType.Medtronic_523andHigher, 8));
+        //BolusWizardChange.addSpecialRuleBody(new SpecialRule(MedtronicDeviceType.Medtronic_522andHigher, 143));
+        BolusWizardChange.addSpecialRuleBody(new SpecialRule(MedtronicDeviceType.Medtronic_523andHigher, 143)); // V5: 522 has old form
+        BolusWizardBolusEstimate.addSpecialRuleBody(new SpecialRule(MedtronicDeviceType.Medtronic_523andHigher, 15));
+        BolusReminder.addSpecialRuleBody(new SpecialRule(MedtronicDeviceType.Medtronic_523andHigher, 2));
+    }
+
+
+    public static PumpHistoryEntryType getByCode(int opCode) {
+        if (opCodeMap.containsKey(opCode)) {
+            return opCodeMap.get(opCode);
+        } else {
+            return PumpHistoryEntryType.UnknownBasePacket;
+        }
     }
 
 
@@ -270,6 +274,16 @@ public enum PumpHistoryEntryType //implements CodeEnum
     // this.totalLength = (head + date + body);
     // }
     //
+
+
+    public static boolean isRelevantEntry() {
+        return true;
+    }
+
+
+    public int getCode() {
+        return this.opCode;
+    }
 
 
     public int getTotalLength() {
@@ -303,15 +317,6 @@ public enum PumpHistoryEntryType //implements CodeEnum
 
         specialRulesBody.add(rule);
         hasSpecialRules = true;
-    }
-
-
-    public static PumpHistoryEntryType getByCode(int opCode) {
-        if (opCodeMap.containsKey(opCode)) {
-            return opCodeMap.get(opCode);
-        } else {
-            return PumpHistoryEntryType.UnknownBasePacket;
-        }
     }
 
 
@@ -355,6 +360,8 @@ public enum PumpHistoryEntryType //implements CodeEnum
         }
     }
 
+    // byte[] dh = { 2, 3 };
+
 
     private int determineSizeByRule(int defaultValue, List<SpecialRule> rules) {
         int size = defaultValue;
@@ -367,25 +374,6 @@ public enum PumpHistoryEntryType //implements CodeEnum
         }
 
         return size;
-    }
-
-    // byte[] dh = { 2, 3 };
-
-    public static class SpecialRule {
-
-        MedtronicDeviceType deviceType;
-        int size;
-
-
-        public SpecialRule(MedtronicDeviceType deviceType, int size) {
-            this.deviceType = deviceType;
-            this.size = size;
-        }
-    }
-
-
-    public static boolean isRelevantEntry() {
-        return true;
     }
 
 
@@ -409,6 +397,18 @@ public enum PumpHistoryEntryType //implements CodeEnum
 
         public void setLength(int length) {
             this.length = length;
+        }
+    }
+
+    public static class SpecialRule {
+
+        MedtronicDeviceType deviceType;
+        int size;
+
+
+        public SpecialRule(MedtronicDeviceType deviceType, int size) {
+            this.deviceType = deviceType;
+            this.size = size;
         }
     }
 

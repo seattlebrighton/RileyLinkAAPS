@@ -25,8 +25,7 @@ public enum RileyLinkTargetFrequency {
 
     public double[] getScanFrequencies() {
 
-        if (maxFrequency == minFrequency)
-        {
+        if (maxFrequency == minFrequency) {
             double freq[] = new double[1];
             freq[0] = minFrequency;
 

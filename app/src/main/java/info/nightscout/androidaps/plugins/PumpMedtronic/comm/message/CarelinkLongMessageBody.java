@@ -11,7 +11,7 @@ public class CarelinkLongMessageBody extends MessageBody {
     public CarelinkLongMessageBody() {
         init(new byte[0]);
     }
-    
+
 
     public CarelinkLongMessageBody(byte[] payload) {
         init(payload);

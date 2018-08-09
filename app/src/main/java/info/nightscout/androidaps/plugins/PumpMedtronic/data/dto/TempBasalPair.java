@@ -22,36 +22,6 @@ public class TempBasalPair {
     private boolean isPercent = false;
 
 
-    public double getInsulinRate() {
-        return insulinRate;
-    }
-
-
-    public void setInsulinRate(double insulinRate) {
-        this.insulinRate = insulinRate;
-    }
-
-
-    public int getDurationMinutes() {
-        return durationMinutes;
-    }
-
-
-    public void setDurationMinutes(int durationMinutes) {
-        this.durationMinutes = durationMinutes;
-    }
-
-
-    public boolean isPercent() {
-        return isPercent;
-    }
-
-
-    public void setIsPercent(boolean yesIsPercent) {
-        this.isPercent = yesIsPercent;
-    }
-
-
     public TempBasalPair() {
     }
 
@@ -96,6 +66,36 @@ public class TempBasalPair {
 
         durationMinutes = MedtronicUtil.makeUnsignedShort(response[4], response[5]);
 
+    }
+
+
+    public double getInsulinRate() {
+        return insulinRate;
+    }
+
+
+    public void setInsulinRate(double insulinRate) {
+        this.insulinRate = insulinRate;
+    }
+
+
+    public int getDurationMinutes() {
+        return durationMinutes;
+    }
+
+
+    public void setDurationMinutes(int durationMinutes) {
+        this.durationMinutes = durationMinutes;
+    }
+
+
+    public boolean isPercent() {
+        return isPercent;
+    }
+
+
+    public void setIsPercent(boolean yesIsPercent) {
+        this.isPercent = yesIsPercent;
     }
 
 

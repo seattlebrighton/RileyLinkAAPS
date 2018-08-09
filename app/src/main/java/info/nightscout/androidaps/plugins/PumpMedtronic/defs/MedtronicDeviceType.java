@@ -56,17 +56,6 @@ public enum MedtronicDeviceType {
     //
     All;
 
-    private String pumpModel;
-    private boolean isFamily;
-    private MedtronicDeviceType[] familyMembers = null;
-
-
-    MedtronicConverterType pumpConverter;
-    MedtronicConverterType cgmsConverter;
-
-    //String smallReservoirPump;
-    //String bigReservoirPump;
-
     static Map<String, MedtronicDeviceType> mapByDescription;
 
     static {
@@ -81,6 +70,15 @@ public enum MedtronicDeviceType {
         }
 
     }
+
+    MedtronicConverterType pumpConverter;
+    MedtronicConverterType cgmsConverter;
+    private String pumpModel;
+
+    //String smallReservoirPump;
+    //String bigReservoirPump;
+    private boolean isFamily;
+    private MedtronicDeviceType[] familyMembers = null;
 
 
     MedtronicDeviceType(MedtronicConverterType pumpConverter, MedtronicConverterType cgmsConverter, String pumpModel) {
@@ -113,6 +111,20 @@ public enum MedtronicDeviceType {
     }
 
 
+    public static MedtronicDeviceType getByDescription(String desc) {
+        if (mapByDescription.containsKey(desc)) {
+            return mapByDescription.get(desc);
+        } else {
+            return MedtronicDeviceType.Unknown_Device;
+        }
+    }
+
+
+    public static boolean isLargerFormat(MedtronicDeviceType model) {
+        return isSameDevice(model, Medtronic_523andHigher);
+    }
+
+
     public boolean isFamily() {
         return isFamily;
     }
@@ -130,20 +142,6 @@ public enum MedtronicDeviceType {
 
     public MedtronicConverterType getPumpConverterType() {
         return pumpConverter;
-    }
-
-
-    public static MedtronicDeviceType getByDescription(String desc) {
-        if (mapByDescription.containsKey(desc)) {
-            return mapByDescription.get(desc);
-        } else {
-            return MedtronicDeviceType.Unknown_Device;
-        }
-    }
-
-
-    public static boolean isLargerFormat(MedtronicDeviceType model) {
-        return isSameDevice(model, Medtronic_523andHigher);
     }
 
 

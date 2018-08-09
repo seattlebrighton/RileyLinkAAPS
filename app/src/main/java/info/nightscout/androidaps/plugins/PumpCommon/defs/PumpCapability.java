@@ -44,7 +44,7 @@ public enum PumpCapability {
             return true;
 
         if (this.children != null) {
-            for (PumpCapability child : children) {
+            for(PumpCapability child : children) {
                 if (child == capability)
                     return true;
             }

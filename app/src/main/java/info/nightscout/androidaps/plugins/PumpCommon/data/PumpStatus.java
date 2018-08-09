@@ -33,18 +33,11 @@ public abstract class PumpStatus {
     // TDD
     public Double dailyTotalUnits;
     public String maxDailyTotalUnits;
-
-
-    protected PumpDescription pumpDescription;
     public boolean validBasalRateProfileSelectedOnPump = true;
-
     public PumpType pumpType = PumpType.GenericAAPS;
-
-
     public ProfileStore profileStore;
     public String units; // Constants.MGDL or Constants.MMOL
     public PumpStatusType pumpStatusType = PumpStatusType.Running;
-
     // TODO maybe not needed anymore in 2.0
     public Double constraintBasalRateAbsolute;
     public Integer constraintBasalRatePercent;
@@ -52,6 +45,14 @@ public abstract class PumpStatus {
     public Integer constraintCarbs;
     public Double constraintMaxIob;
     public Double[] basalsByHour;
+    //public double remainUnits = 0;
+    public int remainBattery = 0;
+    public double currentBasal = 0;
+    public int tempBasalInProgress = 0;
+    public int tempBasalRatio = 0;
+    public int tempBasalRemainMin = 0;
+    public Date tempBasalStart;
+    protected PumpDescription pumpDescription;
 
 
     public PumpStatus(PumpDescription pumpDescription) {
@@ -59,6 +60,20 @@ public abstract class PumpStatus {
 
         this.initSettings();
     }
+
+    // FIXME cleanup this is from RT2
+
+    //    public long getTimeIndex() {
+    //        return (long) Math.ceil(time.getTime() / 60000d);
+    //    }
+    //
+    //    public void setTimeIndex(long timeIndex) {
+    //        this.timeIndex = timeIndex;
+    //    }
+    //
+    //    public long timeIndex;
+    //
+    //    public Date time;
 
 
     public abstract void initSettings();
@@ -80,33 +95,10 @@ public abstract class PumpStatus {
         return pumpType;
     }
 
+
     public void setPumpType(PumpType pumpType) {
         this.pumpType = pumpType;
     }
-
-    // FIXME cleanup this is from RT2
-
-//    public long getTimeIndex() {
-//        return (long) Math.ceil(time.getTime() / 60000d);
-//    }
-//
-//    public void setTimeIndex(long timeIndex) {
-//        this.timeIndex = timeIndex;
-//    }
-//
-//    public long timeIndex;
-//
-//    public Date time;
-
-    //public double remainUnits = 0;
-    public int remainBattery = 0;
-
-    public double currentBasal = 0;
-
-    public int tempBasalInProgress = 0;
-    public int tempBasalRatio = 0;
-    public int tempBasalRemainMin = 0;
-    public Date tempBasalStart;
 
     //public Date last_bolus_time;
     //public double last_bolus_amount = 0;

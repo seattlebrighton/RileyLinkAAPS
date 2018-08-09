@@ -43,22 +43,16 @@ import info.nightscout.androidaps.plugins.PumpCommon.utils.ThreadUtil;
 public class RileyLinkBLE {
 
     private static final Logger LOG = LoggerFactory.getLogger(RFTools.class);
-
+    private final Context context;
     public boolean gattDebugEnabled = true;
-
+    boolean manualDisconnect = false;
     private BluetoothAdapter bluetoothAdapter;
     private BluetoothGattCallback bluetoothGattCallback;
-
-    private final Context context;
-
     private BluetoothDevice rileyLinkDevice;
     private BluetoothGatt bluetoothConnectionGatt = null;
-
     private BLECommOperation mCurrentOperation;
     private Semaphore gattOperationSema = new Semaphore(1, true);
-
     private Runnable radioResponseCountNotified;
-
     private boolean mIsConnected = false;
 
 
@@ -370,9 +364,6 @@ public class RileyLinkBLE {
             }
         }
     }
-
-
-    boolean manualDisconnect = false;
 
 
     public void disconnect() {

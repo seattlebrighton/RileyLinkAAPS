@@ -42,7 +42,7 @@ public enum PumpBolusType //implements CodeEnumWithTranslation
     private static boolean translated;
 
     static {
-        for (PumpBolusType pbt : values()) {
+        for(PumpBolusType pbt : values()) {
             codeMapping.put(pbt.code, pbt);
         }
     }
@@ -89,6 +89,25 @@ public enum PumpBolusType //implements CodeEnumWithTranslation
     }
 
 
+    public static PumpBolusType getByCode(int code) {
+        if (codeMapping.containsKey(code)) {
+            return codeMapping.get(code);
+        } else {
+            return PumpBolusType.None;
+        }
+    }
+
+
+    /**
+     * Get Descriptions (array)
+     *
+     * @return array of strings with description
+     */
+    public static String[] getDescriptions() {
+        return descriptions;
+    }
+
+
     public String getTranslation() {
         return translation;
     }
@@ -111,24 +130,5 @@ public enum PumpBolusType //implements CodeEnumWithTranslation
 
     public String getName() {
         return this.name();
-    }
-
-
-    public static PumpBolusType getByCode(int code) {
-        if (codeMapping.containsKey(code)) {
-            return codeMapping.get(code);
-        } else {
-            return PumpBolusType.None;
-        }
-    }
-
-
-    /**
-     * Get Descriptions (array)
-     *
-     * @return array of strings with description
-     */
-    public static String[] getDescriptions() {
-        return descriptions;
     }
 }

@@ -8,12 +8,6 @@ public class CarelinkShortMessageBody extends MessageBody {
     byte[] body;
 
 
-    @Override
-    public int getLength() {
-        return body.length;
-    }
-
-
     public CarelinkShortMessageBody() {
         init(new byte[]{0});
     }
@@ -21,6 +15,12 @@ public class CarelinkShortMessageBody extends MessageBody {
 
     public CarelinkShortMessageBody(byte[] data) {
         init(data);
+    }
+
+
+    @Override
+    public int getLength() {
+        return body.length;
     }
 
 

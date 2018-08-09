@@ -45,18 +45,18 @@ public class MedtronicPumpResult extends ServiceResult {
     }
 
 
-//    public void addParameter(String parameter, String value)
-//    {
-//        map.put(parameter, value);
-//    }
+    //    public void addParameter(String parameter, String value)
+    //    {
+    //        map.put(parameter, value);
+    //    }
 
 
-//    public void setTime(LocalDateTime pumpTime) {
-//        Bundle map = getMap();
-//        DateTimeFormatter fmt = DateTimeFormat.forStyle("FF");
-//        map.putString("PumpTime", fmt.print(pumpTime));
-//        setMap(map);
-//    }
+    //    public void setTime(LocalDateTime pumpTime) {
+    //        Bundle map = getMap();
+    //        DateTimeFormatter fmt = DateTimeFormat.forStyle("FF");
+    //        map.putString("PumpTime", fmt.print(pumpTime));
+    //        setMap(map);
+    //    }
 
 
     public void addParameter(String key, LocalDateTime time) {

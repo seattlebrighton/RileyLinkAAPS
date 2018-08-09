@@ -1,8 +1,8 @@
 package info.nightscout.androidaps.plugins.PumpMedtronic.comm.history.pump;
 
 import info.nightscout.androidaps.plugins.PumpCommon.utils.HexDump;
+import info.nightscout.androidaps.plugins.PumpCommon.utils.StringUtil;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.history.MedtronicHistoryEntry;
-import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.PumpTimeStampedRecord;
 
 /**
  * Application:   GGC - GNU Gluco Control
@@ -61,40 +61,25 @@ public class PumpHistoryEntry extends MedtronicHistoryEntry {
     }
 
 
-    @Override
-    public String getToStringStart() {
-        return "PumpHistoryRecord [type=" + getStringInLength(entryType.name(), 20) + " [" + getStringInLength("" + getOpCode(), 3) + ", 0x" + HexDump.getCorrectHexValue((byte) getOpCode()) + "]";
-    }
-
-
-    private String getStringInLength(String value, int length) {
-        StringBuilder val = new StringBuilder(value);
-
-        if (val.length() > length) {
-            return val.substring(0, length);
-        }
-
-        for(int i = val.length(); i < length; i++) {
-            val.append(" ");
-        }
-
-        return val.toString();
-    }
-
-
     public void setOpCode(Integer opCode) {
         this.opCode = opCode;
     }
 
 
-    public PumpTimeStampedRecord getHistoryEntryDetails() {
-        return historyEntryDetails;
+    @Override
+    public String getToStringStart() {
+        return "PumpHistoryRecord [type=" + StringUtil.getStringInLength(entryType.name(), 20) + " [" + StringUtil.getStringInLength("" + getOpCode(), 3) + ", 0x" + HexDump.getCorrectHexValue((byte) getOpCode()) + "]";
     }
 
 
-    public void setHistoryEntryDetails(PumpTimeStampedRecord historyEntryDetails) {
-        this.historyEntryDetails = historyEntryDetails;
-    }
+    //    public PumpTimeStampedRecord getHistoryEntryDetails() {
+    //        return historyEntryDetails;
+    //    }
+    //
+    //
+    //    public void setHistoryEntryDetails(PumpTimeStampedRecord historyEntryDetails) {
+    //        this.historyEntryDetails = historyEntryDetails;
+    //    }
 
 
     public int getOffset() {

@@ -30,23 +30,19 @@ public enum PumpType {
     // Cellnovo
 
     Cellnovo1("Cellnovo", 0.05f, null, //
-            new DoseSettings(0.05f, 30, 24 * 60, 1f, null),
-            PumpTempBasalType.Percent,
-            new DoseSettings(5, 30, 24 * 60, 0f, 200f), //
+            new DoseSettings(0.05f, 30, 24 * 60, 1f, null), PumpTempBasalType.Percent, new DoseSettings(5, 30, 24 * 60, 0f, 200f), //
             0.05f, 0.05f, null, PumpCapability.VirtualPump), //
 
     // Accu-Chek
 
     AccuChekCombo("Accu-Chek Combo", 0.1f, null, //
             new DoseSettings(0.1f, 15, 12 * 60, 0.1f), //
-            PumpTempBasalType.Percent,
-            new DoseSettings(10, 15, 12 * 60, 0f, 500f),  //
+            PumpTempBasalType.Percent, new DoseSettings(10, 15, 12 * 60, 0f, 500f),  //
             0.01f, 0.1f, DoseStepSize.ComboBasal, PumpCapability.Bolus_TBR_Basal_Refill_Carb), //
 
     AccuChekSpirit("Accu-Chek Spirit", 0.1f, null, //
             new DoseSettings(0.1f, 15, 12 * 60, 0.1f), //
-            PumpTempBasalType.Percent,
-            new DoseSettings(10, 15, 12 * 60, 0f, 500f),  //
+            PumpTempBasalType.Percent, new DoseSettings(10, 15, 12 * 60, 0f, 500f),  //
             0.01f, 0.1f, null, PumpCapability.VirtualPump), //
 
 
@@ -72,8 +68,7 @@ public enum PumpType {
             new DoseSettings(10f, 60, 24 * 60, 0f, 200f), //
             0.1f, 0.01f, null, PumpCapability.Bolus_Extended_TBR_Basal_Refill_Carb),
 
-    DanaRS("DanaRS", DanaR),
-    DanaRv2("DanaRv2", DanaR),
+    DanaRS("DanaRS", DanaR), DanaRv2("DanaRv2", DanaR),
 
 
     // Insulet
@@ -90,9 +85,7 @@ public enum PumpType {
             new DoseSettings(0.05f, 30, 24 * 60, 0f, 35f), //
             0.05f, 0.05f, null, PumpCapability.VirtualPump), // TODO
 
-    Minimed_515_715("Medtronic 515/715", Minimed_512_712),
-    Minimed_522_722("Medtronic 522/722", Minimed_512_712),
-    Minimed_523_723("Medtronic 523/723", Minimed_512_712),
+    Minimed_515_715("Medtronic 515/715", Minimed_512_712), Minimed_522_722("Medtronic 522/722", Minimed_512_712), Minimed_523_723("Medtronic 523/723", Minimed_512_712),
 
     Minimed_553_753_Revel("Medtronic 553/753 (Revel)", 0.05f, null, //
             new DoseSettings(0.05f, 30, 8 * 60, 0.05f), //
@@ -110,15 +103,23 @@ public enum PumpType {
 
     // Tandem
     TandemTSlim("Tandem t:slim", 0.01f, null, //
-            new DoseSettings(0.01f, 15, 8 * 60, 0.4f),
-            PumpTempBasalType.Percent,
-            new DoseSettings(1, 15, 8 * 60, 0f, 250f),  //
+            new DoseSettings(0.01f, 15, 8 * 60, 0.4f), PumpTempBasalType.Percent, new DoseSettings(1, 15, 8 * 60, 0f, 250f),  //
             0.1f, 0.001f, null, PumpCapability.VirtualPump),
 
     TandemTFlex("Tandem t:flex", TandemTSlim), //
     TandemTSlimG4("Tandem t:slim G4", TandemTSlim), //
     TandemTSlimX2("Tandem t:slim X2", TandemTSlim), //
     ;
+
+    private static Map<String, PumpType> mapByDescription;
+
+    static {
+        mapByDescription = new HashMap<>();
+
+        for(PumpType pumpType : values()) {
+            mapByDescription.put(pumpType.getDescription(), pumpType);
+        }
+    }
 
     private String description;
     private float bolusSize;
@@ -131,17 +132,7 @@ public enum PumpType {
     private float baseBasalStep; //
     private DoseStepSize baseBasalSpecialSteps; //
     private PumpCapability pumpCapability;
-
     private PumpType parent;
-    private static Map<String, PumpType> mapByDescription;
-
-    static {
-        mapByDescription = new HashMap<>();
-
-        for (PumpType pumpType : values()) {
-            mapByDescription.put(pumpType.getDescription(), pumpType);
-        }
-    }
 
 
     PumpType(String description, PumpType parent) {
@@ -149,23 +140,28 @@ public enum PumpType {
         this.parent = parent;
     }
 
+
     PumpType(String description, PumpType parent, PumpCapability pumpCapability) {
         this.description = description;
         this.parent = parent;
         this.pumpCapability = pumpCapability;
     }
 
-    PumpType(String description, float bolusSize, DoseStepSize specialBolusSize, //
-             DoseSettings extendedBolusSettings, //
-             PumpTempBasalType pumpTempBasalType, DoseSettings tbrSettings,  //
-             float baseBasalMinValue, float baseBasalStep, DoseStepSize baseBasalSpecialSteps, PumpCapability pumpCapability) {
-        this(description, bolusSize, specialBolusSize, extendedBolusSettings, pumpTempBasalType, tbrSettings, baseBasalMinValue, null, baseBasalStep, baseBasalSpecialSteps, pumpCapability);
-    }
 
     PumpType(String description, float bolusSize, DoseStepSize specialBolusSize, //
              DoseSettings extendedBolusSettings, //
              PumpTempBasalType pumpTempBasalType, DoseSettings tbrSettings,  //
-             float baseBasalMinValue, Float baseBasalMaxValue, float baseBasalStep, DoseStepSize baseBasalSpecialSteps, PumpCapability pumpCapability) {
+             float baseBasalMinValue, float baseBasalStep, DoseStepSize baseBasalSpecialSteps, PumpCapability pumpCapability
+    ) {
+        this(description, bolusSize, specialBolusSize, extendedBolusSettings, pumpTempBasalType, tbrSettings, baseBasalMinValue, null, baseBasalStep, baseBasalSpecialSteps, pumpCapability);
+    }
+
+
+    PumpType(String description, float bolusSize, DoseStepSize specialBolusSize, //
+             DoseSettings extendedBolusSettings, //
+             PumpTempBasalType pumpTempBasalType, DoseSettings tbrSettings,  //
+             float baseBasalMinValue, Float baseBasalMaxValue, float baseBasalStep, DoseStepSize baseBasalSpecialSteps, PumpCapability pumpCapability
+    ) {
         this.description = description;
         this.bolusSize = bolusSize;
         this.specialBolusSize = specialBolusSize;
@@ -180,9 +176,19 @@ public enum PumpType {
     }
 
 
+    public static PumpType getByDescription(String desc) {
+        if (mapByDescription.containsKey(desc)) {
+            return mapByDescription.get(desc);
+        } else {
+            return PumpType.GenericAAPS;
+        }
+    }
+
+
     public String getDescription() {
         return description;
     }
+
 
     public PumpCapability getPumpCapability() {
 
@@ -191,6 +197,7 @@ public enum PumpType {
         else
             return this.pumpCapability;
     }
+
 
     public float getBolusSize() {
         return isParentSet() ? parent.bolusSize : bolusSize;
@@ -244,15 +251,6 @@ public enum PumpType {
 
     private boolean isParentSet() {
         return this.parent != null;
-    }
-
-
-    public static PumpType getByDescription(String desc) {
-        if (mapByDescription.containsKey(desc)) {
-            return mapByDescription.get(desc);
-        } else {
-            return PumpType.GenericAAPS;
-        }
     }
 
 

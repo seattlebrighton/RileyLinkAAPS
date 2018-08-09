@@ -153,11 +153,6 @@ public enum MessageType {
     }
 
 
-    public byte getValue() {
-        return this.mtype;
-    }
-
-
     public static MessageType getByValue(byte msgType) {
 
         if (mapByValue.containsKey(msgType)) {
@@ -165,5 +160,10 @@ public enum MessageType {
         } else {
             return MessageType.Invalid;
         }
+    }
+
+
+    public byte getValue() {
+        return this.mtype;
     }
 }

@@ -22,10 +22,12 @@ public class CharacteristicReadOperation extends BLECommOperation {
 
     private BluetoothGattCharacteristic characteristic;
 
+
     public CharacteristicReadOperation(BluetoothGatt gatt, BluetoothGattCharacteristic chara) {
         this.gatt = gatt;
         this.characteristic = chara;
     }
+
 
     @Override
     public void execute(RileyLinkBLE comm) {
@@ -47,12 +49,12 @@ public class CharacteristicReadOperation extends BLECommOperation {
         value = characteristic.getValue();
     }
 
+
     @Override
     public void gattOperationCompletionCallback(UUID uuid, byte[] value) {
         super.gattOperationCompletionCallback(uuid, value);
         if (!characteristic.getUuid().equals(uuid)) {
-            LOG.error(String.format("Completion callback: UUID does not match! out of sequence? Found: %s, should be %s",
-                    GattAttributes.lookup(characteristic.getUuid()), GattAttributes.lookup(uuid)));
+            LOG.error(String.format("Completion callback: UUID does not match! out of sequence? Found: %s, should be %s", GattAttributes.lookup(characteristic.getUuid()), GattAttributes.lookup(uuid)));
         }
         operationComplete.release();
     }

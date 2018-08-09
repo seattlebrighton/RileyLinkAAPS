@@ -54,15 +54,20 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
     private static final int DEFAULT_TIMEOUT = 2000;
 
     static MedtronicCommunicationManager medtronicCommunicationManager;
-    private MedtronicConverter medtronicConverter;
-
     String errorMessage;
+    private MedtronicConverter medtronicConverter;
+    private boolean debugSetCommands = true;
 
 
     public MedtronicCommunicationManager(Context context, RFSpy rfspy, RileyLinkTargetFrequency targetFrequency) {
         super(context, rfspy, targetFrequency);
         medtronicCommunicationManager = this;
         this.medtronicConverter = new MedtronicConverter();
+    }
+
+
+    public static MedtronicCommunicationManager getInstance() {
+        return medtronicCommunicationManager;
     }
 
 
@@ -117,14 +122,6 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
 
 
     }
-
-
-    public static MedtronicCommunicationManager getInstance() {
-        return medtronicCommunicationManager;
-    }
-
-
-    private boolean debugSetCommands = true;
 
 
     // FIXME remove debugs - Andy
@@ -692,7 +689,6 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
     }
 
 
-    // TODO test with values bigger than 30U
     public Boolean setBolus(double units) {
 
         LOG.warn("setBolus: " + units);
@@ -743,7 +739,6 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
     }
 
 
-    // FIXME:
     public BatteryStatusDTO getRemainingBattery() {
 
         Object responseObject = sendAndGetResponseWithCheck(MedtronicCommandType.GetBatteryStatus);

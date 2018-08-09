@@ -17,7 +17,6 @@ public class CRC {
             203, 80, 190, 37, 19, 136, 127, 228, 210, 73, 149, 14, 56, 163, 84, 207, 249, 98, 140, 23, 33, 186, 77, 214, 224, 123};
 
 
-
     public static byte crc8(byte[] data, int len) {
         byte result = 0;
         if (data == null) {
@@ -32,7 +31,7 @@ public class CRC {
             int tmp3 = tmp2 & 0xFF;
             int idx = tmp3;
             result = (byte) crc8lookup[idx];
-//            log(String.format("iter=%d,tmp=0x%02x, tmp2=0x%02x, tmp3=0x%02x, lookup=0x%02x",i,tmp,tmp2,tmp3,result));
+            //            log(String.format("iter=%d,tmp=0x%02x, tmp2=0x%02x, tmp3=0x%02x, lookup=0x%02x",i,tmp,tmp2,tmp3,result));
         }
         // orig python:
         //result = klass.lookup[ ( result ^ block[ i ] & 0xFF ) ]
@@ -57,7 +56,8 @@ public class CRC {
                         boolean bit = ((b >> (7 - i) & 1) == 1);
                         boolean c15 = ((crc >> 15 & 1) == 1);
                         crc <<= 1;
-                        if (c15 ^ bit) crc ^= polynomial;
+                        if (c15 ^ bit)
+                            crc ^= polynomial;
                     }
                 }
             }

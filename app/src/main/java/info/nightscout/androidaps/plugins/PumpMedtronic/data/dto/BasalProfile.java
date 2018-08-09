@@ -29,12 +29,12 @@ import info.nightscout.androidaps.plugins.PumpMedtronic.util.MedtronicUtil;
  * m is the start time-of-day for the basal rate period (in 30 minute increments?)
  */
 public class BasalProfile {
+    public static final int MAX_RAW_DATA_SIZE = (48 * 3) + 1;
     //private static final String TAG = "BasalProfile";
     private static final Logger LOG = LoggerFactory.getLogger(BasalProfile.class);
-
     private static final boolean DEBUG_BASALPROFILE = false;
-    public static final int MAX_RAW_DATA_SIZE = (48 * 3) + 1;
     protected byte[] mRawData; // store as byte array to make transport (via parcel) easier
+    List<BasalProfileEntry> listEntries;
 
 
     public BasalProfile() {
@@ -47,17 +47,17 @@ public class BasalProfile {
     }
 
 
+    // this asUINT8 should be combined with Record.asUINT8, and placed in a new util class.
+    protected static int readUnsignedByte(byte b) {
+        return (b < 0) ? b + 256 : b;
+    }
+
+
     public void init() {
         mRawData = new byte[MAX_RAW_DATA_SIZE];
         mRawData[0] = 0;
         mRawData[1] = 0;
         mRawData[2] = 0x3f;
-    }
-
-
-    // this asUINT8 should be combined with Record.asUINT8, and placed in a new util class.
-    protected static int readUnsignedByte(byte b) {
-        return (b < 0) ? b + 256 : b;
     }
 
 
@@ -166,30 +166,12 @@ public class BasalProfile {
                 break;
 
             r = MedtronicUtil.makeUnsignedShort(mRawData[i + 1], mRawData[i]); //readUnsignedByte(mRawData[i]);
-            // What is mRawData[i+1]? Not used in decocare.
             st = readUnsignedByte(mRawData[i + 2]);
             entries.add(new BasalProfileEntry(r, st));
         }
 
-
-        //        while (!done) {
-        //
-        //            r = MedtronicUtil.makeUnsignedShort(mRawData[i + 1], mRawData[i]); //readUnsignedByte(mRawData[i]);
-        //            // What is mRawData[i+1]? Not used in decocare.
-        //            st = readUnsignedByte(mRawData[i + 2]);
-        //            entries.add(new BasalProfileEntry(r, st));
-        //            i = i + 3;
-        //            if (i >= MAX_RAW_DATA_SIZE) {
-        //                done = true;
-        //            } else if ((mRawData[i] == 0) && (mRawData[i + 1] == 0) && (mRawData[i + 2] == 0)) {
-        //                done = true;
-        //            }
-        //        }
         return entries;
     }
-
-
-    List<BasalProfileEntry> listEntries;
 
 
     /**
@@ -213,16 +195,8 @@ public class BasalProfile {
 
             byte[] strokes = MedtronicUtil.getBasalStrokes(profileEntry.rate, true);
 
-            // TODO check if this is correct
             outData.add(profileEntry.rate_raw[0]);
             outData.add(profileEntry.rate_raw[1]);
-
-            //int time = profileEntry.startTime.getHourOfDay();
-
-            //if (profileEntry.startTime.getMinuteOfHour() == 30) {
-            //    time++;
-            //}
-
             outData.add(profileEntry.startTime_raw);
         }
 

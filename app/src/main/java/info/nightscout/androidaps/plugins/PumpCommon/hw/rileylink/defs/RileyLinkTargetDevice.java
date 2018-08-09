@@ -11,10 +11,12 @@ public enum RileyLinkTargetDevice {
 
     private boolean tuneUpEnabled;
 
+
     RileyLinkTargetDevice(boolean tuneUpEnabled) {
 
         this.tuneUpEnabled = tuneUpEnabled;
     }
+
 
     public boolean isTuneUpEnabled() {
         return tuneUpEnabled;

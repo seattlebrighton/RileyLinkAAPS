@@ -70,23 +70,22 @@ public enum CGMSHistoryEntryType {
 
     GlucoseSensorData(0xFF, "GlucoseSensorData", 1, 0, 0, DateType.PreviousTimeStamp);;
 
-    private int opCode;
-    private String description;
-    private int headLength;
-    private int dateLength;
-    private int bodyLength;
-    private int totalLength;
-    public boolean schemaSet = false;
-    private DateType dateType;
-
     private static Map<Integer, CGMSHistoryEntryType> opCodeMap = new HashMap<Integer, CGMSHistoryEntryType>();
-
 
     static {
         for(CGMSHistoryEntryType type : values()) {
             opCodeMap.put(type.opCode, type);
         }
     }
+
+    public boolean schemaSet = false;
+    private int opCode;
+    private String description;
+    private int headLength;
+    private int dateLength;
+    private int bodyLength;
+    private int totalLength;
+    private DateType dateType;
 
 
     CGMSHistoryEntryType(int opCode, String name, int head, int date, int body, DateType dateType) {
@@ -112,6 +111,14 @@ public enum CGMSHistoryEntryType {
     // }
 
 
+    public static CGMSHistoryEntryType getByCode(int opCode) {
+        if (opCodeMap.containsKey(opCode)) {
+            return opCodeMap.get(opCode);
+        } else
+            return CGMSHistoryEntryType.None;
+    }
+
+
     public int getCode() {
         return this.opCode;
     }
@@ -119,14 +126,6 @@ public enum CGMSHistoryEntryType {
 
     public int getTotalLength() {
         return totalLength;
-    }
-
-
-    public static CGMSHistoryEntryType getByCode(int opCode) {
-        if (opCodeMap.containsKey(opCode)) {
-            return opCodeMap.get(opCode);
-        } else
-            return CGMSHistoryEntryType.None;
     }
 
 
@@ -160,6 +159,11 @@ public enum CGMSHistoryEntryType {
     }
 
 
+    public boolean hasDate() {
+        return (this.dateType == DateType.MinuteSpecific) || (this.dateType == DateType.SecondSpecific);
+    }
+
+
     public enum DateType {
         None, //
         MinuteSpecific, //
@@ -167,11 +171,6 @@ public enum CGMSHistoryEntryType {
         PreviousTimeStamp //
         ;
 
-    }
-
-
-    public boolean hasDate() {
-        return (this.dateType == DateType.MinuteSpecific) || (this.dateType == DateType.SecondSpecific);
     }
 
 }

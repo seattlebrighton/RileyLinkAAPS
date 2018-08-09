@@ -8,17 +8,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.HexDump;
+import info.nightscout.androidaps.plugins.PumpCommon.utils.StringUtil;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.history.MedtronicHistoryDecoder;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.history.MedtronicHistoryEntry;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.history.RawHistoryPage;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.history.RecordDecodeStatus;
-import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.BasalProfileEntry;
 import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.BolusDTO;
 import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.BolusWizardDTO;
+import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.TempBasalPair;
 import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicDeviceType;
 import info.nightscout.androidaps.plugins.PumpMedtronic.defs.PumpBolusType;
 import info.nightscout.androidaps.plugins.PumpMedtronic.util.MedtronicUtil;
@@ -57,10 +60,11 @@ public class MedtronicPumpHistoryDecoder extends MedtronicHistoryDecoder {
     //PumpValuesWriter pumpValuesWriter = null;
 
     // DataAccessPlugInBase dataAccess = DataAccessPump.getInstance();
-
+    Map<String, BolusDTO> bolusHistory = new HashMap<>();
     // Temporary records for processing
     private PumpHistoryEntry tbrPreviousRecord;
     private PumpHistoryEntry changeTimeRecord;
+    private MedtronicDeviceType deviceType;
 
 
     public MedtronicPumpHistoryDecoder() {
@@ -80,6 +84,7 @@ public class MedtronicPumpHistoryDecoder extends MedtronicHistoryDecoder {
         int counter = 0;
         int record = 0;
         boolean incompletePacket = false;
+        deviceType = MedtronicUtil.getMedtronicPumpModel();
 
         List<MedtronicHistoryEntry> outList = new ArrayList<MedtronicHistoryEntry>();
         String skipped = null;
@@ -387,7 +392,6 @@ public class MedtronicPumpHistoryDecoder extends MedtronicHistoryDecoder {
                 decodeChangeTime(entry);
                 return RecordDecodeStatus.OK;
 
-
             case TempBasalDuration:
                 decodeTempBasal(entry);
                 return RecordDecodeStatus.OK;
@@ -467,19 +471,6 @@ public class MedtronicPumpHistoryDecoder extends MedtronicHistoryDecoder {
     }
 
 
-    // FIXME
-    private void decodeChangeTime(PumpHistoryEntry entry) {
-        if (changeTimeRecord == null)
-            return;
-
-        //String timeChange = String.format(PumpEventType.DateTimeChanged.getValueTemplate(), this.changeTimeRecord.getATechDate().getDateTimeString(), entry.getATechDate().getDateTimeString());
-
-        //writeData(PumpBaseType.Event, PumpEventType.DateTimeChanged, timeChange, entry.getATechDate());
-
-        this.changeTimeRecord = null;
-    }
-
-
     //    private void decodeCalBGForPH(PumpHistoryEntry entry) {
     //        int high = (entry.getDatetime()[4] & 0x80) >> 7;
     //        int bg = bitUtils.toInt(high, getUnsignedInt(entry.getHead()[0]));
@@ -496,14 +487,29 @@ public class MedtronicPumpHistoryDecoder extends MedtronicHistoryDecoder {
 
 
     // FIXME
+    private void decodeChangeTime(PumpHistoryEntry entry) {
+        if (changeTimeRecord == null)
+            return;
+
+        //String timeChange = String.format(PumpEventType.DateTimeChanged.getValueTemplate(), this.changeTimeRecord.getATechDate().getDateTimeString(), entry.getATechDate().getDateTimeString());
+
+        //writeData(PumpBaseType.Event, PumpEventType.DateTimeChanged, timeChange, entry.getATechDate());
+
+        this.changeTimeRecord = null;
+    }
+
+
+    // FIXME
     private void decodeBatteryActivity(PumpHistoryEntry entry) {
         //this.writeData(PumpBaseType.Event, entry.getHead()[0] == 0 ? PumpEventType.BatteryRemoved : PumpEventType.BatteryReplaced, entry.getATechDate());
     }
 
 
-    // FIXME
+    // FIXME 554 ?
     private void decodeEndResultTotals(PumpHistoryEntry entry) {
-        float totals = bitUtils.toInt(entry.getHead()[2], entry.getHead()[3]) * 0.025f;
+        float totals = bitUtils.toInt((int) entry.getHead()[0], (int) entry.getHead()[1], (int) entry.getHead()[2], (int) entry.getHead()[3], ByteUtil.BitConversion.BIG_ENDIAN) * 0.025f;
+
+        entry.addDecodedData("Totals", totals);
 
         //this.writeData(PumpBaseType.Report, PumpReport.InsulinTotalDay, getFormattedFloat(totals, 2), entry.getATechDate());
     }
@@ -526,6 +532,7 @@ public class MedtronicPumpHistoryDecoder extends MedtronicHistoryDecoder {
             return RecordDecodeStatus.Error;
         } else {
             //writeData(PumpBaseType.Basal, PumpBasalType.ValueChange, getFormattedFloat(rate, 3), entry.getATechDate());
+            entry.addDecodedData("Value", getFormattedFloat(rate, 3));
             return RecordDecodeStatus.OK;
         }
 
@@ -570,7 +577,9 @@ public class MedtronicPumpHistoryDecoder extends MedtronicHistoryDecoder {
             dto.correctionEstimate = (body[7] + (body[5] & 0x0F)) / 10.0f;
         }
 
-        entry.setHistoryEntryDetails(dto);
+        dto.localDateTime = entry.getLocalDateTime();
+        entry.addDecodedData("Object", dto);
+        //entry.setHistoryEntryDetails(dto);
 
         //this.writeData(PumpBaseType.Event, PumpEventType.BolusWizard, dto.getValue(), entry.getATechDate());
 
@@ -589,15 +598,23 @@ public class MedtronicPumpHistoryDecoder extends MedtronicHistoryDecoder {
         float amount = bitUtils.toInt(entry.getHead()[2], entry.getHead()[3]) / 10.0f;
         float fixed = bitUtils.toInt(entry.getHead()[0], entry.getHead()[1]) / 10.0f;
 
+        entry.addDecodedData("Amount", amount);
+        entry.addDecodedData("FixedAmount", fixed);
+
+        //        amount = (double) (asUINT8(data[4]) << 2) / 40.0;
+        //        programmedAmount = (double) (asUINT8(data[2]) << 2) / 40.0;
+        //        primeType = programmedAmount == 0 ? "manual" : "fixed";
+        //        return true;
+
         //this.writeData(PumpBaseType.Event, PumpEventType.PrimeInfusionSet, fixed > 0 ? getFormattedFloat(fixed, 1) : getFormattedFloat(amount, 1), entry.getATechDate());
     }
 
 
     @Override
     public void postProcess() {
-        if (bolusEntry != null) {
-            writeBolus(pumpHistoryEntry4BolusEntry, bolusEntry);
-        }
+        //if (bolusEntry != null) {
+        //    writeBolus(pumpHistoryEntry4BolusEntry, bolusEntry);
+        //}
     }
 
 
@@ -605,10 +622,6 @@ public class MedtronicPumpHistoryDecoder extends MedtronicHistoryDecoder {
     protected void runPostDecodeTasks() {
         this.showStatistics();
     }
-
-
-    BolusDTO bolusEntry;
-    PumpHistoryEntry pumpHistoryEntry4BolusEntry;
 
 
     private void decodeBolus(PumpHistoryEntry entry) {
@@ -630,42 +643,32 @@ public class MedtronicPumpHistoryDecoder extends MedtronicHistoryDecoder {
         bolus.setBolusType((bolus.getDuration() != null && (bolus.getDuration() > 0)) ? PumpBolusType.Extended : PumpBolusType.Normal);
         bolus.setLocalDateTime(entry.getLocalDateTime());
 
-        if (bolusEntry != null) {
-            if (bolus.getBolusType() == PumpBolusType.Extended) {
-                if (bolusEntry.getLocalDateTime().equals(bolus.getLocalDateTime())) {
-                    bolus.setImmediateAmount(bolusEntry.getDeliveredAmount());
-                    bolus.setBolusType(PumpBolusType.Multiwave);
+        String dateTime = StringUtil.toDateTimeString(entry.getLocalDateTime());
 
-                    writeBolus(entry, bolus);
-                } else {
-                    // FIXME ths might not be correct
-                    writeBolus(entry, bolusEntry);
-                }
-            } else {
-                writeBolus(entry, bolusEntry);
+        if (bolus.getBolusType() == PumpBolusType.Extended) {
+            // we check if we have coresponding normal entry
+            if (bolusHistory.containsKey(dateTime)) {
+                BolusDTO bolusDTO = bolusHistory.get(dateTime);
+
+                bolusDTO.setImmediateAmount(bolus.getDeliveredAmount());
+                bolusDTO.setBolusType(PumpBolusType.Multiwave);
+
+                return;
             }
         }
 
-        bolusEntry = bolus;
-        pumpHistoryEntry4BolusEntry = entry;
+
+        entry.addDecodedData("Object", bolus);
+
+        bolusHistory.put(dateTime, bolus);
+
+
     }
 
 
-    private void resetBolusEntry() {
-        bolusEntry = null;
-        pumpHistoryEntry4BolusEntry = null;
-    }
-
-
-    private void writeBolus(PumpHistoryEntry pumpHistoryEntry, BolusDTO bolus) {
-        //writeData(PumpBaseType.Bolus, bolus.getBolusType(), bolus.getValue(), bolus.getATechDate());
-        pumpHistoryEntry.setHistoryEntryDetails(bolus);
-        resetBolusEntry();
-    }
-
-
-    // FIXME
+    // FIXME new pumps have single record (I think)
     private void decodeTempBasal(PumpHistoryEntry entry) {
+
         if (this.tbrPreviousRecord == null) {
             // LOG.debug(this.tbrPreviousRecord.toString());
             this.tbrPreviousRecord = entry;
@@ -689,21 +692,23 @@ public class MedtronicPumpHistoryDecoder extends MedtronicHistoryDecoder {
         // LOG.debug("Rate: " + tbrRate.toString());
         // LOG.debug("Durration: " + tbrDuration.toString());
 
-        BasalProfileEntry basalProfileEntry = new BasalProfileEntry(tbrRate.getHead()[0], tbrDuration.getHead()[0]);
 
-
-        // System.out.println(
-        // "TBR: amount=" + tbr.getAmount() + ", duration=" + tbr.getDuration()
-        // + " min. Packed: " + tbr.getValue());
-
-        // FIXME set Unit
-
-        // FIXME AAPS
-        //        if (tbr.getDuration() > 0) {
-        //            writeData(PumpBaseType.Basal, PumpBasalType.TemporaryBasalRate, tbr.getValue(), entry.getATechDate());
+        //        if ((asUINT8(data[7]) >> 3) == 0) {
+        //            mIsPercent = false;
+        //            tbrRate = (double) (asUINT8(tbrRate.getRawData().get(1)) / 40.0;
         //        } else {
-        //            writeData(PumpBaseType.Basal, PumpBasalType.TemporaryBasalRateCanceled, "", entry.getATechDate());
+        //            mIsPercent = true;
+        //            basalRate = asUINT8(data[1]);
         //        }
+
+        // FIXME
+        TempBasalPair tbr = new TempBasalPair(tbrRate.getHead()[0], tbrDuration.getHead()[0], (ByteUtil.asUINT8(tbrRate.getDatetime()[4]) >> 3) == 0);
+
+        //        System.out.println("TBR: amount=" + tbr.getInsulinRate() + ", duration=" + tbr.getDurationMinutes()
+        //                // + " min. Packed: " + tbr.getValue()
+        //        );
+
+        entry.addDecodedData("Object", tbr);
 
         tbrPreviousRecord = null;
     }

@@ -11,6 +11,7 @@ public class FrequencyScanResults {
     public ArrayList<FrequencyTrial> trials = new ArrayList<>();
     public double bestFrequencyMHz = 0.0;
 
+
     public void sort() {
         Collections.sort(trials, new Comparator<FrequencyTrial>() {
             @Override

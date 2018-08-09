@@ -18,6 +18,7 @@ public enum PumpDeviceState {
 
     Integer resourceId = null;
 
+
     PumpDeviceState() {
 
     }

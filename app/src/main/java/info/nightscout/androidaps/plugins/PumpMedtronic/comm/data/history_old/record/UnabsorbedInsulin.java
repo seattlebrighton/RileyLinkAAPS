@@ -10,9 +10,15 @@ import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history_old.Record;
 import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicDeviceType;
 
+@Deprecated
 public class UnabsorbedInsulin extends Record {
     private static final String TAG = "UnabsorbedInsulin";
+    ArrayList<UnabsorbedInsulinRecord> records = new ArrayList<>();
     private int length = 2;
+
+
+    public UnabsorbedInsulin() {
+    }
 
 
     @Override
@@ -24,24 +30,6 @@ public class UnabsorbedInsulin extends Record {
     @Override
     public String getShortTypeName() {
         return "Unabsorbed Insulin";
-    }
-
-
-    class UnabsorbedInsulinRecord {
-        public double amount = 0.0;
-        public int age = 0;
-
-
-        public UnabsorbedInsulinRecord(double amount, int age) {
-            this.amount = amount;
-            this.age = age;
-        }
-    }
-
-    ArrayList<UnabsorbedInsulinRecord> records = new ArrayList<>();
-
-
-    public UnabsorbedInsulin() {
     }
 
 
@@ -107,5 +95,17 @@ public class UnabsorbedInsulin extends Record {
     @Override
     public boolean isAAPSRelevant() {
         return true;
+    }
+
+
+    class UnabsorbedInsulinRecord {
+        public double amount = 0.0;
+        public int age = 0;
+
+
+        public UnabsorbedInsulinRecord(double amount, int age) {
+            this.amount = amount;
+            this.age = age;
+        }
     }
 }

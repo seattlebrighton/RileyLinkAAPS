@@ -10,9 +10,11 @@ public class ButtonPressCarelinkMessageBody extends CarelinkLongMessageBody {
     public static final byte BUTTON_UP = 0x03;
     public static final byte BUTTON_DOWN = 0x04;
 
+
     public ButtonPressCarelinkMessageBody(int which) {
         init(which);
     }
+
 
     public void init(int buttonType) {
         int numArgs = 1;

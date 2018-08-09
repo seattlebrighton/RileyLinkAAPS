@@ -22,11 +22,13 @@ public class CharacteristicWriteOperation extends BLECommOperation {
 
     private BluetoothGattCharacteristic characteristic;
 
+
     public CharacteristicWriteOperation(BluetoothGatt gatt, BluetoothGattCharacteristic chara, byte[] value) {
         this.gatt = gatt;
         this.characteristic = chara;
         this.value = value;
     }
+
 
     @Override
     public void execute(RileyLinkBLE comm) {
@@ -50,12 +52,12 @@ public class CharacteristicWriteOperation extends BLECommOperation {
 
     }
 
+
     // This will be run on the IBinder thread
     @Override
     public void gattOperationCompletionCallback(UUID uuid, byte[] value) {
         if (!characteristic.getUuid().equals(uuid)) {
-            LOG.error(String.format("Completion callback: UUID does not match! out of sequence? Found: %s, should be %s",
-                    GattAttributes.lookup(characteristic.getUuid()), GattAttributes.lookup(uuid)));
+            LOG.error(String.format("Completion callback: UUID does not match! out of sequence? Found: %s, should be %s", GattAttributes.lookup(characteristic.getUuid()), GattAttributes.lookup(uuid)));
         }
         operationComplete.release();
     }

@@ -226,12 +226,6 @@ public class ByteUtil {
     }
 
 
-    public enum BitConversion {
-        LITTLE_ENDIAN, // 20 0 0 0 = reverse
-        BIG_ENDIAN // 0 0 0 20 = normal - java
-    }
-
-
     public static List<Byte> getListFromByteArray(byte[] array) {
         List<Byte> listOut = new ArrayList<Byte>();
 
@@ -318,15 +312,15 @@ public class ByteUtil {
     }
 
 
+    public static int convertUnsignedByteToInt(byte data) {
+        return data & 0xff;
+    }
+
+
     //    public String getHexCompact(int i) {
     //        long l = i != -1 ? convertUnsignedIntToLong(i) : i;
     //        return getHexCompact(l);
     //    }
-
-
-    public static int convertUnsignedByteToInt(byte data) {
-        return data & 0xff;
-    }
 
 
     public static String getHexCompact(int l) {
@@ -343,5 +337,11 @@ public class ByteUtil {
 
     public static boolean isOdd(int i) {
         return !isEven(i);
+    }
+
+
+    public enum BitConversion {
+        LITTLE_ENDIAN, // 20 0 0 0 = reverse
+        BIG_ENDIAN // 0 0 0 20 = normal - java
     }
 }
