@@ -9,7 +9,9 @@ public interface MedtronicHistoryEntryInterface {
 
     String getEntryTypeName();
 
+
     void setData(List<Byte> listRawData, boolean doNotProcess);
+
 
     int getDateLength();
 

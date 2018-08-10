@@ -1,6 +1,5 @@
 package info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history_old.record;
 
-
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history_old.TimeStampedRecord;
 
 /**
@@ -8,6 +7,7 @@ import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history_old.Ti
  */
 @Deprecated
 public class AlarmSensorPumpEvent extends TimeStampedRecord {
+
     public AlarmSensorPumpEvent() {
     }
 

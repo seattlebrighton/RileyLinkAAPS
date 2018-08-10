@@ -29,5 +29,4 @@ public class MedtronicConst {
         static final String SMBBoluses = StatsPrefix + "smb_boluses_delivered";
     }
 
-
 }

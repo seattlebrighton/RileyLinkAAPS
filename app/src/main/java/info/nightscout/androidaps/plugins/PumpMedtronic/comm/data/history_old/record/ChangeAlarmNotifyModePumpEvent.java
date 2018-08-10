@@ -3,6 +3,7 @@ package info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history_old.r
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history_old.TimeStampedRecord;
 
 public class ChangeAlarmNotifyModePumpEvent extends TimeStampedRecord {
+
     public ChangeAlarmNotifyModePumpEvent() {
     }
 
@@ -17,6 +18,5 @@ public class ChangeAlarmNotifyModePumpEvent extends TimeStampedRecord {
     public boolean isAAPSRelevant() {
         return false;
     }
-
 
 }

@@ -4,7 +4,6 @@ import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.defs.RileyLink
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.defs.RileyLinkServiceState;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.defs.RileyLinkTargetDevice;
 
-
 /**
  * Created by andy on 16/05/2018.
  */

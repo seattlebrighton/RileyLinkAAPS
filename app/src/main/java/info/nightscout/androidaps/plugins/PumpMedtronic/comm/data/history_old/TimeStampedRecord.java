@@ -11,7 +11,8 @@ import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicDeviceType
  *  Many of the subclasses of this class only override the opcode.
  */
 abstract public class TimeStampedRecord extends Record {
-    //private final static String TAG = "TimeStampedRecord";
+
+    // private final static String TAG = "TimeStampedRecord";
     private final static boolean DEBUG_TIMESTAMPEDRECORD = false;
     protected PumpTimeStamp timestamp;
 

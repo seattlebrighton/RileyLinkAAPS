@@ -34,7 +34,7 @@ public enum RileyLinkTargetFrequency {
 
         double diff = maxFrequency - minFrequency;
 
-        int count = (int) (diff / step);
+        int count = (int)(diff / step);
 
         double freq[] = new double[count];
 

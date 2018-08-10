@@ -19,7 +19,7 @@ public class GetPumpModelCarelinkMessageBody extends MessageBody {
 
 
     public byte[] getRxData() {
-        return new byte[]{0};
+        return new byte[] { 0 };
     }
 
 
@@ -30,7 +30,7 @@ public class GetPumpModelCarelinkMessageBody extends MessageBody {
 
     @Override
     public byte[] getTxData() {
-        return new byte[]{0};
+        return new byte[] { 0 };
     }
 
 

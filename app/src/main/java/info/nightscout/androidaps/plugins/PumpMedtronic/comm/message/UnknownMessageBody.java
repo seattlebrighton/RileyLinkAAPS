@@ -4,6 +4,7 @@ package info.nightscout.androidaps.plugins.PumpMedtronic.comm.message;
  * Created by geoff on 5/29/16.
  */
 public class UnknownMessageBody extends MessageBody {
+
     public byte[] rxData;
 
 

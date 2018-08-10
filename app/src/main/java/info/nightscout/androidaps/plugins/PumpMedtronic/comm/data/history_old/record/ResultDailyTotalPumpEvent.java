@@ -5,6 +5,7 @@ import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history_old.Ti
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history_old.TimeStampedRecord;
 
 public class ResultDailyTotalPumpEvent extends TimeStampedRecord {
+
     private static final String TAG = "ResultDailyTotalPumpEvent";
 
 

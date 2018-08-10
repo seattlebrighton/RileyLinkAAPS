@@ -29,7 +29,7 @@ public enum PacketType {
 
 
     PacketType(int value) {
-        this.value = (byte) value;
+        this.value = (byte)value;
     }
 
 

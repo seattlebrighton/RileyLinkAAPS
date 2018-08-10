@@ -1,6 +1,5 @@
 package info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history_old.record;
 
-
 import android.os.Bundle;
 
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history_old.PumpTimeStamp;
@@ -9,6 +8,7 @@ import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history_old.Ti
 import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicDeviceType;
 
 public class BolusNormalPumpEvent extends TimeStampedRecord {
+
     private final static String TAG = "BolusNormalPumpEvent";
 
     private double programmedAmount = 0.0;

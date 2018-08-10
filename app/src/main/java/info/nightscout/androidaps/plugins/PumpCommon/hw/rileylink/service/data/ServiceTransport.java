@@ -6,8 +6,7 @@ import android.os.Parcel;
 /**
  * Created by geoff on 7/6/16.
  * <p>
- * This class exists to hold a ServiceCommand along with transport variables
- * such as time sent, time received, sender.
+ * This class exists to hold a ServiceCommand along with transport variables such as time sent, time received, sender.
  * May also contain result, if the command is completed.
  */
 public class ServiceTransport extends ServiceMessage {

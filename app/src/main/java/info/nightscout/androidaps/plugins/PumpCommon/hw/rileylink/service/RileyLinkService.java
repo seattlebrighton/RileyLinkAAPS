@@ -1,5 +1,10 @@
 package info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service;
 
+import static info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkUtil.getRileyLinkCommunicationManager;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
@@ -13,9 +18,6 @@ import android.widget.Toast;
 
 import com.gxwtech.roundtrip2.RT2Const;
 import com.gxwtech.roundtrip2.RoundtripService.RileyLinkIPCConnection;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkCommunicationManager;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkConst;
@@ -35,9 +37,6 @@ import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.tasks.
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.tasks.ServiceTaskExecutor;
 import info.nightscout.utils.SP;
 
-import static info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkUtil.getRileyLinkCommunicationManager;
-
-
 /**
  * Created by andy on 5/6/18.
  * Split from original file and renamed.
@@ -51,10 +50,10 @@ public abstract class RileyLinkService extends Service {
     public RileyLinkBLE rileyLinkBLE; // android-bluetooth management
     protected BluetoothAdapter bluetoothAdapter;
     protected RFSpy rfspy; // interface for RL xxx Mhz radio.
-    //protected boolean needBluetoothPermission = true;
+    // protected boolean needBluetoothPermission = true;
     protected RileyLinkIPCConnection rileyLinkIPCConnection;
     protected Context context;
-    //public RileyLinkCommunicationManager pumpCommunicationManager;
+    // public RileyLinkCommunicationManager pumpCommunicationManager;
     protected BroadcastReceiver mBroadcastReceiver;
     protected RileyLinkServiceData rileyLinkServiceData;
     protected RileyLinkTargetFrequency rileyLinkTargetFrequency;
@@ -73,7 +72,7 @@ public abstract class RileyLinkService extends Service {
 
     public synchronized static PowerManager.WakeLock getLock(Context context) {
         if (lockStatic == null) {
-            PowerManager mgr = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+            PowerManager mgr = (PowerManager)context.getSystemService(Context.POWER_SERVICE);
 
             lockStatic = mgr.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, WAKELOCKNAME);
             lockStatic.setReferenceCounted(true);
@@ -130,13 +129,14 @@ public abstract class RileyLinkService extends Service {
         rileyLinkIPCConnection = new RileyLinkIPCConnection(context); // TODO We might be able to remove this -- Andy
         RileyLinkUtil.setRileyLinkIPCConnection(rileyLinkIPCConnection);
 
-
         mBroadcastReceiver = new BroadcastReceiver() {
+
             @Override
             public void onReceive(Context context, Intent intent) {
-            /* here we can listen for local broadcasts, then send ourselves
-             * a specific intent to deal with them, if we wish
-              */
+                /*
+                 * here we can listen for local broadcasts, then send ourselves
+                 * a specific intent to deal with them, if we wish
+                 */
                 if (intent == null) {
                     LOG.error("onReceive: received null intent");
                 } else {
@@ -146,20 +146,24 @@ public abstract class RileyLinkService extends Service {
                     } else {
 
                         if (action.equals(RileyLinkConst.Intents.BluetoothConnected)) {
-                            //LOG.warn("serviceLocal.bluetooth_connected");
-                            rileyLinkIPCConnection.sendNotification(new ServiceNotification(RT2Const.IPC.MSG_note_FindingRileyLink), null);
+                            // LOG.warn("serviceLocal.bluetooth_connected");
+                            rileyLinkIPCConnection.sendNotification(new ServiceNotification(
+                                RT2Const.IPC.MSG_note_FindingRileyLink), null);
                             ServiceTaskExecutor.startTask(new DiscoverGattServicesTask());
                         } else if (action.equals(RileyLinkConst.Intents.RileyLinkDisconnected)) {
                             if (bluetoothAdapter.isEnabled()) {
-                                RileyLinkUtil.setServiceState(RileyLinkServiceState.BluetoothReady, RileyLinkError.RileyLinkUnreachable);
+                                RileyLinkUtil.setServiceState(RileyLinkServiceState.BluetoothReady,
+                                    RileyLinkError.RileyLinkUnreachable);
                             } else {
-                                RileyLinkUtil.setServiceState(RileyLinkServiceState.BluetoothError, RileyLinkError.BluetoothDisabled);
+                                RileyLinkUtil.setServiceState(RileyLinkServiceState.BluetoothError,
+                                    RileyLinkError.BluetoothDisabled);
                             }
 
                         } else if (action.equals(RileyLinkConst.Intents.RileyLinkReady)) {
                             LOG.warn("MedtronicConst.Intents.RileyLinkReady");
                             // FIXME
-                            rileyLinkIPCConnection.sendNotification(new ServiceNotification(RT2Const.IPC.MSG_note_WakingPump), null);
+                            rileyLinkIPCConnection.sendNotification(new ServiceNotification(
+                                RT2Const.IPC.MSG_note_WakingPump), null);
                             rileyLinkBLE.enableNotifications();
                             rfspy.startReader(); // call startReader from outside?
 
@@ -176,23 +180,26 @@ public abstract class RileyLinkService extends Service {
                             LOG.info("Announcing RileyLink open For business");
                         } else if (action.equals(RileyLinkConst.Intents.BluetoothReconnected)) {
                             LOG.debug("Reconnecting Bluetooth");
-                            rileyLinkIPCConnection.sendNotification(new ServiceNotification(RT2Const.IPC.MSG_note_FindingRileyLink), null);
+                            rileyLinkIPCConnection.sendNotification(new ServiceNotification(
+                                RT2Const.IPC.MSG_note_FindingRileyLink), null);
                             bluetoothInit();
                             ServiceTaskExecutor.startTask(new DiscoverGattServicesTask(true));
                         } else if (action.equals(RT2Const.serviceLocal.ipcBound)) {
                             // If we still need permission for bluetooth, ask now.
                             // FIXME removed Andy - doesn't do anything
-                            //                            if (needBluetoothPermission) {
-                            //                                sendBLERequestForAccess();
-                            //                            }
+                            // if (needBluetoothPermission) {
+                            // sendBLERequestForAccess();
+                            // }
 
-                        } /*else if (RT2Const.IPC.MSG_BLE_accessGranted.equals(action)) {
-                            //initializeLeAdapter();
-                            //bluetoothInit();
-                        } else if (RT2Const.IPC.MSG_BLE_accessDenied.equals(action)) {
-                            LOG.error("BLE_Access_Denied recived. Stoping the service.");
-                            stopSelf(); // This will stop the service.
-                        } */ else if (action.equals(RT2Const.IPC.MSG_PUMP_tunePump)) {
+                        } /*
+                           * else if (RT2Const.IPC.MSG_BLE_accessGranted.equals(action)) {
+                           * //initializeLeAdapter();
+                           * //bluetoothInit();
+                           * } else if (RT2Const.IPC.MSG_BLE_accessDenied.equals(action)) {
+                           * LOG.error("BLE_Access_Denied recived. Stoping the service.");
+                           * stopSelf(); // This will stop the service.
+                           * }
+                           */else if (action.equals(RT2Const.IPC.MSG_PUMP_tunePump)) {
                             if (getRileyLinkTargetDevice().isTuneUpEnabled()) {
                                 doTuneUpDevice();
                             }
@@ -227,11 +234,11 @@ public abstract class RileyLinkService extends Service {
         intentFilter.addAction(RileyLinkConst.Intents.RileyLinkDisconnected);
         intentFilter.addAction(RileyLinkConst.Intents.BluetoothReconnected);
         intentFilter.addAction(RT2Const.serviceLocal.ipcBound);
-        //intentFilter.addAction(RT2Const.IPC.MSG_BLE_accessGranted);
-        //intentFilter.addAction(RT2Const.IPC.MSG_BLE_accessDenied);
-        //intentFilter.addAction(RT2Const.IPC.MSG_BLE_useThisDevice);
+        // intentFilter.addAction(RT2Const.IPC.MSG_BLE_accessGranted);
+        // intentFilter.addAction(RT2Const.IPC.MSG_BLE_accessDenied);
+        // intentFilter.addAction(RT2Const.IPC.MSG_BLE_useThisDevice);
         intentFilter.addAction(RT2Const.IPC.MSG_PUMP_tunePump);
-        //intentFilter.addAction(RT2Const.IPC.MSG_PUMP_useThisAddress);
+        // intentFilter.addAction(RT2Const.IPC.MSG_PUMP_useThisAddress);
         intentFilter.addAction(RT2Const.IPC.MSG_ServiceCommand);
         intentFilter.addAction(RT2Const.serviceLocal.INTENT_sessionCompleted);
 
@@ -289,7 +296,8 @@ public abstract class RileyLinkService extends Service {
 
         if (bluetoothAdapter == null) {
             LOG.error("Unable to obtain a BluetoothAdapter.");
-            RileyLinkUtil.setServiceState(RileyLinkServiceState.BluetoothError, RileyLinkError.UnableToObtainBluetoothAdapter);
+            RileyLinkUtil.setServiceState(RileyLinkServiceState.BluetoothError,
+                RileyLinkError.UnableToObtainBluetoothAdapter);
         } else {
 
             if (!bluetoothAdapter.isEnabled()) {
@@ -318,10 +326,11 @@ public abstract class RileyLinkService extends Service {
                 LOG.info("No change to RL address.  Not reconnecting.");
                 return false;
             } else {
-                LOG.warn("Disconnecting from old RL (" + rileyLinkServiceData.rileylinkAddress + "), reconnecting to new: " + deviceAddress);
+                LOG.warn("Disconnecting from old RL (" + rileyLinkServiceData.rileylinkAddress
+                    + "), reconnecting to new: " + deviceAddress);
                 rileyLinkBLE.disconnect();
                 // prolly need to shut down listening thread too?
-                //SP.putString(MedtronicConst.Prefs.RileyLinkAddress, deviceAddress);
+                // SP.putString(MedtronicConst.Prefs.RileyLinkAddress, deviceAddress);
 
                 rileyLinkServiceData.rileylinkAddress = deviceAddress;
                 rileyLinkBLE.findRileyLink(rileyLinkServiceData.rileylinkAddress);
@@ -333,7 +342,8 @@ public abstract class RileyLinkService extends Service {
 
             if (RileyLinkUtil.getServiceState() == RileyLinkServiceState.NotStarted) {
                 if (!bluetoothInit()) {
-                    LOG.error("RileyLink can't get activated, Bluetooth is not functioning correctly. {}", RileyLinkUtil.getError().name());
+                    LOG.error("RileyLink can't get activated, Bluetooth is not functioning correctly. {}",
+                        RileyLinkUtil.getError().name());
                     return false;
                 }
             }
@@ -363,10 +373,10 @@ public abstract class RileyLinkService extends Service {
 
     protected void sendBLERequestForAccess() {
         // FIXME
-        //serviceConnection.sendMessage(RT2Const.IPC.MSG_BLE_requestAccess);
+        // serviceConnection.sendMessage(RT2Const.IPC.MSG_BLE_requestAccess);
 
-        //Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-        //startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+        // Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+        // startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
     }
 
 
@@ -389,7 +399,7 @@ public abstract class RileyLinkService extends Service {
             // we have an old frequency, so let's start there.
             newFrequency = getDeviceCommunicationManager().quickTuneForPump(lastGoodFrequency);
             if (newFrequency == 0.0) {
-                // quick scan failed to find pump.  Try full scan
+                // quick scan failed to find pump. Try full scan
                 LOG.warn("Failed to find pump near last saved frequency, doing full scan");
                 newFrequency = getDeviceCommunicationManager().tuneForDevice();
             }
@@ -401,7 +411,7 @@ public abstract class RileyLinkService extends Service {
 
         if ((newFrequency != 0.0) && (newFrequency != lastGoodFrequency)) {
             LOG.info("Saving new pump frequency of {}MHz", newFrequency);
-            SP.putFloat(RileyLinkConst.Prefs.LastGoodDeviceFrequency, (float) newFrequency);
+            SP.putFloat(RileyLinkConst.Prefs.LastGoodDeviceFrequency, (float)newFrequency);
             rileyLinkServiceData.lastGoodFrequency = newFrequency;
             rileyLinkServiceData.tuneUpDone = true;
             rileyLinkServiceData.lastTuneUpTime = System.currentTimeMillis();
@@ -411,7 +421,8 @@ public abstract class RileyLinkService extends Service {
 
         if (newFrequency == 0.0d) {
             // error tuning pump, pump not present ??
-            RileyLinkUtil.setServiceState(RileyLinkServiceState.PumpConnectorError, RileyLinkError.TuneUpOfDeviceFailed);
+            RileyLinkUtil
+                .setServiceState(RileyLinkServiceState.PumpConnectorError, RileyLinkError.TuneUpOfDeviceFailed);
         }
     }
 

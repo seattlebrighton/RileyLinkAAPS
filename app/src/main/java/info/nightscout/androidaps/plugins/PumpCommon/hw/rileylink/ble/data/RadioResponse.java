@@ -45,7 +45,6 @@ public class RadioResponse {
             return true;
         }
 
-
         if (!decodedOK) {
             return false;
         }
@@ -80,14 +79,15 @@ public class RadioResponse {
                 byte calculatedCRC = CRC.crc8(decodedPayload);
                 receivedCRC = decodeThis[decodeThis.length - 1];
                 if (receivedCRC != calculatedCRC) {
-                    LOG.error(String.format("RadioResponse: CRC mismatch, calculated 0x%02x, received 0x%02x", calculatedCRC, receivedCRC));
+                    LOG.error(String.format("RadioResponse: CRC mismatch, calculated 0x%02x, received 0x%02x",
+                        calculatedCRC, receivedCRC));
                 }
             } else {
                 decodedOK = true;
                 decodedPayload = encodedPayload;
             }
 
-            //byte[] decodeThis = RFTools.decode4b6b(encodedPayload);
+            // byte[] decodeThis = RFTools.decode4b6b(encodedPayload);
         } catch (NumberFormatException e) {
             decodedOK = false;
             LOG.error("Failed to decode radio data: " + ByteUtil.shortHexString(encodedPayload));

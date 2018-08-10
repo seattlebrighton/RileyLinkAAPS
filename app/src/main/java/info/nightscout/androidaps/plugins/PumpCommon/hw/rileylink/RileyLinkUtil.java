@@ -1,17 +1,17 @@
 package info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.gxwtech.roundtrip2.RT2Const;
 import com.gxwtech.roundtrip2.RoundtripService.RileyLinkIPCConnection;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RileyLinkBLE;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkTargetFrequency;
@@ -26,7 +26,6 @@ import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.S
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.tasks.ServiceTask;
 import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicDeviceType;
 
-
 /**
  * Created by andy on 17/05/2018.
  */
@@ -40,10 +39,10 @@ public class RileyLinkUtil {
     private static RileyLinkBLE rileyLinkBLE;
     private static RileyLinkServiceData rileyLinkServiceData;
     private static List<RLHistoryItem> historyRileyLink = new ArrayList<>();
-    //private static PumpType pumpType;
-    //private static MedtronicPumpStatus medtronicPumpStatus;
+    // private static PumpType pumpType;
+    // private static MedtronicPumpStatus medtronicPumpStatus;
     private static RileyLinkService rileyLinkService;
-    //private static RileyLinkIPCConnection rileyLinkIPCConnection;
+    // private static RileyLinkIPCConnection rileyLinkIPCConnection;
     private static MedtronicDeviceType medtronicPumpModel;
     private static RileyLinkTargetFrequency rileyLinkTargetFrequency;
     // BAD dependencies in Classes: RileyLinkService
@@ -82,9 +81,11 @@ public class RileyLinkUtil {
         RileyLinkUtil.rileyLinkServiceData.serviceState = newState;
         RileyLinkUtil.rileyLinkServiceData.errorCode = errorCode;
 
-        LOG.warn("RileyLink State Changed: {} {}", newState, errorCode == null ? "" : " - Error State: " + errorCode.name());
+        LOG.warn("RileyLink State Changed: {} {}", newState,
+            errorCode == null ? "" : " - Error State: " + errorCode.name());
 
-        RileyLinkUtil.historyRileyLink.add(new RLHistoryItem(rileyLinkServiceData.serviceState, rileyLinkServiceData.errorCode));
+        RileyLinkUtil.historyRileyLink.add(new RLHistoryItem(rileyLinkServiceData.serviceState,
+            rileyLinkServiceData.errorCode));
     }
 
 
@@ -103,31 +104,28 @@ public class RileyLinkUtil {
     }
 
 
-    //    public static void setMedtronicPumpStatus(MedtronicPumpStatus medtronicPumpStatus) {
+    // public static void setMedtronicPumpStatus(MedtronicPumpStatus medtronicPumpStatus) {
     //
-    //        RileyLinkUtil.medtronicPumpStatus = medtronicPumpStatus;
-    //    }
+    // RileyLinkUtil.medtronicPumpStatus = medtronicPumpStatus;
+    // }
 
-    //    public static void addHistoryEntry(RLHistoryItem rlHistoryItem) {
-    //        historyRileyLink.add(rlHistoryItem);
-    //    }
+    // public static void addHistoryEntry(RLHistoryItem rlHistoryItem) {
+    // historyRileyLink.add(rlHistoryItem);
+    // }
 
-
-    //    public static MedtronicPumpStatus getMedtronicPumpStatus() {
+    // public static MedtronicPumpStatus getMedtronicPumpStatus() {
     //
-    //        return RileyLinkUtil.medtronicPumpStatus;
-    //    }
-
+    // return RileyLinkUtil.medtronicPumpStatus;
+    // }
 
     public static void setRileyLinkServiceData(RileyLinkServiceData rileyLinkServiceData) {
         RileyLinkUtil.rileyLinkServiceData = rileyLinkServiceData;
     }
 
 
-    //    public static void tuneUpPump() {
-    //        RileyLinkUtil.rileyLinkService.doTunePump(); // FIXME thread
-    //    }
-
+    // public static void tuneUpPump() {
+    // RileyLinkUtil.rileyLinkService.doTunePump(); // FIXME thread
+    // }
 
     public static boolean hasPumpBeenTunned() {
         return RileyLinkUtil.rileyLinkServiceData.tuneUpDone;

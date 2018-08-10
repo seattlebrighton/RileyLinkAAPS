@@ -33,16 +33,19 @@ public class DoseSettings {
 
 
     public int getDurationStep() {
+
         return durationStep;
     }
 
 
     public int getMaxDuration() {
+
         return maxDuration;
     }
 
 
     public float getMinDose() {
+
         return minDose;
     }
 

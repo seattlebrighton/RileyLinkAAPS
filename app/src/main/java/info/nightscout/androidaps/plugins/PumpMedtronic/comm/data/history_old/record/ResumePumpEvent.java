@@ -3,6 +3,7 @@ package info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history_old.r
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history_old.TimeStampedRecord;
 
 public class ResumePumpEvent extends TimeStampedRecord {
+
     public ResumePumpEvent() {
     }
 

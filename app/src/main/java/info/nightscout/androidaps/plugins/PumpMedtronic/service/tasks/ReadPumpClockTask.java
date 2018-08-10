@@ -1,10 +1,10 @@
 package info.nightscout.androidaps.plugins.PumpMedtronic.service.tasks;
 
+import org.joda.time.LocalDateTime;
+
 import android.util.Log;
 
 import com.gxwtech.roundtrip2.ServiceData.ReadPumpClockResult;
-
-import org.joda.time.LocalDateTime;
 
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.ServiceTransport;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.tasks.PumpTask;
@@ -15,6 +15,7 @@ import info.nightscout.androidaps.plugins.PumpMedtronic.service.RileyLinkMedtron
  */
 @Deprecated
 public class ReadPumpClockTask extends PumpTask {
+
     private static final String TAG = "ReadPumpClockTask";
 
 
