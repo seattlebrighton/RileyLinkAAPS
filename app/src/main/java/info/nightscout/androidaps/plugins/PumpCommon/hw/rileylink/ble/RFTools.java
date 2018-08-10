@@ -79,7 +79,7 @@ public class RFTools {
 
     public static ArrayList<Byte> fromBytes(byte[] data) {
         ArrayList<Byte> rval = new ArrayList<>();
-        for(int i = 0; i < data.length; i++) {
+        for (int i = 0; i < data.length; i++) {
             rval.add(data[i]);
         }
         return rval;
@@ -88,7 +88,7 @@ public class RFTools {
 
     public static byte[] toBytes(ArrayList<Byte> data) {
         byte[] rval = new byte[data.size()];
-        for(int i = 0; i < data.size(); i++) {
+        for (int i = 0; i < data.size(); i++) {
             rval[i] = data.get(i);
         }
         return rval;
@@ -97,7 +97,7 @@ public class RFTools {
 
     /* O(n) lookup.  Run on an O(n) translation of a byte-stream, gives O(n**2) performance. Sigh. */
     public static int codeIndex(byte b) {
-        for(int i = 0; i < codes.length; i++) {
+        for (int i = 0; i < codes.length; i++) {
             if (b == codes[i]) {
                 return i;
             }
@@ -117,7 +117,7 @@ public class RFTools {
         int acc = 0;
         int bitcount = 0;
         int i;
-        for(i = 0; i < inData.size(); i++) {
+        for (i = 0; i < inData.size(); i++) {
             acc <<= 6;
             acc |= codes[(inData.get(i) >> 4) & 0x0f];
             bitcount += 6;
@@ -212,7 +212,7 @@ public class RFTools {
         int x = 0;
         //Log.w(TAG,"decode4b6b: untested code");
         //Log.w(TAG,String.format("Decoding %d bytes: %s",raw.length,ByteUtil.shortHexString(raw)));
-        for(int i = 0; i < raw.length; i++) {
+        for (int i = 0; i < raw.length; i++) {
             int unsignedValue = raw[i];
             if (unsignedValue < 0) {
                 unsignedValue += 256;
@@ -272,7 +272,7 @@ public class RFTools {
         char[] buf = new char[length * 2];
 
         int bufIndex = 0;
-        for(int i = offset; i < offset + length; i++) {
+        for (int i = offset; i < offset + length; i++) {
             byte b = array[i];
             buf[bufIndex++] = HEX_DIGITS[(b >>> 4) & 0x0F];
             buf[bufIndex++] = HEX_DIGITS[b & 0x0F];

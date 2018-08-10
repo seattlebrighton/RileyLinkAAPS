@@ -42,7 +42,7 @@ public enum PumpBolusType //implements CodeEnumWithTranslation
     private static boolean translated;
 
     static {
-        for(PumpBolusType pbt : values()) {
+        for (PumpBolusType pbt : values()) {
             codeMapping.put(pbt.code, pbt);
         }
     }

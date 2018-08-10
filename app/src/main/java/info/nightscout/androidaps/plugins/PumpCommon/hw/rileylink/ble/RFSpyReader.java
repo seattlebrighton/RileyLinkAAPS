@@ -100,7 +100,7 @@ public class RFSpyReader {
 
                         if (result.resultCode == BLECommOperationResult.RESULT_SUCCESS) {
                             // only data up to the first null is valid
-                            for(int i = 0; i < result.value.length; i++) {
+                            for (int i = 0; i < result.value.length; i++) {
                                 if (result.value[i] == 0) {
                                     result.value = ByteUtil.substring(result.value, 0, i);
                                     break;

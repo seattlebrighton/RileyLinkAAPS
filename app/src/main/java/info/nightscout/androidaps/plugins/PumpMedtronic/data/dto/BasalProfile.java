@@ -79,7 +79,7 @@ public class BasalProfile {
     public void dumpBasalProfile() {
         LOG.debug("Basal Profile entries:");
         List<BasalProfileEntry> entries = getEntries();
-        for(int i = 0; i < entries.size(); i++) {
+        for (int i = 0; i < entries.size(); i++) {
             BasalProfileEntry entry = entries.get(i);
             String startString = entry.startTime.toString("HH:mm");
             // this doesn't work
@@ -92,7 +92,7 @@ public class BasalProfile {
     public String getBasalProfileAsString() {
         StringBuffer sb = new StringBuffer("Basal Profile entries:\n");
         List<BasalProfileEntry> entries = getEntries();
-        for(int i = 0; i < entries.size(); i++) {
+        for (int i = 0; i < entries.size(); i++) {
             BasalProfileEntry entry = entries.get(i);
             String startString = entry.startTime.toString("HH:mm");
 
@@ -160,7 +160,7 @@ public class BasalProfile {
         boolean done = false;
         int r, st;
 
-        for(int i = 0; i < mRawData.length - 2; i += 3) {
+        for (int i = 0; i < mRawData.length - 2; i += 3) {
 
             if ((mRawData[i] == 0) && (mRawData[i + 1] == 0) && (mRawData[i + 2] == 0))
                 break;
@@ -191,7 +191,7 @@ public class BasalProfile {
 
         List<Byte> outData = new ArrayList<>();
 
-        for(BasalProfileEntry profileEntry : listEntries) {
+        for (BasalProfileEntry profileEntry : listEntries) {
 
             byte[] strokes = MedtronicUtil.getBasalStrokes(profileEntry.rate, true);
 
@@ -212,7 +212,7 @@ public class BasalProfile {
 
         Double[] basalByHour = new Double[24];
 
-        for(int i = 0; i < entries.size(); i++) {
+        for (int i = 0; i < entries.size(); i++) {
             BasalProfileEntry current = entries.get(i);
 
             int currentTime = (current.startTime_raw % 2 == 0) ? current.startTime_raw : current.startTime_raw - 1;
@@ -232,7 +232,7 @@ public class BasalProfile {
 
             //System.out.println("Current time: " + currentTime + " Next Time: " + lastHour);
 
-            for(int j = currentTime; j < lastHour; j++) {
+            for (int j = currentTime; j < lastHour; j++) {
                 basalByHour[j] = current.rate;
             }
         }

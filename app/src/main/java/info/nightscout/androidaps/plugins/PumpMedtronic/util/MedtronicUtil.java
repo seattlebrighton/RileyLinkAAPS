@@ -82,7 +82,7 @@ public class MedtronicUtil extends RileyLinkUtil {
 
         byte[] array = new byte[data.size()];
 
-        for(int i = 0; i < data.size(); i++) {
+        for (int i = 0; i < data.size(); i++) {
             array[i] = data.get(i);
         }
 
@@ -219,7 +219,7 @@ public class MedtronicUtil extends RileyLinkUtil {
         } else {
             sendPayloadBuffer.put((byte) parameters.length); // size
 
-            for(byte val : parameters) {
+            for (byte val : parameters) {
                 sendPayloadBuffer.put(val);
             }
         }

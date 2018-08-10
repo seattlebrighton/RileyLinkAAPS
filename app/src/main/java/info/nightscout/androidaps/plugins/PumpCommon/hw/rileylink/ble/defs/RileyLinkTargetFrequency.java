@@ -38,7 +38,7 @@ public enum RileyLinkTargetFrequency {
 
         double freq[] = new double[count];
 
-        for(int i = 0; i < count; i++) {
+        for (int i = 0; i < count; i++) {
             freq[i] = (minFrequency + (i * step));
         }
 

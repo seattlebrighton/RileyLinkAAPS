@@ -116,7 +116,7 @@ public enum PumpType {
     static {
         mapByDescription = new HashMap<>();
 
-        for(PumpType pumpType : values()) {
+        for (PumpType pumpType : values()) {
             mapByDescription.put(pumpType.getDescription(), pumpType);
         }
     }

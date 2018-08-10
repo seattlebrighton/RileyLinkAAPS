@@ -149,10 +149,10 @@ public class Page {
             done = (i >= data.length - 2);
         }
         // for each of the discovered key locations, attempt to parse a sequence of records
-        for(RecordTypeEnum en : RecordTypeEnum.values()) {
+        for (RecordTypeEnum en : RecordTypeEnum.values()) {
 
         }
-        for(int ix = 0; ix < keyLocations.size(); ix++) {
+        for (int ix = 0; ix < keyLocations.size(); ix++) {
 
         }
     }
@@ -226,8 +226,8 @@ public class Page {
         ArrayList<Record> pickyRecords = new ArrayList<>();
         pickyRecords.addAll(mRecordList);
         parseByDates(rawPage, model);
-        for(Record r : mRecordList) {
-            for(Record r2 : pickyRecords) {
+        for (Record r : mRecordList) {
+            for (Record r2 : pickyRecords) {
                 if (r.getFoundAtOffset() == r2.getFoundAtOffset()) {
                     Log.v(TAG, "Found matching record at offset " + r.getFoundAtOffset());
                 }
@@ -402,7 +402,7 @@ public class Page {
         if (DEBUG_PAGE) {
             Log.i(TAG, String.format("Number of records: %d", mRecordList.size()));
             int index = 1;
-            for(Record r : mRecordList) {
+            for (Record r : mRecordList) {
                 Log.v(TAG, String.format("Record #%d: %s", index, r.getShortTypeName()));
                 index += 1;
             }
@@ -430,7 +430,7 @@ public class Page {
         bundle.putByteArray("data", data);
         bundle.putString("model", model.name());
         ArrayList<Bundle> records = new ArrayList<>();
-        for(int i = 0; i < mRecordList.size(); i++) {
+        for (int i = 0; i < mRecordList.size(); i++) {
             try {
                 records.add(mRecordList.get(i).dictionaryRepresentation());
             } catch (NullPointerException e) {
@@ -449,7 +449,7 @@ public class Page {
         ArrayList<Bundle> records = in.getParcelableArrayList("mRecordList");
         mRecordList = new ArrayList<>();
         if (records != null) {
-            for(int i = 0; i < records.size(); i++) {
+            for (int i = 0; i < records.size(); i++) {
                 Record r = RecordTypeEnum.getRecordClassInstance(records.get(i), model);
                 r.readFromBundle(records.get(i));
                 mRecordList.add(r);

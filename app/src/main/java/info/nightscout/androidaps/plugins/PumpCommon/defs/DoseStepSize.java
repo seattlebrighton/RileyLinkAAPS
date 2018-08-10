@@ -28,7 +28,7 @@ public enum DoseStepSize {
 
 
     public float getStepSizeForAmount(float amount) {
-        for(DoseStepSizeEntry entry : entries) {
+        for (DoseStepSizeEntry entry : entries) {
             if (entry.from <= amount && entry.to > amount)
                 return entry.value;
         }
@@ -41,7 +41,7 @@ public enum DoseStepSize {
     public String getDescription() {
         StringBuilder sb = new StringBuilder();
 
-        for(DoseStepSizeEntry entry : entries) {
+        for (DoseStepSizeEntry entry : entries) {
 
             sb.append(entry.value);
             sb.append(" {");

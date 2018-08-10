@@ -73,7 +73,7 @@ public enum CGMSHistoryEntryType {
     private static Map<Integer, CGMSHistoryEntryType> opCodeMap = new HashMap<Integer, CGMSHistoryEntryType>();
 
     static {
-        for(CGMSHistoryEntryType type : values()) {
+        for (CGMSHistoryEntryType type : values()) {
             opCodeMap.put(type.opCode, type);
         }
     }

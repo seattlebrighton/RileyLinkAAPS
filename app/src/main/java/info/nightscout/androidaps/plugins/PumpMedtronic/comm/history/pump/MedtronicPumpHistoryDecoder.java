@@ -138,7 +138,7 @@ public class MedtronicPumpHistoryDecoder extends MedtronicHistoryDecoder {
 
                 int els = getUnsignedInt(elements);
 
-                for(int k = 0; k < (els - 2); k++) {
+                for (int k = 0; k < (els - 2); k++) {
                     listRawData.add((byte) dataClear.get(counter));
                     counter++;
                 }
@@ -146,7 +146,7 @@ public class MedtronicPumpHistoryDecoder extends MedtronicHistoryDecoder {
                 special = true;
             } else {
 
-                for(int j = 0; j < (entryType.getTotalLength() - 1); j++) {
+                for (int j = 0; j < (entryType.getTotalLength() - 1); j++) {
 
                     try {
                         listRawData.add(dataClear.get(counter));

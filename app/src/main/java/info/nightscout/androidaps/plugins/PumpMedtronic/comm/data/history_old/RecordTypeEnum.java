@@ -208,7 +208,7 @@ public enum RecordTypeEnum {
 
 
     public static RecordTypeEnum fromByte(byte b) {
-        for(RecordTypeEnum en : RecordTypeEnum.values()) {
+        for (RecordTypeEnum en : RecordTypeEnum.values()) {
             if (en.opcode() == b) {
                 return en;
             }

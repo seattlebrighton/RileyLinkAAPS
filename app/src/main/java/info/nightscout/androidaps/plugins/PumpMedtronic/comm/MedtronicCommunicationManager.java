@@ -292,7 +292,7 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
     public ArrayList<Page> getAllHistoryPages() {
         ArrayList<Page> pages = new ArrayList<>();
 
-        for(int pageNum = 0; pageNum < 16; pageNum++) {
+        for (int pageNum = 0; pageNum < 16; pageNum++) {
             pages.add(getPumpHistoryPage(pageNum));
         }
 
@@ -302,10 +302,10 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
 
     public ArrayList<Page> getHistoryEventsSinceDate(Instant when) {
         ArrayList<Page> pages = new ArrayList<>();
-        for(int pageNum = 0; pageNum < 16; pageNum++) {
+        for (int pageNum = 0; pageNum < 16; pageNum++) {
             pages.add(getPumpHistoryPage(pageNum));
-            for(Page page : pages) {
-                for(Record r : page.mRecordList) {
+            for (Page page : pages) {
+                for (Record r : page.mRecordList) {
                     LocalDateTime timestamp = r.getTimestamp().getLocalDateTime();
                     LOG.info("Found record: (" + r.getClass().getSimpleName() + ") " + timestamp.toString());
                 }
@@ -449,7 +449,7 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
 
     private Object sendAndGetResponseWithCheck(MedtronicCommandType commandType, byte[] bodyData) {
 
-        for(int retries = 0; retries < MAX_COMMAND_RETRIES; retries++) {
+        for (int retries = 0; retries < MAX_COMMAND_RETRIES; retries++) {
 
             PumpMessage response = sendAndGetResponse(commandType, bodyData, DEFAULT_TIMEOUT + (DEFAULT_TIMEOUT * retries));
 
@@ -578,7 +578,7 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
 
         MedtronicCommandType commandType = MedtronicCommandType.GetBasalProfileSTD;
 
-        for(int retries = 0; retries <= MAX_COMMAND_RETRIES; retries++) {
+        for (int retries = 0; retries <= MAX_COMMAND_RETRIES; retries++) {
 
             // create message
             PumpMessage msg;
@@ -872,7 +872,7 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
 
         newBodyData[0] = (byte) bodyData.length;
 
-        for(int i = 0; i < bodyData.length; i++) {
+        for (int i = 0; i < bodyData.length; i++) {
             newBodyData[i + 1] = bodyData[i];
         }
 
@@ -882,7 +882,7 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
 
     public byte[] getEmptyMessage(int length) {
         byte newBodyData[] = new byte[length];
-        for(int i = 0; i < length; i++) {
+        for (int i = 0; i < length; i++) {
             newBodyData[i] = 0x00;
         }
 

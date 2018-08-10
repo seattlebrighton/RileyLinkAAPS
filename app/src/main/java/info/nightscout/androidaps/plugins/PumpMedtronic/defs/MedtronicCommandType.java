@@ -197,7 +197,7 @@ public enum MedtronicCommandType implements Serializable //, MinimedCommandTypeI
 
         mapByCode = new HashMap<>();
 
-        for(MedtronicCommandType medtronicCommandType : values()) {
+        for (MedtronicCommandType medtronicCommandType : values()) {
             mapByCode.put(medtronicCommandType.getCommandCode(), medtronicCommandType);
         }
     }
@@ -286,7 +286,7 @@ public enum MedtronicCommandType implements Serializable //, MinimedCommandTypeI
     private static HashMap<MedtronicDeviceType, String> getDeviceTypesArray(MedtronicDeviceType... types) {
         HashMap<MedtronicDeviceType, String> hashMap = new HashMap<MedtronicDeviceType, String>();
 
-        for(MedtronicDeviceType type : types) {
+        for (MedtronicDeviceType type : types) {
             hashMap.put(type, null);
         }
 
@@ -297,7 +297,7 @@ public enum MedtronicCommandType implements Serializable //, MinimedCommandTypeI
     private static byte[] getByteArray(int... data) {
         byte[] array = new byte[data.length];
 
-        for(int i = 0; i < data.length; i++) {
+        for (int i = 0; i < data.length; i++) {
             array[i] = (byte) data[i];
         }
 

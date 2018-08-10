@@ -25,7 +25,7 @@ public class CRC {
         if (len > data.length) {
             len = data.length;
         }
-        for(int i = 0; i < len; i++) {
+        for (int i = 0; i < len; i++) {
             int tmp = result;
             int tmp2 = tmp ^ data[i];
             int tmp3 = tmp2 & 0xFF;
@@ -50,9 +50,9 @@ public class CRC {
         int polynomial = 0x1021;
         if (data != null) {
             if (data.length > 0) {
-                for(int j = 0; j < data.length; j++) {
+                for (int j = 0; j < data.length; j++) {
                     byte b = data[j];
-                    for(int i = 0; i < 8; i++) {
+                    for (int i = 0; i < 8; i++) {
                         boolean bit = ((b >> (7 - i) & 1) == 1);
                         boolean c15 = ((crc >> 15 & 1) == 1);
                         crc <<= 1;

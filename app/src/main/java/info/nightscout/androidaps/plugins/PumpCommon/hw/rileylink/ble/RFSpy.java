@@ -163,7 +163,7 @@ public class RFSpy {
         output[0] = command.code;
 
         if (body != null) {
-            for(int i = 0; i < body.length; i++) {
+            for (int i = 0; i < body.length; i++) {
                 output[i + 1] = body[i];
             }
         }

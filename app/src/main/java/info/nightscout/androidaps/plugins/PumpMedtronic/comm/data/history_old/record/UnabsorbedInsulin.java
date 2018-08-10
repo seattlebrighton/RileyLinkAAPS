@@ -47,7 +47,7 @@ public class UnabsorbedInsulin extends Record {
         }
 
         int numRecords = (asUINT8(data[1]) - 2) / 3;
-        for(int i = 0; i < numRecords; i++) {
+        for (int i = 0; i < numRecords; i++) {
             double amount = (double) (asUINT8(data[2 + (i * 3)])) / 40.0;
             int age = asUINT8(data[3 + (i * 3)]) + (((asUINT8(data[4 + (i * 3)])) & 0b110000) << 4);
             records.add(new UnabsorbedInsulinRecord(amount, age));
@@ -66,7 +66,7 @@ public class UnabsorbedInsulin extends Record {
         } else if (storedAges.length != storedAmounts.length) {
             Log.e(TAG, "readFromBundle: failed to load from bundle: array size mismatch");
         } else {
-            for(int i = 0; i < storedAges.length; i++) {
+            for (int i = 0; i < storedAges.length; i++) {
                 records.add(new UnabsorbedInsulinRecord(storedAmounts[i], storedAges[i]));
             }
         }
@@ -80,7 +80,7 @@ public class UnabsorbedInsulin extends Record {
         // of precision when going from double to float.
         float[] storedAmounts = new float[records.size()];
         int[] storedAges = new int[records.size()];
-        for(int i = 0; i < records.size(); i++) {
+        for (int i = 0; i < records.size(); i++) {
             storedAmounts[i] = (float) records.get(i).amount;
             storedAges[i] = records.get(i).age;
         }

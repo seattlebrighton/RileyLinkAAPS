@@ -180,14 +180,14 @@ public abstract class RileyLinkCommunicationManager {
         wakeUp(receiverDeviceAwakeForMinutes, false);
         FrequencyScanResults results = new FrequencyScanResults();
 
-        for(int i = 0; i < frequencies.length; i++) {
+        for (int i = 0; i < frequencies.length; i++) {
             int tries = 3;
             FrequencyTrial trial = new FrequencyTrial();
             trial.frequencyMHz = frequencies[i];
             rfspy.setBaseFrequency(frequencies[i]);
 
             int sumRSSI = 0;
-            for(int j = 0; j < tries; j++) {
+            for (int j = 0; j < tries; j++) {
 
                 byte[] pumpMsgContent = createPumpMessageContent(RLMessageType.ReadSimpleData);
                 RFSpyResponse resp = rfspy.transmitThenReceive(new RadioPacket(pumpMsgContent), (byte) 0, (byte) 0, (byte) 0, (byte) 0, SCAN_TIMEOUT, (byte) 0);
@@ -214,7 +214,7 @@ public abstract class RileyLinkCommunicationManager {
 
         StringBuilder stringBuilder = new StringBuilder("Scan results:\n");
 
-        for(int k = 0; k < results.trials.size(); k++) {
+        for (int k = 0; k < results.trials.size(); k++) {
             FrequencyTrial one = results.trials.get(k);
 
             stringBuilder.append(String.format("Scan Result[%s]: Freq=%s, avg RSSI = %s\n", "" + k, "" + one.frequencyMHz, "" + one.averageRSSI));
@@ -266,7 +266,7 @@ public abstract class RileyLinkCommunicationManager {
     public double quickTuneForPump(double startFrequencyMHz) {
         double betterFrequency = startFrequencyMHz;
         double stepsize = 0.05;
-        for(int tries = 0; tries < 4; tries++) {
+        for (int tries = 0; tries < 4; tries++) {
             double evenBetterFrequency = quickTunePumpStep(betterFrequency, stepsize);
             if (evenBetterFrequency == 0.0) {
                 // could not see the pump at all.

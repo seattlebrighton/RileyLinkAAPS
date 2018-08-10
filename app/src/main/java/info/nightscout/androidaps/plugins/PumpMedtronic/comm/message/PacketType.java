@@ -20,7 +20,7 @@ public enum PacketType {
     static {
         mapByValue = new HashMap<>();
 
-        for(PacketType packetType : values()) {
+        for (PacketType packetType : values()) {
             mapByValue.put(packetType.value, packetType);
         }
     }

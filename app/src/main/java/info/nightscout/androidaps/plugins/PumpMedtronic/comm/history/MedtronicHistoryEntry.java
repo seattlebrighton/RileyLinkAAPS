@@ -62,14 +62,14 @@ public abstract class MedtronicHistoryEntry implements MedtronicHistoryEntryInte
             return;
 
         head = new byte[getHeadLength() - 1];
-        for(int i = 1; i < (getHeadLength()); i++) {
+        for (int i = 1; i < (getHeadLength()); i++) {
             head[i - 1] = listRawData.get(i);
         }
 
         if (getDateTimeLength() > 0) {
             datetime = new byte[getDateTimeLength()];
 
-            for(int i = getHeadLength(), j = 0; j < getDateTimeLength(); i++, j++) {
+            for (int i = getHeadLength(), j = 0; j < getDateTimeLength(); i++, j++) {
                 datetime[j] = listRawData.get(i);
             }
         }
@@ -77,7 +77,7 @@ public abstract class MedtronicHistoryEntry implements MedtronicHistoryEntryInte
         if (getBodyLength() > 0) {
             body = new byte[getBodyLength()];
 
-            for(int i = (getHeadLength() + getDateTimeLength()), j = 0; j < getBodyLength(); i++, j++) {
+            for (int i = (getHeadLength() + getDateTimeLength()), j = 0; j < getBodyLength(); i++, j++) {
                 body[j] = listRawData.get(i);
             }
 

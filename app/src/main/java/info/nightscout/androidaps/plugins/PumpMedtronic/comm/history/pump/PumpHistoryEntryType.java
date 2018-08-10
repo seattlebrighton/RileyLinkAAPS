@@ -192,7 +192,7 @@ public enum PumpHistoryEntryType //implements CodeEnum
     private static Map<Integer, PumpHistoryEntryType> opCodeMap = new HashMap<Integer, PumpHistoryEntryType>();
 
     static {
-        for(PumpHistoryEntryType type : values()) {
+        for (PumpHistoryEntryType type : values()) {
             opCodeMap.put(type.opCode, type);
         }
 
@@ -366,7 +366,7 @@ public enum PumpHistoryEntryType //implements CodeEnum
     private int determineSizeByRule(int defaultValue, List<SpecialRule> rules) {
         int size = defaultValue;
 
-        for(SpecialRule rule : rules) {
+        for (SpecialRule rule : rules) {
             if (MedtronicDeviceType.isSameDevice(MedtronicUtil.getMedtronicPumpModel(), rule.deviceType)) {
                 size = rule.size;
                 break;

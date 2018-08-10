@@ -115,7 +115,7 @@ public enum MessageType {
 
         boolean foundErrors = false;
 
-        for(MessageType messageType : values()) {
+        for (MessageType messageType : values()) {
 
             if (mapByValue.containsKey(messageType.getValue())) {
                 // leave this check in case someone adds any new commands

@@ -108,7 +108,7 @@ public class MedtronicConverter {
         int time_x;
         double vald;
 
-        for(int i = 0; i < rep.length; i += 3) {
+        for (int i = 0; i < rep.length; i += 3) {
 
             vald = MedtronicUtil.decodeBasalInsulin(rep[i + 1], rep[i]);
 
