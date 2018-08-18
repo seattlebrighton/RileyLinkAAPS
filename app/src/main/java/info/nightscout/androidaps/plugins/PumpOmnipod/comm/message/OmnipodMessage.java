@@ -34,8 +34,7 @@ public class OmnipodMessage {
         rawData = ByteUtil.concat(header, rawData);
         String myString = ByteUtil.shortHexString(rawData);
         int crc = OmniCRC.crc16(rawData);
-        rawData = ByteUtil.concat(rawData, ByteUtil.highByte((short)crc));
-        rawData = ByteUtil.concat(rawData, ByteUtil.lowByte((short)crc));
+        rawData = ByteUtil.concat(rawData, ByteUtil.substring(ByteUtil.getBytesFromInt(crc), 2,2));
         return rawData;
     }
 

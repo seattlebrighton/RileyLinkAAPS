@@ -24,7 +24,7 @@ public class AssignAddressCommand extends MessageBlock {
 
     public AssignAddressCommand(int address) {
         super(null);
-        this.address = 0x1f000000 | (address & 0x000fffff);
+        this.address = 0x1f000000 | (address & 0x001fffff);
         rawData = ByteBuffer.allocate(4).putInt(this.address).array();
 
     }
