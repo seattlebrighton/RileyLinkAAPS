@@ -4,8 +4,8 @@ import org.apache.commons.lang3.NotImplementedException;
 
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RLMessage;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
-import info.nightscout.androidaps.plugins.PumpCommon.utils.CRC;
 import info.nightscout.androidaps.plugins.PumpOmnipod.defs.PacketType;
+import info.nightscout.androidaps.plugins.PumpOmnipod.util.OmniCRC;
 
 /**
  * Created by andy on 6/1/18.
@@ -35,8 +35,8 @@ public class OmnipodPacket implements RLMessage {
             //FIXME: Log invalid packet type
             return;
         }
-        this.sequenceNumber = encoded[4] & 0b11111;
-        int crc = CRC.crc8(ByteUtil.substring(encoded,0, encoded.length - 1));
+        this.sequenceNumber = (encoded[4] & 0b11111);
+        int crc = OmniCRC.crc8(ByteUtil.substring(encoded,0, encoded.length - 1));
         if (crc != encoded[encoded.length - 1]) {
             //FIXME: Log CRC mismatch
             return;
@@ -76,9 +76,11 @@ public class OmnipodPacket implements RLMessage {
     public byte[] getTxData() {
         byte[] output = new byte[0];
         output = ByteUtil.concat(output, ByteUtil.getBytesFromInt(this.packetAddress));
-        output = ByteUtil.concat(output, (byte)((this.packetType.getValue() << 5) + sequenceNumber & 0b11111));
+        output = ByteUtil.concat(output, (byte)((this.packetType.getValue() << 5) + (sequenceNumber & 0b11111)));
         output = ByteUtil.concat(output, encodedMessage);
-        output = ByteUtil.concat(output, CRC.crc8(output));
+        String myString = ByteUtil.shortHexString(output);
+        output = ByteUtil.concat(output, OmniCRC.crc8(output));
+        myString = ByteUtil.shortHexString(output);
         return output;
 
     }

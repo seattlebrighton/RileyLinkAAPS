@@ -3,7 +3,7 @@ package info.nightscout.androidaps.plugins.PumpOmnipod.comm.message;
 import java.util.ArrayList;
 
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
-import info.nightscout.androidaps.plugins.PumpCommon.utils.CRC;
+import info.nightscout.androidaps.plugins.PumpOmnipod.util.OmniCRC;
 
 public class OmnipodMessage {
 
@@ -23,13 +23,17 @@ public class OmnipodMessage {
     public byte[] getEncoded() {
         byte[] rawData = new byte[0];
         for (int i = 0; i < messageBlocks.length; i++) {
-            ByteUtil.concat(rawData, messageBlocks[i].getRawData());
+            rawData = ByteUtil.concat(rawData, messageBlocks[i].getRawData());
             }
 
-        //right before the message bloxks we have 6 bits of seqNum and 10 bits of length
-        byte header = (byte) (((sequenceNumber & 0x1F) << 2) + ((rawData.length >> 8) & 0x03));
+        byte[] header = new byte[0];
+        //right before the message blocks we have 6 bits of seqNum and 10 bits of length
+        header = ByteUtil.concat(header, ByteUtil.getBytesFromInt(address));
+        header = ByteUtil.concat(header, (byte) (((sequenceNumber & 0x1F) << 2) + ((rawData.length >> 8) & 0x03)));
+        header = ByteUtil.concat(header, (byte)(rawData.length & 0xFF));
         rawData = ByteUtil.concat(header, rawData);
-        int crc = CRC.crc16(rawData);
+        String myString = ByteUtil.shortHexString(rawData);
+        int crc = OmniCRC.crc16(rawData);
         rawData = ByteUtil.concat(rawData, ByteUtil.highByte((short)crc));
         rawData = ByteUtil.concat(rawData, ByteUtil.lowByte((short)crc));
         return rawData;
@@ -60,9 +64,9 @@ public class OmnipodMessage {
             //FIXME: Throw or log: not enough data
             return null;
         }
-        int sequenceNumber = (b9 >> 2) & 0b11111;
+        int sequenceNumber = ((b9 >> 2) & 0b11111);
         int crc = ByteUtil.toInt(data[data.length - 2], data[data.length - 1]);
-        int calculatedCrc = CRC.crc16(ByteUtil.substring(data, 0, data.length - 2));
+        int calculatedCrc = OmniCRC.crc16(ByteUtil.substring(data, 0, data.length - 2));
         if (crc != calculatedCrc) {
             //FIXME: Throw or log CRC error
             return null;

@@ -107,7 +107,8 @@ public class SendAndListen extends RileyLinkCommand {
 
         if (isPacketV2) { //2.x (and probably higher versions) support preamble extension
             byte[] preambleBuf = ByteBuffer.allocate(4).putInt(preambleExtension_ms).array();
-            bytes.add(preambleBuf[2], preambleBuf[3]);
+            bytes.add(preambleBuf[2]);
+            bytes.add(preambleBuf[3]);
         }
 
         return ByteUtil.concat(ByteUtil.fromByteArray(bytes), packetToSend.getEncoded());

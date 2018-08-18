@@ -149,6 +149,7 @@ public String getBLEVersionCached() {
     private RFSpyResponse writeToData(RileyLinkCommand command, int responseTimeout_ms) {
 
         byte[] bytes = command.getRaw();
+        String myString =  ByteUtil.shortHexString(bytes);
         byte[] rawResponse = writeToDataRaw(bytes, responseTimeout_ms);
 
         RFSpyResponse resp = new RFSpyResponse(command, rawResponse);

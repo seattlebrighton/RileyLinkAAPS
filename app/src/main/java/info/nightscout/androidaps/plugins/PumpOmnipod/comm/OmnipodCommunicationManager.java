@@ -96,12 +96,15 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
 
         Boolean firstPacket = true;
         byte[] encodedMessage = message.getEncoded();
+        String myString =  ByteUtil.shortHexString(encodedMessage);
+
         OmnipodPacket response = null;
         while(encodedMessage.length > 0) {
             PacketType packetType = firstPacket? PacketType.Pdm : PacketType.Con;
             OmnipodPacket packet = new OmnipodPacket(packetAddress, packetType,packetNumber, encodedMessage);
-            byte[] dataToSend = packet.getTxData();
-            encodedMessage = ByteUtil.substring(encodedMessage, dataToSend.length - 1, encodedMessage.length - dataToSend.length);
+            byte[] encodedMessageInPacket = packet.getEncodedMessage();
+            //getting the data remaining to be sent
+            encodedMessage = ByteUtil.substring(encodedMessage, encodedMessageInPacket.length - 1, encodedMessage.length - encodedMessageInPacket.length);
             firstPacket = false;
             response = exchangePackets(packet);
             //We actually ignore (ack) responses if it is not last packet to send
@@ -237,6 +240,10 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
     public Object initializePod() {
         Random rnd = new Random();
         int newAddress = rnd.nextInt();
+        this.packetNumber = 0;
+        this.messageNumber = 1;
+        //newAddress = 0x08ced0;
+        newAddress = 0x0d3143;
         AssignAddressCommand assignAddress = new AssignAddressCommand(newAddress);
         OmnipodMessage assignAddressMessage = new OmnipodMessage(defaultAddress, new MessageBlock[] {assignAddress}, messageNumber);
         ConfigResponse config = exchangeMessages(assignAddressMessage, defaultAddress, newAddress);

@@ -71,6 +71,8 @@ public abstract class RileyLinkCommunicationManager {
     protected <E extends RLMessage> E sendAndListen(RLMessage msg, int timeout_ms, int repeatCount, int extendPreamble_ms, Class<E> clazz) {
 
         if (showPumpMessages) {
+            String myString =  ByteUtil.shortHexString(msg.getTxData());
+
             LOG.info("Sent:" + ByteUtil.shortHexString(msg.getTxData()));
         }
 

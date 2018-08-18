@@ -33,8 +33,8 @@ public class NonceState {
     }
 
     private int generateEntry() {
-        table[0] = ((table[0] >> 16) + (table[0] & 0xFFFF) * 0x5D7F) & 0xFFFFFFFF;
-        table[1] = ((table[1] >> 16) + (table[1] & 0xFFFF) * 0x8CA0) & 0xFFFFFFFF;
+        table[0] = (((table[0] >> 16) + (table[0] & 0xFFFF) * 0x5D7F) & 0xFFFFFFFF);
+        table[1] = (((table[1] >> 16) + (table[1] & 0xFFFF) * 0x8CA0) & 0xFFFFFFFF);
         return (int)(((long)(table[1]) + ((long)(table[0]) << 16)) & 0xFFFFFFFF);
 
     }

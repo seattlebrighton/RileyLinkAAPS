@@ -3,8 +3,8 @@ package info.nightscout.androidaps.plugins.PumpOmnipod.defs;
 import org.apache.commons.lang3.NotImplementedException;
 import org.joda.time.DateTime;
 
-import info.nightscout.androidaps.plugins.PumpCommon.utils.CRC;
 import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.response.FirmwareVersion;
+import info.nightscout.androidaps.plugins.PumpOmnipod.util.OmniCRC;
 
 public class PodState {
 
@@ -29,10 +29,10 @@ public class PodState {
 
     public void ResyncNonce(int syncWord, int sentNonce, int sequenceNumber) {
         int sum = (sentNonce & 0xFFFF)
-                + CRC.crc16lookup[sequenceNumber]
-                + this.Lot & 0xFFFF
-                + this.Tid & 0xFFFF;
-        int seed = sum &0xFFFF ^ syncWord;
+                + OmniCRC.crc16lookup[sequenceNumber]
+                + (this.Lot & 0xFFFF)
+                + (this.Tid & 0xFFFF);
+        int seed = ((sum & 0xFFFF) ^ syncWord);
         this.nonceState = new NonceState(Lot, Tid, (byte)(seed & 0xFF));
 
     }
