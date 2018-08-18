@@ -27,8 +27,11 @@ public class ConfigResponse extends MessageBlock {
             case 0x1D:
                 initializeMembers(9, rawData);
                 break;
+            default:
+                return;
         }
         this.rawData = ByteUtil.substring(rawData, 1, length - 1);
+
     }
 
     private void initializeMembers(int startOffset, byte[] data) {
@@ -39,7 +42,7 @@ public class ConfigResponse extends MessageBlock {
                 new Integer(data[startOffset + 8])
                 , new Integer(data[startOffset + 9])
                 , new Integer(data[startOffset + 10])
-                , new Integer(data[11])
+                , new Integer(data[startOffset + 11])
                 , ByteUtil.BitConversion.BIG_ENDIAN);
         this.tid = ByteUtil.toInt(
                 new Integer(data[startOffset + 12])

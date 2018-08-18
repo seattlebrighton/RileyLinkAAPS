@@ -122,6 +122,7 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
                 OmnipodPacket conPacket = exchangePackets(ackForCon, 3, 40);
                 if (conPacket.getPacketType() != PacketType.Con) {
                     //FIXME: We should throw an error as we expect only continuation packets
+                    return null;
                 }
                 receivedMessageData = ByteUtil.concat(receivedMessageData, conPacket.getEncodedMessage());
             }
@@ -172,7 +173,7 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
             addr1 = packetAddress;
         if (messageAddress != null)
             addr2 = messageAddress;
-        return new OmnipodPacket(addr1, PacketType.Ack, packetNumber, ByteUtil.getUInt16BigEndian((short)addr2));
+        return new OmnipodPacket(addr1, PacketType.Ack, packetNumber, ByteUtil.getBytesFromInt(addr2));
 
     }
 
@@ -181,7 +182,8 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
         Boolean quiet = false;
         while(!quiet) {
             OmnipodPacket response = sendAndListen(ack, 600, 5, 40, OmnipodPacket.class);
-            if (response == null)
+            //FIXME: instead of this crappy core we should make a proper timeout handling (exception-based?)
+            if (response == null || (!response.isValid() && response.getPacketType() == PacketType.Invalid))
                 quiet = true;
         }
         incrementPacketNumber(1);
@@ -240,10 +242,10 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
     public Object initializePod() {
         Random rnd = new Random();
         int newAddress = rnd.nextInt();
-        this.packetNumber = 0;
-        this.messageNumber = 1;
-        //newAddress = 0x08ced0;
-        newAddress = 0x0d3143;
+        this.packetNumber = 0x0A;
+        this.messageNumber = 0;
+        newAddress = 0x05e70b;
+        newAddress = (newAddress & 0x001fffff) | 0x1f000000;
         AssignAddressCommand assignAddress = new AssignAddressCommand(newAddress);
         OmnipodMessage assignAddressMessage = new OmnipodMessage(defaultAddress, new MessageBlock[] {assignAddress}, messageNumber);
         ConfigResponse config = exchangeMessages(assignAddressMessage, defaultAddress, newAddress);

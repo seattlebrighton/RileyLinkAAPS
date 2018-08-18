@@ -115,7 +115,9 @@ public class ByteUtil {
 
 
     public static byte[] fromHexString(String src) {
-        String s = src.toUpperCase();
+        if (src == null || src.length() == 0)
+            return new byte[0];
+        String s = src.toUpperCase().replaceAll("\\s", "");
         byte[] rval = new byte[]{};
         if ((s.length() % 2) != 0) {
             // invalid hex string!

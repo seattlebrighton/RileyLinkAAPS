@@ -93,15 +93,10 @@ public class SendAndListen extends RileyLinkCommand {
 
         byte[] timeoutBuff = ByteBuffer.allocate(4).putInt(timeout_ms).array();
 
-        if (isPacketV2) {
-            bytes.add(timeoutBuff[2]);
-            bytes.add(timeoutBuff[3]);
-        } else {
-            bytes.add(timeoutBuff[0]);
-            bytes.add(timeoutBuff[1]);
-            bytes.add(timeoutBuff[2]);
-            bytes.add(timeoutBuff[3]);
-        }
+        bytes.add(timeoutBuff[0]);
+        bytes.add(timeoutBuff[1]);
+        bytes.add(timeoutBuff[2]);
+        bytes.add(timeoutBuff[3]);
 
         bytes.add(retryCount);
 

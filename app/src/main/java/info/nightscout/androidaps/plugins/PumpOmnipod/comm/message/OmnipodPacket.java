@@ -23,6 +23,7 @@ public class OmnipodPacket implements RLMessage {
     public OmnipodPacket(byte[] encoded) {
         if (encoded.length < 7) {
             //FIXME: Throw not enough data exception
+            return;
         }
         this.packetAddress = ByteUtil.toInt(
                 new Integer(encoded[0])
@@ -30,7 +31,7 @@ public class OmnipodPacket implements RLMessage {
                 , new Integer(encoded[2])
                 , new Integer(encoded[3])
                 , ByteUtil.BitConversion.BIG_ENDIAN);
-        this.packetType = PacketType.fromByte((byte)(encoded[4] >> 5));
+        this.packetType = PacketType.fromByte((byte)(((int)encoded[4] & 0xFF)>> 5));
         if (this.packetType == null) {
             //FIXME: Log invalid packet type
             return;

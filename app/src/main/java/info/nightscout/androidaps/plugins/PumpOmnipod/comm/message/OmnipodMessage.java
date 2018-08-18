@@ -63,7 +63,7 @@ public class OmnipodMessage {
             //FIXME: Throw or log: not enough data
             return null;
         }
-        int sequenceNumber = ((b9 >> 2) & 0b11111);
+        int sequenceNumber = (((int)b9 >> 2) & 0b11111);
         int crc = ByteUtil.toInt(data[data.length - 2], data[data.length - 1]);
         int calculatedCrc = OmniCRC.crc16(ByteUtil.substring(data, 0, data.length - 2));
         if (crc != calculatedCrc) {
