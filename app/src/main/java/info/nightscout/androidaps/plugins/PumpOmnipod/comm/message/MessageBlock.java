@@ -28,4 +28,9 @@ public abstract class MessageBlock {
         }
         return stream.toByteArray();
     }
+
+    protected byte[] getByteArray(byte... input) {
+        return input;
+    }
+
 }

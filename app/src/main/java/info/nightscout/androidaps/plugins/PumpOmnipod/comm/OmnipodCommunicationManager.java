@@ -2,6 +2,7 @@ package info.nightscout.androidaps.plugins.PumpOmnipod.comm;
 
 import android.content.Context;
 
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,7 +17,10 @@ import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.Riley
 
 
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
+import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.AlertConfiguration;
 import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.command.AssignAddressCommand;
+import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.command.ConfigureAlertsCommand;
+import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.command.ConfirmPairingCommand;
 import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.response.ConfigResponse;
 import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.MessageBlock;
 import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.MessageBlockType;
@@ -24,6 +28,10 @@ import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.OmnipodMessag
 import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.OmnipodPacket;
 import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.response.ErrorResponse;
 import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.response.ErrorResponseType;
+import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.response.PairingState;
+import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.response.StatusResponse;
+import info.nightscout.androidaps.plugins.PumpOmnipod.defs.AlertType;
+import info.nightscout.androidaps.plugins.PumpOmnipod.defs.ExpirationAdvisory;
 import info.nightscout.androidaps.plugins.PumpOmnipod.defs.PacketType;
 import info.nightscout.androidaps.plugins.PumpOmnipod.defs.PodState;
 
@@ -84,6 +92,10 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
 
     public static OmnipodCommunicationManager getInstance() {
         return omnipodCommunicationManager;
+    }
+
+    protected <T extends MessageBlock> T exchangeMessages(OmnipodMessage message) {
+        return exchangeMessages(message, null, null);
     }
 
 
@@ -164,16 +176,16 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
     }
 
     private OmnipodPacket makeAckPacket(Integer packetAddress, Integer messageAddress) {
-        int addr1 = defaultAddress;
-        int addr2 = defaultAddress;
+        int pktAddress = defaultAddress;
+        int msgAddress = defaultAddress;
         if (this.podState != null) {
-            addr1 = addr2 = podState.Address;
+            pktAddress = msgAddress = podState.Address;
         }
         if (packetAddress != null)
-            addr1 = packetAddress;
+            pktAddress = packetAddress;
         if (messageAddress != null)
-            addr2 = messageAddress;
-        return new OmnipodPacket(addr1, PacketType.Ack, packetNumber, ByteUtil.getBytesFromInt(addr2));
+            msgAddress = messageAddress;
+        return new OmnipodPacket(pktAddress, PacketType.Ack, packetNumber, ByteUtil.getBytesFromInt(msgAddress));
 
     }
 
@@ -238,6 +250,30 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
         return null;
     }
 
+    public <T extends MessageBlock> T sendCommand(MessageBlock command) {
+        int msgAddress = defaultAddress;
+        if (this.podState != null) {
+            msgAddress = podState.Address;
+        }
+        OmnipodMessage message = new OmnipodMessage(msgAddress, new MessageBlock[]{command}, messageNumber);
+        return exchangeMessages(message);
+
+    }
+
+    private int nonceValue() {
+        if (this.podState == null)
+            //FIXME: we should have a set of application-level meaningfull exceptions
+            throw new IllegalArgumentException("Getting nonce without active pod");
+        return podState.getCurrentNonce();
+    }
+    private void advanceToNextNonce() {
+        if (this.podState == null)
+            //FIXME: we should have a set of application-level meaningfull exceptions
+            throw new IllegalArgumentException("Getting nonce without active pod");
+        podState.AdvanceToNextNonce();
+
+    }
+
 
     public Object initializePod() {
         Random rnd = new Random();
@@ -247,8 +283,52 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
         newAddress = 0x05e70b;
         newAddress = (newAddress & 0x001fffff) | 0x1f000000;
         AssignAddressCommand assignAddress = new AssignAddressCommand(newAddress);
-        OmnipodMessage assignAddressMessage = new OmnipodMessage(defaultAddress, new MessageBlock[] {assignAddress}, messageNumber);
+        OmnipodMessage assignAddressMessage = new OmnipodMessage(
+                defaultAddress
+                , new MessageBlock[] {assignAddress}
+                , messageNumber);
         ConfigResponse config = exchangeMessages(assignAddressMessage, defaultAddress, newAddress);
+
+        DateTime activationDate = DateTime.now();
+
+        ConfirmPairingCommand confirmPairing = new ConfirmPairingCommand(
+                newAddress
+                , activationDate
+                , config.lot
+                , config.tid);
+        OmnipodMessage confirmPairingMessage = new OmnipodMessage(
+                defaultAddress
+                , new MessageBlock[]{confirmPairing}
+                , messageNumber);
+        ConfigResponse config2 = exchangeMessages(confirmPairingMessage, defaultAddress, newAddress);
+        if (config2.pairingState != PairingState.Paired) {
+            //FIXME: Log invalid data (we should have received a paired-state response
+            return null;
+        }
+
+        this.podState = new PodState(
+                newAddress
+                , activationDate
+                , config2.piVersion
+                , config2.pmVersion
+                , config2.lot
+                , config2.tid);
+
+        AlertConfiguration lweReservoir = new AlertConfiguration(
+                AlertType.LowReservoir,
+                true,
+                false,
+                0,
+                new ExpirationAdvisory(ExpirationAdvisory.ExpirationType.Reservoir, 10),
+                0x0102
+                );
+        ConfigureAlertsCommand lowReservoirCommand = new ConfigureAlertsCommand(
+                nonceValue(),
+                new AlertConfiguration[]{lweReservoir});
+        StatusResponse status = sendCommand(lowReservoirCommand);
+        advanceToNextNonce();
+
+
 
 
 

@@ -6,12 +6,12 @@ import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.MessageBlockT
 
 public class ConfigResponse extends MessageBlock {
 
-    PairingState pairingState;
-    FirmwareVersion pmVersion;
-    FirmwareVersion piVersion;
-    int lot;
-    int tid;
-    int address;
+    public PairingState pairingState;
+    public FirmwareVersion pmVersion;
+    public FirmwareVersion piVersion;
+    public int lot;
+    public int tid;
+    public int address;
 
 
 

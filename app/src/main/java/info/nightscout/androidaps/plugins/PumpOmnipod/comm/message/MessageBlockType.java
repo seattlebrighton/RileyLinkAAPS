@@ -22,7 +22,8 @@ public enum MessageBlockType {
     SetInsulinSchedule(0x1a),
     DeactivatePod(0x1c),
     StatusResponse(0x1d),
-    CancelDelivery(0x1f);
+    CancelDelivery(0x1f),
+    Invalid(0);
 
     byte value;
 
