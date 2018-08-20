@@ -13,10 +13,6 @@ public class ConfirmPairingCommand extends MessageBlock {
     private DateTime date;
     private int address;
 
-    public ConfirmPairingCommand(byte[] encodedData) {
-        super(encodedData);
-    }
-
     @Override
     public MessageBlockType getType() {
         return MessageBlockType.ConfirmPairing;

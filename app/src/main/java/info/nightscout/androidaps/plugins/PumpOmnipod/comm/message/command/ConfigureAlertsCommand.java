@@ -11,10 +11,6 @@ public class ConfigureAlertsCommand extends MessageBlock {
     private int nonce;
     private AlertConfiguration[] configurations;
 
-    public ConfigureAlertsCommand(byte[] encodedData) {
-        super(encodedData);
-    }
-
     @Override
     public MessageBlockType getType() {
         return MessageBlockType.ConfigureAlerts;

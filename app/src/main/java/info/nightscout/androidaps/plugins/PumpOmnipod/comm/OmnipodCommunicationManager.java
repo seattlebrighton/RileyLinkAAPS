@@ -22,6 +22,7 @@ import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.AlertConfigur
 import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.command.AssignAddressCommand;
 import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.command.ConfigureAlertsCommand;
 import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.command.ConfirmPairingCommand;
+import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.command.SetInsulinScheduleCommand;
 import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.response.ConfigResponse;
 import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.MessageBlock;
 import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.MessageBlockType;
@@ -33,6 +34,8 @@ import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.response.Pair
 import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.response.StatusResponse;
 import info.nightscout.androidaps.plugins.PumpOmnipod.defs.AlertType;
 import info.nightscout.androidaps.plugins.PumpOmnipod.defs.ExpirationAdvisory;
+import info.nightscout.androidaps.plugins.PumpOmnipod.defs.InsulinSchedule.Bolus;
+import info.nightscout.androidaps.plugins.PumpOmnipod.defs.InsulinSchedule.BolusExtraCommand;
 import info.nightscout.androidaps.plugins.PumpOmnipod.defs.PacketType;
 import info.nightscout.androidaps.plugins.PumpOmnipod.defs.PodState;
 
@@ -340,6 +343,14 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
         ConfigureAlertsCommand insertionTimerCommand = new ConfigureAlertsCommand(nonceValue(), new AlertConfiguration[]{insertionTimer});
         status = sendCommand(insertionTimerCommand);
         advanceToNextNonce();
+
+        double primeUnits = 2.6;
+        Bolus primeBolus = new Bolus(primeUnits, 8);
+        SetInsulinScheduleCommand primeCommand = new SetInsulinScheduleCommand(nonceValue(), primeBolus);
+        BolusExtraCommand extraBolusCommand = new BolusExtraCommand(primeUnits, (byte) 0, ByteUtil.fromHexString("000186a0"));
+        OmnipodMessage prime = new OmnipodMessage(newAddress, new MessageBlock[]{primeCommand, extraBolusCommand}, messageNumber);
+        status = exchangeMessages(prime);
+
 
 
 

@@ -9,10 +9,6 @@ public class AssignAddressCommand extends MessageBlock {
 
     int address;
 
-    public AssignAddressCommand(byte[] encodedData) {
-        super(encodedData);
-    }
-
     public int getAddress() {
         return address;
     };
