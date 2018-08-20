@@ -16,21 +16,21 @@ public class ConfigResponse extends MessageBlock {
 
 
 
-    public ConfigResponse(byte[] rawData) {
-        super(rawData);
+    public ConfigResponse(byte[] encodedData) {
+        super(encodedData);
 
-        int length = rawData[1] + 2;
+        int length = encodedData[1] + 2;
         switch (length) {
             case 0x17:
-                initializeMembers(2, rawData);
+                initializeMembers(2, encodedData);
                 break;
             case 0x1D:
-                initializeMembers(9, rawData);
+                initializeMembers(9, encodedData);
                 break;
             default:
                 return;
         }
-        this.rawData = ByteUtil.substring(rawData, 1, length - 1);
+        this.encodedData = ByteUtil.substring(encodedData, 1, length - 1);
 
     }
 

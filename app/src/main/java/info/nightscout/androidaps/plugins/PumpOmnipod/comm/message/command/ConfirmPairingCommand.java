@@ -13,8 +13,8 @@ public class ConfirmPairingCommand extends MessageBlock {
     private DateTime date;
     private int address;
 
-    public ConfirmPairingCommand(byte[] rawData) {
-        super(rawData);
+    public ConfirmPairingCommand(byte[] encodedData) {
+        super(encodedData);
     }
 
     @Override
@@ -44,7 +44,7 @@ public class ConfirmPairingCommand extends MessageBlock {
         ));
         data = ByteUtil.concat(data, ByteUtil.getBytesFromInt(lot));
         data = ByteUtil.concat(data, ByteUtil.getBytesFromInt(tid));
-        rawData = data;
+        encodedData = data;
     }
 
 

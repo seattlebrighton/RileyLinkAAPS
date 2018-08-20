@@ -32,7 +32,7 @@ public class AlertConfiguration{
     }
 
     public byte[] getRawData() {
-        byte[] rawData = new byte[6];
+        byte[] encodedData = new byte[6];
 
         byte firstByte = (byte) (alertType.getValue() << 4);
         firstByte |= expirationType.expirationType.getValue();
@@ -42,8 +42,8 @@ public class AlertConfiguration{
         byte durationHigh = (byte) (valueBuffer[2] & (byte)1);
         firstByte |= durationHigh;
 
-        rawData[0] = firstByte;
-        rawData[1] = valueBuffer[3];
+        encodedData[0] = firstByte;
+        encodedData[1] = valueBuffer[3];
 
         switch (expirationType.expirationType) {
             case Reservoir:
@@ -55,12 +55,12 @@ public class AlertConfiguration{
                 valueBuffer = ByteUtil.getBytesFromInt(duration);
                 break;
         }
-        rawData[2] = valueBuffer[2];
-        rawData[3] = valueBuffer[3];
+        encodedData[2] = valueBuffer[2];
+        encodedData[3] = valueBuffer[3];
         valueBuffer = ByteUtil.getBytesFromInt(beepType);
-        rawData[4] = valueBuffer[2];
-        rawData[5] = valueBuffer[3];
-        return rawData;
+        encodedData[4] = valueBuffer[2];
+        encodedData[5] = valueBuffer[3];
+        return encodedData;
     }
 
 

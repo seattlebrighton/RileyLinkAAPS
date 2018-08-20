@@ -11,8 +11,8 @@ public class ConfigureAlertsCommand extends MessageBlock {
     private int nonce;
     private AlertConfiguration[] configurations;
 
-    public ConfigureAlertsCommand(byte[] rawData) {
-        super(rawData);
+    public ConfigureAlertsCommand(byte[] encodedData) {
+        super(encodedData);
     }
 
     @Override
@@ -30,10 +30,10 @@ public class ConfigureAlertsCommand extends MessageBlock {
         encode();
     }
     private void encode() {
-        rawData = ByteUtil.getBytesFromInt(nonce);
+        encodedData = ByteUtil.getBytesFromInt(nonce);
         for (AlertConfiguration config:configurations
              ) {
-            rawData = ByteUtil.concat(rawData, config.getRawData());
+            encodedData = ByteUtil.concat(encodedData, config.getRawData());
         }
     }
 }

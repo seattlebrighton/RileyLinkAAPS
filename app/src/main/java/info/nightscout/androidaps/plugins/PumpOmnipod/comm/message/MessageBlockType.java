@@ -44,16 +44,16 @@ public enum MessageBlockType {
         return null;
     }
 
-    public MessageBlock Decode(byte[] rawData) {
+    public MessageBlock Decode(byte[] encodedData) {
         switch (this) {
             case ConfigResponse:
-                return new ConfigResponse(rawData);
+                return new ConfigResponse(encodedData);
             case ErrorResponse:
-                return new ErrorResponse(rawData);
+                return new ErrorResponse(encodedData);
             case StatusError:
-                return new StatusError(rawData);
+                return new StatusError(encodedData);
             case StatusResponse:
-                return new StatusResponse(rawData);
+                return new StatusResponse(encodedData);
 //            case ConfirmPairing:
 //                break;
 //            case AssignAddress:

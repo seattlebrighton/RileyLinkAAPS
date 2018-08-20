@@ -6,9 +6,9 @@ import java.io.IOException;
 import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.MessageBlockType;
 
 public abstract class MessageBlock {
-    protected byte[] rawData;
+    protected byte[] encodedData;
 
-    public MessageBlock(byte[] rawData) {
+    public MessageBlock(byte[] encodedData) {
 
     }
     public abstract MessageBlockType getType();
@@ -20,8 +20,8 @@ public abstract class MessageBlock {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         try {
             stream.write(this.getType().getValue());
-            stream.write((byte)rawData.length);
-            stream.write(rawData);
+            stream.write((byte)encodedData.length);
+            stream.write(encodedData);
         } catch (IOException e) {
             e.printStackTrace();
             return null;

@@ -5,17 +5,17 @@ import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.MessageBlock;
 import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.MessageBlockType;
 
 public class ErrorResponse extends MessageBlock {
-    public ErrorResponse(byte[] rawData) {
-        super(rawData);
-        this.errorResponseType = ErrorResponseType.fromByte(rawData[2]);
+    public ErrorResponse(byte[] encodedData) {
+        super(encodedData);
+        this.errorResponseType = ErrorResponseType.fromByte(encodedData[2]);
         this.nonceSearchKey = ByteUtil.toInt(
-                new Integer(rawData[3])
-                , new Integer(rawData[4])
-                , new Integer(rawData[5])
-                , new Integer(rawData[6])
+                new Integer(encodedData[3])
+                , new Integer(encodedData[4])
+                , new Integer(encodedData[5])
+                , new Integer(encodedData[6])
                 , ByteUtil.BitConversion.BIG_ENDIAN);
-        int length = rawData[1] + 2;
-        this.rawData = ByteUtil.substring(rawData, 1, length - 1);
+        int length = encodedData[1] + 2;
+        this.encodedData = ByteUtil.substring(encodedData, 1, length - 1);
 
     }
 

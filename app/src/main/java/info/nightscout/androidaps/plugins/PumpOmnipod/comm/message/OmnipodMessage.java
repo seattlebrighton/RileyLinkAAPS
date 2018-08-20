@@ -21,21 +21,21 @@ public class OmnipodMessage {
     }
 
     public byte[] getEncoded() {
-        byte[] rawData = new byte[0];
+        byte[] encodedData = new byte[0];
         for (int i = 0; i < messageBlocks.length; i++) {
-            rawData = ByteUtil.concat(rawData, messageBlocks[i].getRawData());
+            encodedData = ByteUtil.concat(encodedData, messageBlocks[i].getRawData());
             }
 
         byte[] header = new byte[0];
         //right before the message blocks we have 6 bits of seqNum and 10 bits of length
         header = ByteUtil.concat(header, ByteUtil.getBytesFromInt(address));
-        header = ByteUtil.concat(header, (byte) (((sequenceNumber & 0x1F) << 2) + ((rawData.length >> 8) & 0x03)));
-        header = ByteUtil.concat(header, (byte)(rawData.length & 0xFF));
-        rawData = ByteUtil.concat(header, rawData);
-        String myString = ByteUtil.shortHexString(rawData);
-        int crc = OmniCRC.crc16(rawData);
-        rawData = ByteUtil.concat(rawData, ByteUtil.substring(ByteUtil.getBytesFromInt(crc), 2,2));
-        return rawData;
+        header = ByteUtil.concat(header, (byte) (((sequenceNumber & 0x1F) << 2) + ((encodedData.length >> 8) & 0x03)));
+        header = ByteUtil.concat(header, (byte)(encodedData.length & 0xFF));
+        encodedData = ByteUtil.concat(header, encodedData);
+        String myString = ByteUtil.shortHexString(encodedData);
+        int crc = OmniCRC.crc16(encodedData);
+        encodedData = ByteUtil.concat(encodedData, ByteUtil.substring(ByteUtil.getBytesFromInt(crc), 2,2));
+        return encodedData;
     }
 
     public MessageBlock[] getMessageBlocks() {

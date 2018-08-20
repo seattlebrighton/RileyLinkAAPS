@@ -21,25 +21,25 @@ public class StatusResponse extends MessageBlock {
     public final PodAlarm alarms;
     private final double reservoirLevel;
 
-    public StatusResponse(byte[] rawData) {
-        super(rawData);
+    public StatusResponse(byte[] encodedData) {
+        super(encodedData);
 
-        this.deliveryStatus = DeliveryStatus.fromByte((byte) (rawData[1] >> 4));
-        this.reservoirStatus = ReservoirStatus.fromByte((byte) (rawData[1] & (byte)0x0F));
-        int minutes = ((rawData[7] & 0x7F) << 6) + (rawData[9] >> 2);
+        this.deliveryStatus = DeliveryStatus.fromByte((byte) (encodedData[1] >> 4));
+        this.reservoirStatus = ReservoirStatus.fromByte((byte) (encodedData[1] & (byte)0x0F));
+        int minutes = ((encodedData[7] & 0x7F) << 6) + (encodedData[9] >> 2);
         this.activeTime = new Duration(minutes * 60 *1000);
 
-        int highInsulinBits = (rawData[2] & 0x0F) << 9;
-        int middleInsulinBits = ((int)rawData[3] & 0xFF) << 1;
-        int lowInsulinBits = rawData[4] >> 7;
+        int highInsulinBits = (encodedData[2] & 0x0F) << 9;
+        int middleInsulinBits = ((int)encodedData[3] & 0xFF) << 1;
+        int lowInsulinBits = encodedData[4] >> 7;
         this.insulin = Constants.PodPulseSize * (highInsulinBits | middleInsulinBits | lowInsulinBits);
-        this.podMessageCounter = (byte) ((rawData[4] >> 3) & 0x0F);
+        this.podMessageCounter = (byte) ((encodedData[4] >> 3) & 0x0F);
 
-        this.insulinNotDelivered = Constants.PodPulseSize * ((rawData[4] & 0x03) << 8) + ((int)rawData[5] & 0xFF);
-        this.alarms = new PodAlarm((byte) (((rawData[6] & 0x7f) << 1) | (rawData[7] >> 7)));
+        this.insulinNotDelivered = Constants.PodPulseSize * ((encodedData[4] & 0x03) << 8) + ((int)encodedData[5] & 0xFF);
+        this.alarms = new PodAlarm((byte) (((encodedData[6] & 0x7f) << 1) | (encodedData[7] >> 7)));
 
-        int resHighBits = (rawData[8] & 0x03) << 6;
-        int resLowBits = rawData[9] >> 2;
+        int resHighBits = (encodedData[8] & 0x03) << 6;
+        int resLowBits = encodedData[9] >> 2;
 
         this.reservoirLevel = Math.round((double)((resHighBits + resLowBits))*50/255);
 

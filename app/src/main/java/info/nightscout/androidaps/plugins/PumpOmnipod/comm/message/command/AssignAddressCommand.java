@@ -9,8 +9,8 @@ public class AssignAddressCommand extends MessageBlock {
 
     int address;
 
-    public AssignAddressCommand(byte[] rawData) {
-        super(rawData);
+    public AssignAddressCommand(byte[] encodedData) {
+        super(encodedData);
     }
 
     public int getAddress() {
@@ -25,7 +25,7 @@ public class AssignAddressCommand extends MessageBlock {
     public AssignAddressCommand(int address) {
         super(null);
         this.address = address;
-        rawData = ByteBuffer.allocate(4).putInt(this.address).array();
+        encodedData = ByteBuffer.allocate(4).putInt(this.address).array();
 
     }
 
