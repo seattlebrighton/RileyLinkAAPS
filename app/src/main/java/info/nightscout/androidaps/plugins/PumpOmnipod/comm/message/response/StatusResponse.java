@@ -1,14 +1,48 @@
 package info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.response;
 
 import org.apache.commons.lang3.NotImplementedException;
+import org.joda.time.Duration;
 
+import info.nightscout.androidaps.Constants;
 import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.MessageBlock;
 import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.MessageBlockType;
+import info.nightscout.androidaps.plugins.PumpOmnipod.defs.DeliveryStatus;
+import info.nightscout.androidaps.plugins.PumpOmnipod.defs.PodAlarm;
+import info.nightscout.androidaps.plugins.PumpOmnipod.defs.ReservoirStatus;
+import info.nightscout.utils.Round;
 
 public class StatusResponse extends MessageBlock {
+    public final DeliveryStatus deliveryStatus;
+    public final ReservoirStatus reservoirStatus;
+    public final Duration activeTime;
+    public final double insulin;
+    public final double insulinNotDelivered;
+    public final byte podMessageCounter;
+    public final PodAlarm alarms;
+    private final double reservoirLevel;
+
     public StatusResponse(byte[] rawData) {
         super(rawData);
-        throw new NotImplementedException("StatusResponse");
+
+        this.deliveryStatus = DeliveryStatus.fromByte((byte) (rawData[1] >> 4));
+        this.reservoirStatus = ReservoirStatus.fromByte((byte) (rawData[1] & (byte)0x0F));
+        int minutes = ((rawData[7] & 0x7F) << 6) + (rawData[9] >> 2);
+        this.activeTime = new Duration(minutes * 60 *1000);
+
+        int highInsulinBits = (rawData[2] & 0x0F) << 9;
+        int middleInsulinBits = ((int)rawData[3] & 0xFF) << 1;
+        int lowInsulinBits = rawData[4] >> 7;
+        this.insulin = Constants.PodPulseSize * (highInsulinBits | middleInsulinBits | lowInsulinBits);
+        this.podMessageCounter = (byte) ((rawData[4] >> 3) & 0x0F);
+
+        this.insulinNotDelivered = Constants.PodPulseSize * ((rawData[4] & 0x03) << 8) + ((int)rawData[5] & 0xFF);
+        this.alarms = new PodAlarm((byte) (((rawData[6] & 0x7f) << 1) | (rawData[7] >> 7)));
+
+        int resHighBits = (rawData[8] & 0x03) << 6;
+        int resLowBits = rawData[9] >> 2;
+
+        this.reservoirLevel = Math.round((double)((resHighBits + resLowBits))*50/255);
+
     }
 
     @Override

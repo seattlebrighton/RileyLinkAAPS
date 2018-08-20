@@ -3,6 +3,7 @@ package info.nightscout.androidaps.plugins.PumpOmnipod.comm;
 import android.content.Context;
 
 import org.joda.time.DateTime;
+import org.joda.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -327,6 +328,20 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
                 new AlertConfiguration[]{lweReservoir});
         StatusResponse status = sendCommand(lowReservoirCommand);
         advanceToNextNonce();
+
+        AlertConfiguration insertionTimer = new AlertConfiguration(
+                AlertType.TimerLimit,
+                true,
+                false,
+                55,
+                new ExpirationAdvisory(ExpirationAdvisory.ExpirationType.Timer, new Duration(60 * 60 * 1000)), //1 hour
+                0x0802
+        );
+        ConfigureAlertsCommand insertionTimerCommand = new ConfigureAlertsCommand(nonceValue(), new AlertConfiguration[]{insertionTimer});
+        status = sendCommand(insertionTimerCommand);
+        advanceToNextNonce();
+
+
 
 
 
