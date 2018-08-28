@@ -6,8 +6,9 @@ import org.slf4j.LoggerFactory;
 
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RFTools;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.command.RileyLinkCommand;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.command.RileyLinkCommandType;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.command.RileyLinkCommand;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.command.RileyLinkCommandType;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkFirmwareVersion;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.CRC;
 
@@ -27,14 +28,17 @@ public class RadioResponse {
 
 
     public RadioResponse() {
+
     }
 
 
     public RadioResponse(byte[] rxData) {
+
         init(rxData);
     }
 
     public RadioResponse(RileyLinkCommand command, byte[] raw) {
+
         this.command = command;
         init(raw);
     }
@@ -61,6 +65,7 @@ public class RadioResponse {
 
 
     public void init(byte[] rxData) {
+
         if (rxData == null) {
             return;
         }
@@ -70,7 +75,14 @@ public class RadioResponse {
         }
         rssi = rxData[0];
         responseNumber = rxData[1];
-        byte[] encodedPayload = ByteUtil.substring(rxData, 2, rxData.length - 2);
+        byte[] encodedPayload;
+
+        if (RileyLinkFirmwareVersion.isSameVersion(RileyLinkUtil.getRileyLinkServiceData().versionCC110, RileyLinkFirmwareVersion.Version2)) {
+            encodedPayload = ByteUtil.substring(rxData, 3, rxData.length - 3);
+        } else {
+            encodedPayload = ByteUtil.substring(rxData, 2, rxData.length - 2);
+        }
+
         try {
 
             // for non-radio commands we just return the raw response
@@ -138,6 +150,7 @@ public class RadioResponse {
 
 
     public byte[] getPayload() {
+
         return decodedPayload;
     }
 }

@@ -32,24 +32,22 @@ public class RadioPacket {
     }
 
     public byte[] getEncoded() {
-        byte[] withCRC = ByteUtil.concat(pkt, CRC.crc8(pkt));
-        byte[] encoded;
+
         switch (RileyLinkUtil.getEncoding()) {
-            case Manchester://We have this encoding in RL firmware
-                encoded = withCRC;
-                break;
-            case FourByteSixByte:
-                encoded = RFTools.encode4b6b(withCRC);
-                break;
+            case Manchester: {  //We have this encoding in RL firmware
+                return pkt;
+            }
+
+            case FourByteSixByte: {
+                byte[] withCRC = getWithCRC();
+
+                byte[] encoded = RFTools.encode4b6b(withCRC);
+                return ByteUtil.concat(encoded, (byte) 0);
+            }
+
             default:
                 throw new NotImplementedException(("Encoding not supported: " + RileyLinkUtil.getEncoding().toString()));
         }
-        // Starting with 2.0 we don't put ending 0
-        if (version.isSameVersion(RileyLinkFirmwareVersion.Version2AndHigher))
-            return encoded;
-
-        byte[] withNullTerm = ByteUtil.concat(encoded, (byte) 0);
-        return withNullTerm;
     }
 
 }

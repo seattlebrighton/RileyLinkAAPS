@@ -8,6 +8,12 @@ import org.slf4j.LoggerFactory;
 import java.util.UUID;
 
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkUtil;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.command.RileyLinkCommand;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.command.RileyLinkCommandType;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.command.SendAndListen;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.command.SetPreamble;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.command.SetSoftwareEncoding;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.command.UpdateRegister;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.GattAttributes;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.RFSpyResponse;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.RadioPacket;
@@ -16,12 +22,6 @@ import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RXFil
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkEncodingType;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkFirmwareVersion;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkTargetFrequency;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.command.RileyLinkCommand;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.command.RileyLinkCommandType;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.command.SendAndListen;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.command.SetPreamble;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.command.SetSoftwareEncoding;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.command.UpdateRegister;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.operations.BLECommOperationResult;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.HexDump;
