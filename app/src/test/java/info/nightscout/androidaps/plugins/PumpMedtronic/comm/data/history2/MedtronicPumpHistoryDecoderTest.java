@@ -18,6 +18,7 @@ import java.util.List;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.history.MedtronicHistoryEntry;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.history.RawHistoryPage;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.history.pump.MedtronicPumpHistoryDecoder;
+import info.nightscout.androidaps.plugins.PumpMedtronic.comm.history.pump.PumpHistoryEntryType;
 import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicDeviceType;
 import info.nightscout.androidaps.plugins.PumpMedtronic.util.MedtronicUtil;
 
@@ -150,12 +151,165 @@ public class MedtronicPumpHistoryDecoderTest {
 
 
     @Test
+    public void oldTests() {
+        DataSpecification dataSpecification;
+
+        dataSpecification = new DataSpecification(CLR, //
+                "analysis/522/578398/", //
+                "ReadHistoryData-page-%NR%.data", //
+                Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10), //
+                MedtronicDeviceType.Medtronic_522);
+
+        // invalid no markdowns
+        //        dataSpecification = new DataSpecification(CLR, //
+        //                "analysis/522/bewest-pump/fall-2013/", //
+        //                "ReadHistoryData-page-%NR%.data", //
+        //                Arrays.asList(0, 1, 2, 3, 4, 6, 7, 8, 9, 10, //
+        //                        11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 23, 26, 27, 28, 29), //
+        //                MedtronicDeviceType.Medtronic_522);
+        runTestWithParameters(dataSpecification, 2);
+
+        // 5,2,0(7)
+
+    }
+
+
+    @Test
     public void runTest() {
         DataSpecification dataSpecification;
 
-        dataSpecification = new DataSpecification(CLR, "analysis/522/578398/", "ReadHistoryData-page-%NR%.data", Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10), MedtronicDeviceType.Medtronic_522);
+        dataSpecification = new DataSpecification(CLR, //
+                "analysis/523/342725/logs/", //
+                "ReadHistoryData-page-%NR%.data", //
+                Arrays.asList(0, 1, 2, 3, 4, 6, 7, 8, 9, 10, //
+                        11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 23, 26, 27, 28, 29), //
+                MedtronicDeviceType.Medtronic_523_Revel);
 
-        runTestWithParameters(dataSpecification, 0);
+        runTestWithParameters(dataSpecification, 2);
+    }
+
+
+    public void relevantHistoryItems() {
+        PumpHistoryEntryType entryType = PumpHistoryEntryType.BasalProfileStart;
+
+        // 01.01.2005 pump reset
+
+        switch (entryType) {
+
+            case Bolus:
+            case TempBasalDuration:
+            case TempBasalRate:
+
+                // Status
+            case PumpSuspend:
+            case PumpResume:
+            case NoDeliveryAlarm: // pump stopped
+            case Rewind:
+            case Prime: // if Prime after no delivery pump is running again
+
+                // Basal rate
+            case ChangeBasalProfile_OldProfile:
+            case ChangeBasalProfile_NewProfile:
+
+                // Totals
+            case DailyTotals522:
+            case EndResultTotals:
+            case DailyTotals512:
+            case DailyTotals523:
+
+                // Settings
+            case SelectBasalProfile:
+            case ChangeTime:
+            case NewTimeSet:
+            case ClearSettings:
+            case ChangeMaxBolus:
+            case ChangeMaxBasal:
+            case ChangeTempBasalType:
+
+            case BasalProfileStart:
+                break;
+
+
+            // Not needed
+            case None:
+            case EventUnknown_MM522_0x05:
+            case EventUnknown_MM512_0x10:
+            case CalBGForPH:
+            case SensorAlert:
+            case ClearAlarm:
+            case LowBattery:
+            case BatteryActivity:
+            case SetAutoOff:
+            case SelfTest:
+            case ChangeChildBlockEnable:
+            case EventUnknown_MM522_0x25:
+            case ToggleRemote:
+            case ChangeRemoteId:
+            case BolusWizardEnabled:
+            case EventUnknown_MM512_0x2e:
+            case EventUnknown_MM512_0x2f:
+            case ChangeBGReminderOffset:
+            case ChangeAlarmClockTime:
+            case LowReservoir:
+            case ChangeMeterId:
+            case EventUnknown_MM512_0x37:
+            case EventUnknown_MM512_0x38:
+            case EventUnknown_MM512_0x39:
+            case EventUnknown_MM512_0x3b:
+            case ChangeParadigmLinkID:
+            case BGReceived:
+            case JournalEntryMealMarker:
+            case JournalEntryExerciseMarker:
+            case JournalEntryInsulinMarker:
+            case JournalEntryOtherMarker:
+            case EventUnknown_MM522_0x45:
+            case EventUnknown_MM522_0x46:
+            case EventUnknown_MM522_0x47:
+            case EventUnknown_MM522_0x48:
+            case EventUnknown_MM522_0x49:
+            case EventUnknown_MM522_0x4a:
+            case EventUnknown_MM522_0x4b:
+            case EventUnknown_MM522_0x4c:
+            case EventUnknown_0x4d:
+            case EventUnknown_MM512_0x4e:
+            case ChangeBolusWizardSetup:
+            case ChangeSensorSetup2:
+            case RestoreMystery51:
+            case RestoreMystery52:
+            case ChangeSensorAlarmSilenceConfig:
+            case RestoreMystery54:
+            case RestoreMystery55:
+            case ChangeSensorRateOfChangeAlertSetup:
+            case ChangeBolusScrollStepSize:
+            case BolusWizardChange:
+            case BolusWizardBolusEstimate:
+            case UnabsorbedInsulin:
+            case SaveSettings:
+            case ChangeVariableBolus:
+            case ChangeAudioBolus:
+            case ChangeBGReminderEnable:
+            case ChangeAlarmClockEnable:
+            case ChangeAlarmNotifyMode:
+            case ChangeTimeFormat:
+            case ChangeReservoirWarningTime:
+            case ChangeBolusReminderEnable:
+            case ChangeBolusReminderTime:
+            case DeleteBolusReminderTime:
+            case BolusReminder:
+            case DeleteAlarmClockTime:
+            case ChangeCarbUnits:
+            case EventUnknown_MM522_0x70:
+            case ChangeWatchdogEnable:
+            case ChangeOtherDeviceID:
+            case ChangeWatchdogMarriageProfile:
+            case DeleteOtherDeviceID:
+            case ChangeCaptureEventEnable:
+            case EventUnknown_MM512_0x88:
+            case EventUnknown_MM512_0x94:
+            case EventUnknown_MM522_0xE8:
+            case UnknownBasePacket:
+                break;
+        }
     }
 
 
@@ -205,7 +359,7 @@ public class MedtronicPumpHistoryDecoderTest {
 
 
     class DataSpecification {
-        String path = "/home/andy/git/diabetes-aapk/decoding-carelink/analysis/";
+        String path = "/home/andy/git/diabetes-aapk/decoding-carelink-test/analysis/";
 
         // -----------------------------------------
         //        String subPath = "578398/";

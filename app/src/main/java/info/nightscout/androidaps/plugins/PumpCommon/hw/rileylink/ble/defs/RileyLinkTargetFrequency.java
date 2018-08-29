@@ -25,8 +25,7 @@ public enum RileyLinkTargetFrequency {
 
     public double[] getScanFrequencies() {
 
-        if (maxFrequency == minFrequency)
-        {
+        if (maxFrequency == minFrequency) {
             double freq[] = new double[1];
             freq[0] = minFrequency;
 
@@ -39,7 +38,7 @@ public enum RileyLinkTargetFrequency {
 
         double freq[] = new double[count];
 
-        for(int i = 0; i < count; i++) {
+        for (int i = 0; i < count; i++) {
             freq[i] = (minFrequency + (i * step));
         }
 

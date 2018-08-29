@@ -20,9 +20,7 @@ public class BatteryStatusDTO {
 
 
     public enum BatteryStatusType {
-        Normal,
-        Low,
-        Unknown
+        Normal, Low, Unknown
     }
 
 }

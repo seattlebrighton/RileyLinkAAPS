@@ -36,13 +36,13 @@ public class ServiceNotification extends ServiceMessage {
     }
 
 
-    public void setNotificationType(String notificationType) {
-        map.putString("NotificationType", notificationType);
+    public String getNotificationType() {
+        return map.getString("NotificationType", "");
     }
 
 
-    public String getNotificationType() {
-        return map.getString("NotificationType", "");
+    public void setNotificationType(String notificationType) {
+        map.putString("NotificationType", notificationType);
     }
 
 

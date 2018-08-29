@@ -37,7 +37,7 @@ public class RadioResponse {
         init(rxData);
     }
 
-    public RadioResponse(RileyLinkCommand command, byte[] raw) {
+    public RadioResponse(RFSpyCommand command, byte[] raw) {
 
         this.command = command;
         init(raw);

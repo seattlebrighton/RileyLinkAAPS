@@ -175,7 +175,7 @@ public class MedtronicCGMSHistoryDecoder extends MedtronicHistoryDecoder {
                     List<Byte> listRawData = new ArrayList<Byte>();
                     listRawData.add((byte) opCode);
 
-                    for(int j = 0; j < (entryType.getTotalLength() - 1); j++) {
+                    for (int j = 0; j < (entryType.getTotalLength() - 1); j++) {
                         listRawData.add(dataClear.get(counter));
                         counter++;
                     }
@@ -209,7 +209,7 @@ public class MedtronicCGMSHistoryDecoder extends MedtronicHistoryDecoder {
 
         int i = outList.size() - 1;
 
-        for(; i >= 0; i--) {
+        for (; i >= 0; i--) {
             //CGMSHistoryEntryType type = (CGMSHistoryEntryType) outList.get(i).getDateLength();
 
             if (outList.get(i).getDateLength() > 0) {
@@ -228,7 +228,7 @@ public class MedtronicCGMSHistoryDecoder extends MedtronicHistoryDecoder {
         // System.exit(1);
 
         // FIXME
-        for(; i >= 0; i--) {
+        for (; i >= 0; i--) {
             // System.out.println("Record2: " + outList.get(i));
 
             CGMSHistoryEntry che = (CGMSHistoryEntry) outList.get(i);
@@ -248,7 +248,7 @@ public class MedtronicCGMSHistoryDecoder extends MedtronicHistoryDecoder {
 
         List<Byte> outList = new ArrayList<Byte>();
 
-        for(int i = dataClearInput.size() - 1; i > 0; i--) {
+        for (int i = dataClearInput.size() - 1; i > 0; i--) {
             outList.add(dataClearInput.get(i));
         }
 

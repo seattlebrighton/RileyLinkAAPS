@@ -14,6 +14,16 @@ abstract public class Record {
     //protected String recordTypeName = this.getClass().getSimpleName();
 
 
+    public Record() {
+
+    }
+
+
+    protected static int asUINT8(byte b) {
+        return (b < 0) ? b + 256 : b;
+    }
+
+
     public String getRecordTypeName() {
         return this.getClass().getSimpleName();
     }
@@ -31,11 +41,6 @@ abstract public class Record {
 
     public int getFoundAtOffset() {
         return foundAtOffset;
-    }
-
-
-    public Record() {
-
     }
 
 
@@ -80,11 +85,6 @@ abstract public class Record {
 
     public byte getRecordOp() {
         return recordOp;
-    }
-
-
-    protected static int asUINT8(byte b) {
-        return (b < 0) ? b + 256 : b;
     }
 
 

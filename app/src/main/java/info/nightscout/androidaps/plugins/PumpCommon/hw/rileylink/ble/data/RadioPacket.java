@@ -26,10 +26,12 @@ public class RadioPacket {
         return pkt;
     }
 
+
     public byte[] getWithCRC() {
         byte[] withCRC = ByteUtil.concat(pkt, CRC.crc8(pkt));
         return withCRC;
     }
+
 
     public byte[] getEncoded() {
 

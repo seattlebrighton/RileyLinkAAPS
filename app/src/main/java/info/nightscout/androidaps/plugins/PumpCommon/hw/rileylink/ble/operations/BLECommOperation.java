@@ -18,15 +18,19 @@ public abstract class BLECommOperation {
     protected BluetoothGatt gatt;
     protected Semaphore operationComplete = new Semaphore(0, true);
 
+
     // This is to be run on the main thread
     public abstract void execute(RileyLinkBLE comm);
+
 
     public void gattOperationCompletionCallback(UUID uuid, byte[] value) {
     }
 
+
     public int getGattOperationTimeout_ms() {
         return 22000;
     }
+
 
     public byte[] getValue() {
         return value;

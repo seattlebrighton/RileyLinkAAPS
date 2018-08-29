@@ -59,14 +59,14 @@ public class CGMSHistoryEntry extends MedtronicHistoryEntry {
     }
 
 
-    @Override
-    public String getToStringStart() {
-        return "CGMSHistoryEntry [type=" + entryType.name() + " [" + getOpCode() + ", 0x" + ByteUtil.getCorrectHexValue(getOpCode()) + "]";
+    public void setOpCode(Integer opCode) {
+        this.opCode = opCode;
     }
 
 
-    public void setOpCode(Integer opCode) {
-        this.opCode = opCode;
+    @Override
+    public String getToStringStart() {
+        return "CGMSHistoryEntry [type=" + entryType.name() + " [" + getOpCode() + ", 0x" + ByteUtil.getCorrectHexValue(getOpCode()) + "]";
     }
 
 }

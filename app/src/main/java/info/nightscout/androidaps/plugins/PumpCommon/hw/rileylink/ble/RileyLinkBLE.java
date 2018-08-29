@@ -43,22 +43,16 @@ import info.nightscout.androidaps.plugins.PumpCommon.utils.ThreadUtil;
 public class RileyLinkBLE {
 
     private static final Logger LOG = LoggerFactory.getLogger(RFTools.class);
-
+    private final Context context;
     public boolean gattDebugEnabled = true;
-
+    boolean manualDisconnect = false;
     private BluetoothAdapter bluetoothAdapter;
     private BluetoothGattCallback bluetoothGattCallback;
-
-    private final Context context;
-
     private BluetoothDevice rileyLinkDevice;
     private BluetoothGatt bluetoothConnectionGatt = null;
-
     private BLECommOperation mCurrentOperation;
     private Semaphore gattOperationSema = new Semaphore(1, true);
-
     private Runnable radioResponseCountNotified;
-
     private boolean mIsConnected = false;
 
 
@@ -214,7 +208,7 @@ public class RileyLinkBLE {
 
                     boolean rileyLinkFound = false;
 
-                    for(BluetoothGattService service : services) {
+                    for (BluetoothGattService service : services) {
                         final UUID uuidService = service.getUuid();
 
                         if (isAnyRileyLinkServiceFound(service)) {
@@ -261,7 +255,7 @@ public class RileyLinkBLE {
         } else {
             List<BluetoothGattService> includedServices = service.getIncludedServices();
 
-            for(BluetoothGattService serviceI : includedServices) {
+            for (BluetoothGattService serviceI : includedServices) {
                 if (isAnyRileyLinkServiceFound(serviceI)) {
                     return true;
                 }
@@ -293,7 +287,7 @@ public class RileyLinkBLE {
             stringBuilder.append(GattAttributes.lookup(uuidServiceString, "Unknown service"));
             stringBuilder.append(" (" + uuidServiceString + ")");
 
-            for(BluetoothGattCharacteristic character : service.getCharacteristics()) {
+            for (BluetoothGattCharacteristic character : service.getCharacteristics()) {
                 final String uuidCharacteristicString = character.getUuid().toString();
 
                 stringBuilder.append("\n    ");
@@ -308,7 +302,7 @@ public class RileyLinkBLE {
 
             List<BluetoothGattService> includedServices = service.getIncludedServices();
 
-            for(BluetoothGattService serviceI : includedServices) {
+            for (BluetoothGattService serviceI : includedServices) {
                 debugService(serviceI, indentCount + 4);
             }
         }
@@ -372,9 +366,6 @@ public class RileyLinkBLE {
     }
 
 
-    boolean manualDisconnect = false;
-
-
     public void disconnect() {
         mIsConnected = false;
         LOG.warn("Closing GATT connection");
@@ -422,7 +413,7 @@ public class RileyLinkBLE {
                     bluetoothConnectionGatt.setCharacteristicNotification(chara, true);
                     List<BluetoothGattDescriptor> list = chara.getDescriptors();
                     if (gattDebugEnabled) {
-                        for(int i = 0; i < list.size(); i++) {
+                        for (int i = 0; i < list.size(); i++) {
                             LOG.debug("Found descriptor: " + list.get(i).toString());
                         }
                     }

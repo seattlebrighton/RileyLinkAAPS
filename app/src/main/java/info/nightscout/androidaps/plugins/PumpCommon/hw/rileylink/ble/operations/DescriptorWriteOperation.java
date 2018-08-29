@@ -28,11 +28,13 @@ public class DescriptorWriteOperation extends BLECommOperation {
         this.value = value;
     }
 
+
     @Override
     public void gattOperationCompletionCallback(UUID uuid, byte[] value) {
         super.gattOperationCompletionCallback(uuid, value);
         operationComplete.release();
     }
+
 
     @Override
     public void execute(RileyLinkBLE comm) {

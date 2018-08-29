@@ -35,6 +35,7 @@ public class BasalProfile {
     private static final boolean DEBUG_BASALPROFILE = false;
     protected static final int MAX_RAW_DATA_SIZE = (48 * 3) + 1;
     protected byte[] mRawData; // store as byte array to make transport (via parcel) easier
+    List<BasalProfileEntry> listEntries;
 
 
     public BasalProfile() {
@@ -160,31 +161,16 @@ public class BasalProfile {
         boolean done = false;
         int r, st;
 
-        for(int i = 0; i < mRawData.length - 2; i += 3) {
+        for (int i = 0; i < mRawData.length - 2; i += 3) {
 
             if ((mRawData[i] == 0) && (mRawData[i + 1] == 0) && (mRawData[i + 2] == 0))
                 break;
 
             r = MedtronicUtil.makeUnsignedShort(mRawData[i + 1], mRawData[i]); //readUnsignedByte(mRawData[i]);
-            // What is mRawData[i+1]? Not used in decocare.
             st = readUnsignedByte(mRawData[i + 2]);
             entries.add(new BasalProfileEntry(r, st));
         }
 
-
-        //        while (!done) {
-        //
-        //            r = MedtronicUtil.makeUnsignedShort(mRawData[i + 1], mRawData[i]); //readUnsignedByte(mRawData[i]);
-        //            // What is mRawData[i+1]? Not used in decocare.
-        //            st = readUnsignedByte(mRawData[i + 2]);
-        //            entries.add(new BasalProfileEntry(r, st));
-        //            i = i + 3;
-        //            if (i >= MAX_RAW_DATA_SIZE) {
-        //                done = true;
-        //            } else if ((mRawData[i] == 0) && (mRawData[i + 1] == 0) && (mRawData[i + 2] == 0)) {
-        //                done = true;
-        //            }
-        //        }
         return entries;
     }
 
@@ -213,16 +199,8 @@ public class BasalProfile {
 
             byte[] strokes = MedtronicUtil.getBasalStrokes(profileEntry.rate, true);
 
-            // TODO check if this is correct
             outData.add(profileEntry.rate_raw[0]);
             outData.add(profileEntry.rate_raw[1]);
-
-            //int time = profileEntry.startTime.getHourOfDay();
-
-            //if (profileEntry.startTime.getMinuteOfHour() == 30) {
-            //    time++;
-            //}
-
             outData.add(profileEntry.startTime_raw);
         }
 

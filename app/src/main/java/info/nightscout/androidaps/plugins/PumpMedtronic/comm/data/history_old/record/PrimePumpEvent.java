@@ -6,6 +6,7 @@ import android.os.Bundle;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history_old.TimeStampedRecord;
 import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicDeviceType;
 
+@Deprecated
 public class PrimePumpEvent extends TimeStampedRecord {
     private double amount = 0.0;
     private double programmedAmount = 0.0;

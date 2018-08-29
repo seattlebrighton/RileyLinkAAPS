@@ -8,6 +8,7 @@ public class PumpAckMessageBody extends CarelinkShortMessageBody {
         init(new byte[]{0});
     }
 
+
     public PumpAckMessageBody(byte[] bodyData) {
         init(bodyData);
     }

@@ -13,6 +13,12 @@ import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicDeviceType
 abstract public class TimeStampedRecord extends Record {
     //private final static String TAG = "TimeStampedRecord";
     private final static boolean DEBUG_TIMESTAMPEDRECORD = false;
+    protected PumpTimeStamp timestamp;
+
+
+    public TimeStampedRecord() {
+        timestamp = new PumpTimeStamp();
+    }
 
 
     @Override
@@ -23,14 +29,6 @@ abstract public class TimeStampedRecord extends Record {
 
     public int getDatestampOffset() {
         return 2;
-    }
-
-
-    protected PumpTimeStamp timestamp;
-
-
-    public TimeStampedRecord() {
-        timestamp = new PumpTimeStamp();
     }
 
 

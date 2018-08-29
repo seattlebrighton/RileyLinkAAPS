@@ -187,27 +187,7 @@ public enum MedtronicCommandType implements Serializable //, MinimedCommandTypeI
 
     CancelTBR(),;
 
-    public byte commandCode = 0;
-    private int recordLength = 64;
-
-    MinimedTargetType targetType;
-    MedtronicDeviceType devices;
-
-    public String commandDescription = "";
-
-    public byte[] commandParameters = null;
-    public int commandParametersCount = 0;
-
-    public int maxRecords = 1;
-    public int command_type = 0;
-    public int allowedRetries = 2;
-    public int maxAllowedTime = 2000;
-    public MinimedCommandParameterType parameterType;
-    public int minimalBufferSizeToStartReading = 14;
-    public int expectedLength = 0;
-
     static Map<Byte, MedtronicCommandType> mapByCode;
-
 
     static {
         MedtronicCommandType.RFPowerOn.maxAllowedTime = 17000;
@@ -217,10 +197,25 @@ public enum MedtronicCommandType implements Serializable //, MinimedCommandTypeI
 
         mapByCode = new HashMap<>();
 
-        for(MedtronicCommandType medtronicCommandType : values()) {
+        for (MedtronicCommandType medtronicCommandType : values()) {
             mapByCode.put(medtronicCommandType.getCommandCode(), medtronicCommandType);
         }
     }
+
+    public byte commandCode = 0;
+    public String commandDescription = "";
+    public byte[] commandParameters = null;
+    public int commandParametersCount = 0;
+    public int maxRecords = 1;
+    public int command_type = 0;
+    public int allowedRetries = 2;
+    public int maxAllowedTime = 2000;
+    public MinimedCommandParameterType parameterType;
+    public int minimalBufferSizeToStartReading = 14;
+    public int expectedLength = 0;
+    MinimedTargetType targetType;
+    MedtronicDeviceType devices;
+    private int recordLength = 64;
 
 
     MedtronicCommandType() {
@@ -291,7 +286,7 @@ public enum MedtronicCommandType implements Serializable //, MinimedCommandTypeI
     private static HashMap<MedtronicDeviceType, String> getDeviceTypesArray(MedtronicDeviceType... types) {
         HashMap<MedtronicDeviceType, String> hashMap = new HashMap<MedtronicDeviceType, String>();
 
-        for(MedtronicDeviceType type : types) {
+        for (MedtronicDeviceType type : types) {
             hashMap.put(type, null);
         }
 
@@ -302,7 +297,7 @@ public enum MedtronicCommandType implements Serializable //, MinimedCommandTypeI
     private static byte[] getByteArray(int... data) {
         byte[] array = new byte[data.length];
 
-        for(int i = 0; i < data.length; i++) {
+        for (int i = 0; i < data.length; i++) {
             array[i] = (byte) data[i];
         }
 
@@ -360,6 +355,26 @@ public enum MedtronicCommandType implements Serializable //, MinimedCommandTypeI
     }
 
 
+    public static MessageBody constructMessageBody(MedtronicCommandType messageType, byte[] bodyData) {
+        switch (messageType) {
+            case CommandACK:
+                return new PumpAckMessageBody(bodyData);
+            default:
+                return new UnknownMessageBody(bodyData);
+        }
+    }
+
+
+    public static MedtronicCommandType getSettings(MedtronicDeviceType medtronicPumpModel) {
+        if (medtronicPumpModel == MedtronicDeviceType.Medtronic_511)
+            return MedtronicCommandType.Settings_511;
+        else if (MedtronicDeviceType.isSameDevice(medtronicPumpModel, MedtronicDeviceType.Medtronic_512_712))
+            return MedtronicCommandType.Settings_512;
+        else
+            return MedtronicCommandType.Settings;
+    }
+
+
     /**
      * Get Full Command Description
      *
@@ -410,23 +425,8 @@ public enum MedtronicCommandType implements Serializable //, MinimedCommandTypeI
     }
 
 
-    public static MessageBody constructMessageBody(MedtronicCommandType messageType, byte[] bodyData) {
-        switch (messageType) {
-            case CommandACK:
-                return new PumpAckMessageBody(bodyData);
-            default:
-                return new UnknownMessageBody(bodyData);
-        }
-    }
-
-
-    public static MedtronicCommandType getSettings(MedtronicDeviceType medtronicPumpModel) {
-        if (medtronicPumpModel == MedtronicDeviceType.Medtronic_511)
-            return MedtronicCommandType.Settings_511;
-        else if (MedtronicDeviceType.isSameDevice(medtronicPumpModel, MedtronicDeviceType.Medtronic_512_712))
-            return MedtronicCommandType.Settings_512;
-        else
-            return MedtronicCommandType.Settings;
+    public String toString() {
+        return name();
     }
 
 
@@ -434,11 +434,6 @@ public enum MedtronicCommandType implements Serializable //, MinimedCommandTypeI
         NoParameters, //
         FixedParameters, //
         SubCommands //
-    }
-
-
-    public String toString() {
-        return name();
     }
 
 }

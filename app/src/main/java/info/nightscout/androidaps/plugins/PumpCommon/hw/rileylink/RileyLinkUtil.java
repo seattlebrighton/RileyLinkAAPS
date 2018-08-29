@@ -35,7 +35,8 @@ import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicDeviceType
 public class RileyLinkUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(RileyLinkUtil.class);
-
+    protected static RileyLinkCommunicationManager rileyLinkCommunicationManager;
+    static ServiceTask currentTask;
     private static Context context;
     private static RileyLinkBLE rileyLinkBLE;
     private static RileyLinkServiceData rileyLinkServiceData;
@@ -43,14 +44,13 @@ public class RileyLinkUtil {
     //private static PumpType pumpType;
     //private static MedtronicPumpStatus medtronicPumpStatus;
     private static RileyLinkService rileyLinkService;
-    protected static RileyLinkCommunicationManager rileyLinkCommunicationManager;
     //private static RileyLinkIPCConnection rileyLinkIPCConnection;
     private static MedtronicDeviceType medtronicPumpModel;
     private static RileyLinkTargetFrequency rileyLinkTargetFrequency;
-    private static RileyLinkIPCConnection rileyLinkIPCConnection;
     // BAD dependencies in Classes: RileyLinkService
 
     // Broadcasts: RileyLinkBLE, RileyLinkService,
+    private static RileyLinkIPCConnection rileyLinkIPCConnection;
 
     private static RileyLinkEncodingType encoding;
 
@@ -73,13 +73,13 @@ public class RileyLinkUtil {
     }
 
 
-    public static void setServiceState(RileyLinkServiceState newState) {
-        setServiceState(newState, null);
+    public static RileyLinkServiceState getServiceState() {
+        return RileyLinkUtil.rileyLinkServiceData.serviceState;
     }
 
 
-    public static RileyLinkServiceState getServiceState() {
-        return RileyLinkUtil.rileyLinkServiceData.serviceState;
+    public static void setServiceState(RileyLinkServiceState newState) {
+        setServiceState(newState, null);
     }
 
 
@@ -98,23 +98,18 @@ public class RileyLinkUtil {
     }
 
 
-    public static void setRileyLinkBLE(RileyLinkBLE rileyLinkBLEIn) {
-        RileyLinkUtil.rileyLinkBLE = rileyLinkBLEIn;
-    }
-
-
     public static RileyLinkBLE getRileyLinkBLE() {
         return RileyLinkUtil.rileyLinkBLE;
     }
 
 
-    public static RileyLinkServiceData getRileyLinkServiceData() {
-        return RileyLinkUtil.rileyLinkServiceData;
+    public static void setRileyLinkBLE(RileyLinkBLE rileyLinkBLEIn) {
+        RileyLinkUtil.rileyLinkBLE = rileyLinkBLEIn;
     }
 
 
-    public static void setRileyLinkServiceData(RileyLinkServiceData rileyLinkServiceData) {
-        RileyLinkUtil.rileyLinkServiceData = rileyLinkServiceData;
+    public static RileyLinkServiceData getRileyLinkServiceData() {
+        return RileyLinkUtil.rileyLinkServiceData;
     }
 
 
@@ -134,8 +129,8 @@ public class RileyLinkUtil {
     //    }
 
 
-    public static boolean hasPumpBeenTunned() {
-        return RileyLinkUtil.rileyLinkServiceData.tuneUpDone;
+    public static void setRileyLinkServiceData(RileyLinkServiceData rileyLinkServiceData) {
+        RileyLinkUtil.rileyLinkServiceData = rileyLinkServiceData;
     }
 
 
@@ -144,8 +139,8 @@ public class RileyLinkUtil {
     //    }
 
 
-    public static void setRileyLinkService(RileyLinkService rileyLinkService) {
-        RileyLinkUtil.rileyLinkService = rileyLinkService;
+    public static boolean hasPumpBeenTunned() {
+        return RileyLinkUtil.rileyLinkServiceData.tuneUpDone;
     }
 
 
@@ -154,8 +149,8 @@ public class RileyLinkUtil {
     }
 
 
-    public static void setRileyLinkCommunicationManager(RileyLinkCommunicationManager rileyLinkCommunicationManager) {
-        RileyLinkUtil.rileyLinkCommunicationManager = rileyLinkCommunicationManager;
+    public static void setRileyLinkService(RileyLinkService rileyLinkService) {
+        RileyLinkUtil.rileyLinkService = rileyLinkService;
     }
 
 
@@ -164,12 +159,14 @@ public class RileyLinkUtil {
     }
 
 
-    public static boolean sendNotification(ServiceNotification notification, Integer clientHashcode) {
-        return RileyLinkUtil.rileyLinkService.sendNotification(notification, clientHashcode);
+    public static void setRileyLinkCommunicationManager(RileyLinkCommunicationManager rileyLinkCommunicationManager) {
+        RileyLinkUtil.rileyLinkCommunicationManager = rileyLinkCommunicationManager;
     }
 
 
-    static ServiceTask currentTask;
+    public static boolean sendNotification(ServiceNotification notification, Integer clientHashcode) {
+        return RileyLinkUtil.rileyLinkService.sendNotification(notification, clientHashcode);
+    }
 
 
     public static void setCurrentTask(ServiceTask task) {
@@ -211,13 +208,13 @@ public class RileyLinkUtil {
     }
 
 
-    public static void setRileyLinkTargetFrequency(RileyLinkTargetFrequency rileyLinkTargetFrequency) {
-        RileyLinkUtil.rileyLinkTargetFrequency = rileyLinkTargetFrequency;
+    public static RileyLinkTargetFrequency getRileyLinkTargetFrequency() {
+        return RileyLinkUtil.rileyLinkTargetFrequency;
     }
 
 
-    public static RileyLinkTargetFrequency getRileyLinkTargetFrequency() {
-        return RileyLinkUtil.rileyLinkTargetFrequency;
+    public static void setRileyLinkTargetFrequency(RileyLinkTargetFrequency rileyLinkTargetFrequency) {
+        RileyLinkUtil.rileyLinkTargetFrequency = rileyLinkTargetFrequency;
     }
 
 

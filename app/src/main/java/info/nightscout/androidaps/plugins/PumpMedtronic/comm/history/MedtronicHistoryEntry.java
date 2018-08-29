@@ -3,11 +3,12 @@ package info.nightscout.androidaps.plugins.PumpMedtronic.comm.history;
 
 import org.joda.time.LocalDateTime;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import info.nightscout.androidaps.plugins.PumpCommon.utils.HexDump;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.StringUtil;
-import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.PumpTimeStampedRecord;
 
 /**
  * Application:   GGC - GNU Gluco Control
@@ -46,7 +47,9 @@ public abstract class MedtronicHistoryEntry implements MedtronicHistoryEntryInte
     protected byte[] body;
 
     protected LocalDateTime dateTime;
-    protected PumpTimeStampedRecord historyEntryDetails;
+    //protected PumpTimeStampedRecord historyEntryDetails;
+
+    private Map<String, Object> decodedData;
 
 
     public void setData(List<Byte> listRawData, boolean doNotProcess) {
@@ -59,14 +62,14 @@ public abstract class MedtronicHistoryEntry implements MedtronicHistoryEntryInte
             return;
 
         head = new byte[getHeadLength() - 1];
-        for(int i = 1; i < (getHeadLength()); i++) {
+        for (int i = 1; i < (getHeadLength()); i++) {
             head[i - 1] = listRawData.get(i);
         }
 
         if (getDateTimeLength() > 0) {
             datetime = new byte[getDateTimeLength()];
 
-            for(int i = getHeadLength(), j = 0; j < getDateTimeLength(); i++, j++) {
+            for (int i = getHeadLength(), j = 0; j < getDateTimeLength(); i++, j++) {
                 datetime[j] = listRawData.get(i);
             }
         }
@@ -74,12 +77,38 @@ public abstract class MedtronicHistoryEntry implements MedtronicHistoryEntryInte
         if (getBodyLength() > 0) {
             body = new byte[getBodyLength()];
 
-            for(int i = (getHeadLength() + getDateTimeLength()), j = 0; j < getBodyLength(); i++, j++) {
+            for (int i = (getHeadLength() + getDateTimeLength()), j = 0; j < getBodyLength(); i++, j++) {
                 body[j] = listRawData.get(i);
             }
 
         }
 
+    }
+
+
+    public String getDecodedData() {
+        if (decodedData == null)
+            if (isNoDataEntry())
+                return "No data";
+            else
+                return "";
+        else
+            return decodedData.toString();
+    }
+
+
+    public boolean hasData() {
+        return (decodedData != null) || (isNoDataEntry()) || getEntryTypeName().equals("UnabsorbedInsulin");
+    }
+
+
+    public boolean isNoDataEntry() {
+        return (sizes[0] == 2 && sizes[1] == 5 && sizes[2] == 0);
+    }
+
+
+    public boolean showRaw() {
+        return getEntryTypeName().equals("EndResultTotals");
     }
 
 
@@ -103,7 +132,7 @@ public abstract class MedtronicHistoryEntry implements MedtronicHistoryEntryInte
         StringBuilder sb = new StringBuilder();
 
         sb.append(getToStringStart());
-        sb.append(", DT: " + ((this.dateTime == null) ? "x" : StringUtil.toDateTimeString(this.dateTime)));
+        sb.append(", DT: " + StringUtil.getStringInLength((this.dateTime == null) ? "x" : StringUtil.toDateTimeString(this.dateTime), 19));
         sb.append(", length=");
         sb.append(getHeadLength());
         sb.append(",");
@@ -113,6 +142,17 @@ public abstract class MedtronicHistoryEntry implements MedtronicHistoryEntryInte
         sb.append("(");
         sb.append((getHeadLength() + getDateTimeLength() + getBodyLength()));
         sb.append(")");
+
+        boolean hasData = hasData();
+
+        if (hasData) {
+            sb.append(", data=" + getDecodedData());
+        }
+
+        if (hasData && !showRaw()) {
+            sb.append("]");
+            return sb.toString();
+        }
 
         if (head != null) {
             sb.append(", head=");
@@ -133,10 +173,10 @@ public abstract class MedtronicHistoryEntry implements MedtronicHistoryEntryInte
         sb.append(HexDump.toHexStringDisplayable(this.rawData));
         sb.append("]");
 
-        sb.append(" DT: ");
-        sb.append(this.dateTime == null ? " - " : this.dateTime.toString("dd.MM.yyyy HH:mm:ss"));
+        //sb.append(" DT: ");
+        //sb.append(this.dateTime == null ? " - " : this.dateTime.toString("dd.MM.yyyy HH:mm:ss"));
 
-        sb.append(" Ext: ");
+        //sb.append(" Ext: ");
 
         return sb.toString();
     }
@@ -188,13 +228,21 @@ public abstract class MedtronicHistoryEntry implements MedtronicHistoryEntryInte
     }
 
 
+    public LocalDateTime getLocalDateTime() {
+        return this.dateTime;
+    }
+
+
     public void setLocalDateTime(LocalDateTime atdate) {
         this.dateTime = atdate;
     }
 
 
-    public LocalDateTime getLocalDateTime() {
-        return this.dateTime;
+    public void addDecodedData(String key, Object value) {
+        if (decodedData == null)
+            decodedData = new HashMap<>();
+
+        decodedData.put(key, value);
     }
 
 

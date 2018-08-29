@@ -6,31 +6,38 @@ package info.nightscout.androidaps.plugins.PumpMedtronic.comm.message;
 public class UnknownMessageBody extends MessageBody {
     public byte[] rxData;
 
-    @Override
-    public int getLength() {
-        return 0;
-    }
 
     public UnknownMessageBody(byte[] data) {
         this.rxData = data;
     }
 
+
+    @Override
+    public int getLength() {
+        return 0;
+    }
+
+
     @Override
     public void init(byte[] rxData) {
     }
+
 
     public byte[] getRxData() {
         return rxData;
     }
 
+
     public void setRxData(byte[] rxData) {
         this.rxData = rxData;
     }
+
 
     @Override
     public byte[] getTxData() {
         return rxData;
     }
+
 
     public void setTxData(byte[] txData) {
         this.rxData = txData;

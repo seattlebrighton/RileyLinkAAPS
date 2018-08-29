@@ -17,7 +17,9 @@ import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.command.Up
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.GattAttributes;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.RFSpyResponse;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.RadioPacket;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.RadioResponse;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.CC111XRegister;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RFSpyCommand;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RXFilterMode;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkEncodingType;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkFirmwareVersion;
@@ -172,7 +174,6 @@ public class RFSpy {
                 resetNotConnectedCount();
             } else {
                 if (resp.looksLikeRadioPacket()) {
-//                if (resp.looksLikeRadioPacket()) {
 //                    RadioResponse radioResp = resp.getRadioResponse();
 //                    byte[] responsePayload = radioResp.getPayload();
                     LOG.info("writeToData: received radio response. Will decode at upper level");
@@ -203,7 +204,7 @@ public class RFSpy {
         output[0] = command.code;
 
         if (body != null) {
-            for (int i = 0; i < body.length; i++) {
+            for(int i = 0; i < body.length; i++) {
                 output[i + 1] = body[i];
             }
         }
@@ -225,6 +226,8 @@ public class RFSpy {
 //        return response;
 //    }
 
+        return transmit(radioPacket, (byte) 0, (byte) 0, (byte) 0xFF);
+    }
 
 //    public RFSpyResponse receive(byte listenChannel, int timeout_ms, byte retryCount) {
 //        int receiveDelay = timeout_ms * (retryCount + 1);
@@ -232,6 +235,12 @@ public class RFSpy {
 //        return writeToData(RileyLinkCommandType.GetPacket, listen, receiveDelay);
 //    }
 
+    public RFSpyResponse transmit(RadioPacket radioPacket, byte sendChannel, byte repeatCount, byte delay_ms) {
+        // append checksum, encode data, send it.
+        byte[] fullPacket = ByteUtil.concat(getByteArray(sendChannel, repeatCount, delay_ms), radioPacket.getEncoded());
+        RFSpyResponse response = writeToData(RFSpyCommand.Send, fullPacket, delay_ms + EXPECTED_MAX_BLUETOOTH_LATENCY_MS);
+        return response;
+    }
 
 //    public RFSpyResponse transmitThenReceive(RadioPacket pkt, int timeout_ms) {
 //        return transmitThenReceive(pkt, (byte) 0, (byte) 0, (byte) 0, (byte) 0, timeout_ms, (byte) 0);
@@ -243,6 +252,9 @@ public class RFSpy {
     public RFSpyResponse transmitThenReceive(RadioPacket pkt, byte sendChannel, byte repeatCount, byte delay_ms, byte listenChannel, int timeout_ms, byte retryCount) {
         return transmitThenReceive(pkt, sendChannel, repeatCount, delay_ms, listenChannel, timeout_ms, retryCount, 0);
 
+
+    public RFSpyResponse transmitThenReceive(RadioPacket pkt, int timeout_ms) {
+        return transmitThenReceive(pkt, (byte) 0, (byte) 0, (byte) 0, (byte) 0, timeout_ms, (byte) 0);
     }
 
     //FIXME: to be able to work with Omnipod we need to support preamble extensions so we should create a class for the SnedAndListen RL command

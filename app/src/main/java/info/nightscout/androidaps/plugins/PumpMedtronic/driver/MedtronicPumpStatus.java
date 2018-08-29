@@ -40,23 +40,39 @@ public class MedtronicPumpStatus extends PumpStatus {
     public String rileyLinkAddress = null;
     public Double maxBolus;
     public Double maxBasal;
-    private String[] frequencies;
-    private boolean isFrequencyUS = false;
-
     public boolean inPreInit = true;
-
-    String regexMac = "([\\da-fA-F]{1,2}(?:\\:|$)){6}";
-    String regexSN = "[0-9]{6}";
-
-    private Map<String, PumpType> medtronicPumpMap = null;
-
     // statuses
     public RileyLinkServiceState rileyLinkServiceState = RileyLinkServiceState.NotStarted;
     public RileyLinkError rileyLinkError;
     public PumpDeviceState pumpDeviceState = PumpDeviceState.NeverContacted;
-
     public MedtronicDeviceType medtronicDeviceType = null;
+    public long timeIndex;
+    public Date time;
+    public double remainUnits = 0;
+    public int remainBattery = 0;
+    public double currentBasal = 0;
+    public int tempBasalInProgress = 0;
+    public int tempBasalRatio = 0;
+    public int tempBasalRemainMin = 0;
+    public Date tempBasalStart;
+    public Double tempBasalAmount = 0.0d;
+    public Integer tempBasalLength = 0;
+    String regexMac = "([\\da-fA-F]{1,2}(?:\\:|$)){6}";
+    String regexSN = "[0-9]{6}";
+    boolean serialChanged = false;
+    boolean rileyLinkAddressChanged = false;
+    private String[] frequencies;
+    private boolean isFrequencyUS = false;
+    private Map<String, PumpType> medtronicPumpMap = null;
     private HashMap<String, MedtronicDeviceType> medtronicDeviceTypeMap;
+
+
+    // fixme
+
+
+    public MedtronicPumpStatus(PumpDescription pumpDescription) {
+        super(pumpDescription);
+    }
 
 
     public long getTimeIndex() {
@@ -66,31 +82,6 @@ public class MedtronicPumpStatus extends PumpStatus {
 
     public void setTimeIndex(long timeIndex) {
         this.timeIndex = timeIndex;
-    }
-
-
-    public long timeIndex;
-
-    public Date time;
-
-    public double remainUnits = 0;
-    public int remainBattery = 0;
-
-    public double currentBasal = 0;
-
-    public int tempBasalInProgress = 0;
-    public int tempBasalRatio = 0;
-    public int tempBasalRemainMin = 0;
-    public Date tempBasalStart;
-    public Double tempBasalAmount = 0.0d;
-    public Integer tempBasalLength = 0;
-
-
-    // fixme
-
-
-    public MedtronicPumpStatus(PumpDescription pumpDescription) {
-        super(pumpDescription);
     }
 
 
@@ -150,10 +141,6 @@ public class MedtronicPumpStatus extends PumpStatus {
         frequencies[0] = MainApp.gs(R.string.medtronic_pump_frequency_us);
         frequencies[1] = MainApp.gs(R.string.medtronic_pump_frequency_worldwide);
     }
-
-
-    boolean serialChanged = false;
-    boolean rileyLinkAddressChanged = false;
 
 
     public void verifyConfiguration() {

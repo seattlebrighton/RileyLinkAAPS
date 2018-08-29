@@ -13,15 +13,13 @@ import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
  * Created by geoff on 6/4/16.
  */
 public class TimeFormat {
+    public static final String standardFormatString = "YYYY-MM-dd HH:mm:ss";
     private static final boolean DEBUG_TIMEFORMAT = false;
     private static final String TAG = "TimeFormat";
 
 
     public TimeFormat() {
     }
-
-
-    public static final String standardFormatString = "YYYY-MM-dd HH:mm:ss";
 
 
     public static DateTimeFormatter standardFormatter() {

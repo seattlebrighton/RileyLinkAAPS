@@ -28,18 +28,17 @@ import info.nightscout.utils.SP;
 public abstract class RileyLinkCommunicationManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(RileyLinkCommunicationManager.class);
-
+    private static final int SCAN_TIMEOUT = 1500;
     protected final RFSpy rfspy;
     protected final Context context;
-
-    private double[] scanFrequencies;
-
     protected int receiverDeviceAwakeForMinutes = 1; // override this in constructor of specific implementation
     protected String receiverDeviceID; // String representation of receiver device (ex. Pump (xxxxxx) or Pod (yyyyyy))
     protected long lastGoodReceiverCommunicationTime = 0;
     protected PumpStatus pumpStatus;
     protected RileyLinkServiceData rileyLinkServiceData;
-
+    protected RileyLinkTargetFrequency targetFrequency;
+    long nextWakeUpRequired = 0L;
+    private double[] scanFrequencies;
     // internal flag
     private boolean showPumpMessages = true;
     protected RileyLinkTargetFrequency targetFrequency;
@@ -67,18 +66,15 @@ public abstract class RileyLinkCommunicationManager {
 
     private int timeoutCount = 0;
 
-    protected <E extends RLMessage> E sendAndListen(RLMessage msg, int timeout_ms, Class<E> clazz) {
-        return sendAndListen(msg, timeout_ms, 0, 0, clazz);
-    }
 
     // All pump communications go through this function.
-    protected <E extends RLMessage> E sendAndListen(RLMessage msg, int timeout_ms, int repeatCount, int extendPreamble_ms, Class<E> clazz) {
+    protected <E extends RLMessage> E sendAndListen(RLMessage msg, int timeout_ms, Class<E> clazz) {
 
         if (showPumpMessages) {
             LOG.info("Sent:" + ByteUtil.shortHexString(msg.getTxData()));
         }
 
-        RFSpyResponse resp = rfspy.transmitThenReceive(new RadioPacket(msg.getTxData(), rileyLinkServiceData.versionCC110), (byte) 0, (byte) repeatCount, (byte) 0, (byte) 0, timeout_ms, (byte) 0, extendPreamble_ms);
+        RFSpyResponse resp = rfspy.transmitThenReceive(new RadioPacket(msg.getTxData()), timeout_ms);
 
         E response = createResponseMessage(resp.getRadioResponse().getPayload(), clazz);
 
@@ -175,7 +171,6 @@ public abstract class RileyLinkCommunicationManager {
         }
     }
 
-    private static final int SCAN_TIMEOUT = 1500;
 
     /**
      * Do device connection, with wakeup
@@ -191,14 +186,14 @@ public abstract class RileyLinkCommunicationManager {
         wakeUp(receiverDeviceAwakeForMinutes, false);
         FrequencyScanResults results = new FrequencyScanResults();
 
-        for (int i = 0; i < frequencies.length; i++) {
+        for(int i = 0; i < frequencies.length; i++) {
             int tries = 3;
             FrequencyTrial trial = new FrequencyTrial();
             trial.frequencyMHz = frequencies[i];
             rfspy.setBaseFrequency(frequencies[i]);
 
             int sumRSSI = 0;
-            for (int j = 0; j < tries; j++) {
+            for(int j = 0; j < tries; j++) {
 
                 byte[] pumpMsgContent = createPumpMessageContent(RLMessageType.ReadSimpleData);
                 RFSpyResponse resp = rfspy.transmitThenReceive(new RadioPacket(pumpMsgContent, rileyLinkServiceData.versionCC110), (byte) 0, (byte) 0, (byte) 0, (byte) 0, SCAN_TIMEOUT, (byte) 0);
@@ -225,7 +220,7 @@ public abstract class RileyLinkCommunicationManager {
 
         StringBuilder stringBuilder = new StringBuilder("Scan results:\n");
 
-        for (int k = 0; k < results.trials.size(); k++) {
+        for(int k = 0; k < results.trials.size(); k++) {
             FrequencyTrial one = results.trials.get(k);
 
             stringBuilder.append(String.format("Scan Result[%s]: Freq=%s, avg RSSI = %s\n", "" + k, "" + one.frequencyMHz, "" + one.averageRSSI));
@@ -277,7 +272,7 @@ public abstract class RileyLinkCommunicationManager {
     public double quickTuneForPump(double startFrequencyMHz) {
         double betterFrequency = startFrequencyMHz;
         double stepsize = 0.05;
-        for (int tries = 0; tries < 4; tries++) {
+        for(int tries = 0; tries < 4; tries++) {
             double evenBetterFrequency = quickTunePumpStep(betterFrequency, stepsize);
             if (evenBetterFrequency == 0.0) {
                 // could not see the pump at all.

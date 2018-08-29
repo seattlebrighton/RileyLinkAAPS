@@ -66,13 +66,11 @@ public class RileyLinkMedtronicService extends RileyLinkService {
     // saved settings
     //private String pumpIDString;
     //private byte[] pumpIDBytes;
-
+    private static ServiceTask currentTask = null;
+    public MedtronicCommunicationManager medtronicCommunicationManager;
     // cache of most recently received set of pump history pages. Probably shouldn't be here.
     ArrayList<Page> mHistoryPages;
     PumpHistoryManager pumpHistoryManager;
-
-    public MedtronicCommunicationManager medtronicCommunicationManager;
-    private static ServiceTask currentTask = null;
 
     //MedtronicPumpStatus pumpStatus = (MedtronicPumpStatus) MedtronicPumpPlugin.getPlugin().getPumpStatusData();
 

@@ -5,6 +5,7 @@ import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history_old.Ti
 /**
  * Created by geoff on 6/11/16.
  */
+@Deprecated
 public class AlarmClockReminderPumpEvent extends TimeStampedRecord {
 
     public AlarmClockReminderPumpEvent() {
