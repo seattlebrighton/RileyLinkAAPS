@@ -1,11 +1,16 @@
 package info.nightscout.androidaps.plugins.PumpOmnipod.comm.message;
 
 import org.apache.commons.lang3.NotImplementedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RLMessage;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
+import info.nightscout.androidaps.plugins.PumpOmnipod.comm.OmnipodCommunicationManager;
 import info.nightscout.androidaps.plugins.PumpOmnipod.defs.PacketType;
 import info.nightscout.androidaps.plugins.PumpOmnipod.util.OmniCRC;
+
+import static android.webkit.ConsoleMessage.MessageLevel.LOG;
 
 /**
  * Created by andy on 6/1/18.
@@ -13,6 +18,7 @@ import info.nightscout.androidaps.plugins.PumpOmnipod.util.OmniCRC;
 // FIXME: This needs to be changed. this is just copy of MedtronicPumpMessage, so I imagine this file will have different structure
 // in Omnipod I assume
 public class OmnipodPacket implements RLMessage {
+    private static final Logger LOG = LoggerFactory.getLogger(OmnipodCommunicationManager.class);
 
     private int packetAddress = 0;
     private PacketType packetType = PacketType.Invalid;
@@ -37,8 +43,13 @@ public class OmnipodPacket implements RLMessage {
             return;
         }
         this.sequenceNumber = (encoded[4] & 0b11111);
+//        if (packetType == PacketType.Ack) {
+//            _isValid = true;
+//
+//        }
         int crc = OmniCRC.crc8(ByteUtil.substring(encoded,0, encoded.length - 1));
         if (crc != encoded[encoded.length - 1]) {
+            LOG.error("OmnipodPacket CRC mismatch");
             //FIXME: Log CRC mismatch
             return;
         }

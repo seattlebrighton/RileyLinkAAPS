@@ -125,8 +125,17 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
             response = exchangePackets(packet);
             //We actually ignore (ack) responses if it is not last packet to send
         }
+        if (response == null) {
+            LOG.debug("Timeout on receive");
+            //FIXME: Log timeout
+            return null;
+        }
+
+
         if (response.getPacketType() == PacketType.Ack) {
+            LOG.warn("Received ack instead of real response");
             //FIXME: we received ack instead of real response, something is wrong
+            incrementPacketNumber(1);
             return null;
         }
         OmnipodMessage receivedMessage = null;
@@ -137,6 +146,7 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
                 OmnipodPacket ackForCon = makeAckPacket(packetAddress, ackAddressOverride);
                 OmnipodPacket conPacket = exchangePackets(ackForCon, 3, 40);
                 if (conPacket.getPacketType() != PacketType.Con) {
+                    LOG.debug("Received a non-con packet type:", conPacket.getPacketType());
                     //FIXME: We should throw an error as we expect only continuation packets
                     return null;
                 }
@@ -149,6 +159,7 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
 
         MessageBlock[] messageBlocks = receivedMessage.getMessageBlocks();
         if (messageBlocks.length == 0) {
+            LOG.debug("Not enough data");
             //FIXME: We should throw an error of not enough data
             return null;
         }
@@ -157,6 +168,7 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
         if (block.getType() == MessageBlockType.ErrorResponse) {
             ErrorResponse error = (ErrorResponse)block;
             if (error.getErrorResponseType() == ErrorResponseType.BadNonce) {
+                LOG.debug("Nonce out-of-sync");
                 //FIXME: Log that we have nonce out-of-sync
                 if (podState != null) {
                     this.podState.ResyncNonce(error.getNonceSearchKey(), this.podState.getCurrentNonce(), message.getSequenceNumber());
@@ -211,7 +223,7 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
         return exchangePackets(
                 packet
                 , 0
-                , 165
+                , 250
                 ,20000
                 , 127
         );
@@ -224,7 +236,7 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
         return exchangePackets(
                 packet
                 , repeatCount
-                , 165
+                , 250
                 , 20000
                 , preambleExtension_ms);
     }
@@ -282,9 +294,10 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
     public Object initializePod() {
         Random rnd = new Random();
         int newAddress = rnd.nextInt();
-        this.packetNumber = 0x0A;
+        this.packetNumber = 0x0;
         this.messageNumber = 0;
-        newAddress = 0x05e70b;
+        //newAddress = 0x05e70b;
+        //LOG.debug("New address: " + ByteUtil.shortHexString());
         newAddress = (newAddress & 0x001fffff) | 0x1f000000;
         AssignAddressCommand assignAddress = new AssignAddressCommand(newAddress);
         OmnipodMessage assignAddressMessage = new OmnipodMessage(
@@ -292,6 +305,12 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
                 , new MessageBlock[] {assignAddress}
                 , messageNumber);
         ConfigResponse config = exchangeMessages(assignAddressMessage, defaultAddress, newAddress);
+        if (config == null) {
+            LOG.debug("config is null (timeout or wrong answer)");
+            //FIXME: show communication timeout
+            return null;
+        }
+
 
         DateTime activationDate = DateTime.now();
 
@@ -305,8 +324,14 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
                 , new MessageBlock[]{confirmPairing}
                 , messageNumber);
         ConfigResponse config2 = exchangeMessages(confirmPairingMessage, defaultAddress, newAddress);
+        if (config == null) {
+            LOG.debug("Second command timeout, that's bad");
+            return null;
+        }
+
         if (config2.pairingState != PairingState.Paired) {
             //FIXME: Log invalid data (we should have received a paired-state response
+            LOG.error("Invalid pairing state");
             return null;
         }
 
