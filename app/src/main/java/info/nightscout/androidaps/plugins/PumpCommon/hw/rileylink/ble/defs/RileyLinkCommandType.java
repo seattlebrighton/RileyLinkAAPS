@@ -1,4 +1,4 @@
-package info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.command;
+package info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs;
 
 /**
  * Created by andy on 22/05/2018.
@@ -19,11 +19,12 @@ public enum RileyLinkCommandType {
     SetSWEncoding(11),
     SetPreamble(12),
     ResetRadioConfig(13),
-    GetStatistics(14),;
+    GetStatistics(14), ;
 
     public byte code;
 
+
     RileyLinkCommandType(int code) {
-        this.code = (byte) code;
+        this.code = (byte)code;
     }
 }

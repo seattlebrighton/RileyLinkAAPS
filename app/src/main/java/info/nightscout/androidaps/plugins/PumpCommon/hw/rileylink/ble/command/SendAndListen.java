@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.RadioPacket;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkCommandType;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkFirmwareVersion;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
 
@@ -15,44 +16,22 @@ public class SendAndListen extends RileyLinkCommand {
     private byte listenChannel;
     private int timeout_ms;
     private byte retryCount;
-    private int preambleExtension_ms;
+    private Integer preambleExtension_ms;
     private RadioPacket packetToSend;
 
 
-    public SendAndListen(
-            RileyLinkFirmwareVersion version
-            , byte sendChannel
-            , byte repeatCount
-            , byte delayBetweenPackets_ms
-            , byte listenChannel
-            , int timeout_ms
-            , byte retryCount
-            , RadioPacket packetToSend
+    public SendAndListen(RileyLinkFirmwareVersion version, byte sendChannel, byte repeatCount,
+            byte delayBetweenPackets_ms, byte listenChannel, int timeout_ms, byte retryCount, RadioPacket packetToSend
 
     ) {
-        this(
-                version
-                , sendChannel
-                , repeatCount
-                , delayBetweenPackets_ms
-                , listenChannel
-                , timeout_ms
-                , retryCount
-                , 0
-                , packetToSend
-        );
+        this(version, sendChannel, repeatCount, delayBetweenPackets_ms, listenChannel, timeout_ms, retryCount, null,
+            packetToSend);
     }
 
-    public SendAndListen(
-            RileyLinkFirmwareVersion version
-            , byte sendChannel
-            , byte repeatCount
-            , int delayBetweenPackets_ms
-            , byte listenChannel
-            , int timeout_ms
-            , byte retryCount
-            , int preambleExtension_ms
-            , RadioPacket packetToSend
+
+    public SendAndListen(RileyLinkFirmwareVersion version, byte sendChannel, byte repeatCount,
+            int delayBetweenPackets_ms, byte listenChannel, int timeout_ms, byte retryCount,
+            Integer preambleExtension_ms, RadioPacket packetToSend
 
     ) {
         super(version);
@@ -62,14 +41,16 @@ public class SendAndListen extends RileyLinkCommand {
         this.listenChannel = listenChannel;
         this.timeout_ms = timeout_ms;
         this.retryCount = retryCount;
-        this.preambleExtension_ms = preambleExtension_ms;
+        this.preambleExtension_ms = preambleExtension_ms == null ? 0 : preambleExtension_ms;
         this.packetToSend = packetToSend;
     }
+
 
     @Override
     public RileyLinkCommandType getCommandType() {
         return RileyLinkCommandType.SendAndListen;
     }
+
 
     @Override
     public byte[] getRaw() {
@@ -81,12 +62,12 @@ public class SendAndListen extends RileyLinkCommand {
         bytes.add(this.sendChannel);
         bytes.add(this.repeatCount);
 
-        if (isPacketV2) { //delay is unsigned 16-bit integer
+        if (isPacketV2) { // delay is unsigned 16-bit integer
             byte[] delayBuff = ByteBuffer.allocate(4).putInt(delayBetweenPackets_ms).array();
             bytes.add(delayBuff[2]);
             bytes.add(delayBuff[3]);
         } else {
-            bytes.add((byte) delayBetweenPackets_ms);
+            bytes.add((byte)delayBetweenPackets_ms);
         }
 
         bytes.add(this.listenChannel);
@@ -100,15 +81,10 @@ public class SendAndListen extends RileyLinkCommand {
 
         bytes.add(retryCount);
 
-        if (isPacketV2) { //2.x (and probably higher versions) support preamble extension
+        if (isPacketV2) { // 2.x (and probably higher versions) support preamble extension
             byte[] preambleBuf = ByteBuffer.allocate(4).putInt(preambleExtension_ms).array();
             bytes.add(preambleBuf[2]);
             bytes.add(preambleBuf[3]);
-        }
-
-        // Dummy
-        if (isPacketV2) {
-            //bytes.add((byte) 0x00);
         }
 
         return ByteUtil.concat(ByteUtil.fromByteArray(bytes), packetToSend.getEncoded());

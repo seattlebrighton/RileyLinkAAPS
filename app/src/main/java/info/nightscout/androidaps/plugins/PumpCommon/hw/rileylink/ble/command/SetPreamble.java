@@ -1,18 +1,21 @@
 package info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.command;
 
-import org.apache.commons.lang3.NotImplementedException;
-
 import java.nio.ByteBuffer;
 
+import org.apache.commons.lang3.NotImplementedException;
+
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkCommandType;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkFirmwareVersion;
 
 public class SetPreamble extends RileyLinkCommand {
 
     private int preamble;
 
+
     public SetPreamble(RileyLinkFirmwareVersion version, int preamble) throws Exception {
         super(version);
-        if (!this.version.isSameVersion(RileyLinkFirmwareVersion.Version2AndHigher)) { //this command was not supported before 2.0
+        if (!this.version.isSameVersion(RileyLinkFirmwareVersion.Version2AndHigher)) { // this command was not supported
+                                                                                       // before 2.0
             throw new NotImplementedException("Old firmware does not support SetPreamble command");
         }
 
@@ -22,10 +25,12 @@ public class SetPreamble extends RileyLinkCommand {
         this.preamble = preamble;
     }
 
+
     @Override
     public RileyLinkCommandType getCommandType() {
         return RileyLinkCommandType.SetPreamble;
     }
+
 
     @Override
     public byte[] getRaw() {

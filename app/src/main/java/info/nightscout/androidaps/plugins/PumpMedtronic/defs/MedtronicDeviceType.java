@@ -13,7 +13,7 @@ public enum MedtronicDeviceType {
     Unknown_Device, //
 
     // Pump
-    //Medtronic_508_508c(null, null), //
+    // Medtronic_508_508c(null, null), //
     Medtronic_511(MedtronicConverterType.Pump511Converter, null, "511"), //
 
     Medtronic_512(MedtronicConverterType.Pump512Converter, null, "512"), //
@@ -33,19 +33,19 @@ public enum MedtronicDeviceType {
 
     Medtronic_554_Veo(MedtronicConverterType.Pump523Converter, MedtronicConverterType.CGMS523Converter, "554"), //
     Medtronic_754_Veo(MedtronicConverterType.Pump523Converter, MedtronicConverterType.CGMS523Converter, "754"), //
-    //Minimed_640G(MedtronicConverterType.Pump523Converter, MedtronicConverterType.CGMS523Converter, "640G", null),
+    // Minimed_640G(MedtronicConverterType.Pump523Converter, MedtronicConverterType.CGMS523Converter, "640G", null),
 
     Medtronic_512andHigher(Medtronic_512, Medtronic_712, Medtronic_515, Medtronic_715, Medtronic_522, Medtronic_722, //
-            Medtronic_523_Revel, Medtronic_723_Revel, Medtronic_554_Veo, Medtronic_754_Veo), //
+    Medtronic_523_Revel, Medtronic_723_Revel, Medtronic_554_Veo, Medtronic_754_Veo), //
 
     Medtronic_515andHigher(Medtronic_515, Medtronic_715, Medtronic_522, Medtronic_722, Medtronic_523_Revel, Medtronic_723_Revel, //
-            Medtronic_554_Veo, Medtronic_754_Veo), //
-    Medtronic_522andHigher(Medtronic_522, Medtronic_722, Medtronic_523_Revel, Medtronic_723_Revel,  //
-            Medtronic_554_Veo, Medtronic_754_Veo), //
+    Medtronic_554_Veo, Medtronic_754_Veo), //
+    Medtronic_522andHigher(Medtronic_522, Medtronic_722, Medtronic_523_Revel, Medtronic_723_Revel, //
+    Medtronic_554_Veo, Medtronic_754_Veo), //
     Medtronic_523andHigher(Medtronic_523_Revel, Medtronic_723_Revel, Medtronic_554_Veo, //
-            Medtronic_754_Veo), //
+    Medtronic_754_Veo), //
 
-    //Medtronic_553andHigher(Medtronic_553_Revel, Medtronic_753_Revel, Medtronic_554_Veo, Medtronic_754_Veo), //
+    // Medtronic_553andHigher(Medtronic_553_Revel, Medtronic_753_Revel, Medtronic_554_Veo, Medtronic_754_Veo), //
     Medtronic_554andHigher(Medtronic_554_Veo, Medtronic_754_Veo), //
 
     // CGMS
@@ -75,8 +75,8 @@ public enum MedtronicDeviceType {
     MedtronicConverterType cgmsConverter;
     private String pumpModel;
 
-    //String smallReservoirPump;
-    //String bigReservoirPump;
+    // String smallReservoirPump;
+    // String bigReservoirPump;
     private boolean isFamily;
     private MedtronicDeviceType[] familyMembers = null;
 
@@ -87,7 +87,7 @@ public enum MedtronicDeviceType {
         this.cgmsConverter = cgmsConverter;
 
         this.pumpModel = pumpModel;
-        //this.bigReservoirPump = bigReservoirPump;
+        // this.bigReservoirPump = bigReservoirPump;
     }
 
 
@@ -142,11 +142,6 @@ public enum MedtronicDeviceType {
 
     public MedtronicConverterType getPumpConverterType() {
         return pumpConverter;
-    }
-
-
-    public boolean isLargerFormat() {
-        return isSameDevice(this, Medtronic_523andHigher);
     }
 
 
