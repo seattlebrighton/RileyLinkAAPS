@@ -106,7 +106,7 @@ public class RFSpyReader {
                         SystemClock.sleep(100);
 
                         if (result.resultCode == BLECommOperationResult.RESULT_SUCCESS) {
-                            if (!stopAtNull) {
+                            if (stopAtNull) {
                                 // only data up to the first null is valid
                                 for (int i = 0; i < result.value.length; i++) {
                                     if (result.value[i] == 0) {
