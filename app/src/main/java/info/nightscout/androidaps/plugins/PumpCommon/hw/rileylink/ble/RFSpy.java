@@ -33,7 +33,7 @@ import info.nightscout.androidaps.plugins.PumpCommon.utils.ThreadUtil;
 /**
  * Created by geoff on 5/26/16.
  */
-public class RFSpy {
+public class RFSpy implements IRFSpy {
 
     private static final Logger LOG = LoggerFactory.getLogger(RFSpy.class);
 
@@ -59,9 +59,11 @@ public class RFSpy {
         this.rileyLinkBle = rileyLinkBle;
         reader = new RFSpyReader(rileyLinkBle);
     }
+@Override
 public RileyLinkFirmwareVersion getRLVersionCached() {
         return firmwareVersion;
 }
+@Override
 public String getBLEVersionCached() {
         return bleVersion;
 }
@@ -69,6 +71,7 @@ public String getBLEVersionCached() {
 
     // Call this after the RL services are discovered.
     // Starts an async task to read when data is available
+    @Override
     public void startReader() {
         rileyLinkBle.registerRadioResponseCountNotification(new Runnable() {
             @Override
@@ -81,6 +84,7 @@ public String getBLEVersionCached() {
 
     //Here should go generic RL initialisation + protocol adjustments depending on
     //firmware version
+    @Override
     public void initializeRileyLink() {
         //We have to call raw version of communication to get firmware version
         //So that we can adjust other commands accordingly afterwords
@@ -100,6 +104,7 @@ public String getBLEVersionCached() {
 
 
     // Call this from the "response count" notification handler.
+    @Override
     public void newDataIsAvailable() {
         // pass the message to the reader (which should be internal to RFSpy)
         reader.newDataIsAvailable();
@@ -108,6 +113,7 @@ public String getBLEVersionCached() {
 
     // This gets the version from the BLE113, not from the CC1110.
     // I.e., this gets the version from the BLE interface, not from the radio.
+    @Override
     public String getVersion() {
         BLECommOperationResult result = rileyLinkBle.readCharacteristic_blocking(radioServiceUUID, radioVersionUUID);
         if (result.resultCode == BLECommOperationResult.RESULT_SUCCESS) {
@@ -226,6 +232,7 @@ public String getBLEVersionCached() {
 //        return transmitThenReceive(pkt, (byte) 0, (byte) repeatCount, (byte) 0, (byte) 0, timeout_ms, (byte) 0);
 //    }
 
+    @Override
     public RFSpyResponse transmitThenReceive(RadioPacket pkt, byte sendChannel, byte repeatCount, byte delay_ms, byte listenChannel, int timeout_ms, byte retryCount) {
         return transmitThenReceive(pkt, sendChannel, repeatCount, delay_ms, listenChannel, timeout_ms, retryCount, 0);
 
@@ -233,6 +240,7 @@ public String getBLEVersionCached() {
 
     //FIXME: to be able to work with Omnipod we need to support preamble extensions so we should create a class for the SnedAndListen RL command
     //To avoid snedAndListen command assembly magic
+    @Override
     public RFSpyResponse transmitThenReceive(
             RadioPacket pkt
             , byte sendChannel
@@ -264,12 +272,14 @@ public String getBLEVersionCached() {
     }
 
 
+    @Override
     public RFSpyResponse updateRegister(CC111XRegister reg, int val) {
         RFSpyResponse resp = writeToData(new UpdateRegister(firmwareVersion, reg, (byte) val), EXPECTED_MAX_BLUETOOTH_LATENCY_MS);
         return resp;
     }
 
 
+    @Override
     public void setBaseFrequency(double freqMHz) {
         int value = (int) (freqMHz * 1000000 / ((double) (RILEYLINK_FREQ_XTAL) / Math.pow(2.0, 16.0)));
         updateRegister(CC111XRegister.freq0, (byte) (value & 0xff));

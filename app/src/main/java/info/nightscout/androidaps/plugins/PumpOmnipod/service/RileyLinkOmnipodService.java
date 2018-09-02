@@ -24,6 +24,7 @@ import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkCommu
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkConst;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RFSpy;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RFSpyFake;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RileyLinkBLE;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkEncodingType;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkTargetFrequency;
@@ -86,8 +87,11 @@ public class RileyLinkOmnipodService extends RileyLinkService {
         // get most recently used RileyLink address
         rileyLinkServiceData.rileylinkAddress = SP.getString(RileyLinkConst.Prefs.RileyLinkAddress, "");
 
-        rileyLinkBLE = new RileyLinkBLE(this.context); // or this
-        rfspy = new RFSpy(rileyLinkBLE);
+        //rileyLinkBLE = new RileyLinkBLE(this.context); // or this
+        //rfspy = new RFSpy(rileyLinkBLE);
+
+        rfspy = new RFSpyFake()
+        ;
         rfspy.startReader();
 
         RileyLinkUtil.setRileyLinkBLE(rileyLinkBLE);

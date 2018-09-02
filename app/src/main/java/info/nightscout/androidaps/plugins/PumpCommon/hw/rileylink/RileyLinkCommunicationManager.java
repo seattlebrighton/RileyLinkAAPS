@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import info.nightscout.androidaps.plugins.PumpCommon.data.PumpStatus;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.IRFSpy;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RFSpy;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.FrequencyScanResults;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.FrequencyTrial;
@@ -29,7 +30,7 @@ public abstract class RileyLinkCommunicationManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(RileyLinkCommunicationManager.class);
 
-    protected final RFSpy rfspy;
+    protected final IRFSpy rfspy;
     protected final Context context;
 
     private double[] scanFrequencies;
@@ -45,7 +46,7 @@ public abstract class RileyLinkCommunicationManager {
     protected RileyLinkTargetFrequency targetFrequency;
 
 
-    public RileyLinkCommunicationManager(Context context, RFSpy rfspy, RileyLinkTargetFrequency targetFrequency) {
+    public RileyLinkCommunicationManager(Context context, IRFSpy rfspy, RileyLinkTargetFrequency targetFrequency) {
         this.context = context;
         this.rfspy = rfspy;
         this.targetFrequency = targetFrequency;

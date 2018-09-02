@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Random;
 
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkCommunicationManager;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.IRFSpy;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RFSpy;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RLMessage;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RLMessageType;
@@ -54,7 +55,7 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
     private boolean showPumpMessages;
     static OmnipodCommunicationManager omnipodCommunicationManager;
 
-    public OmnipodCommunicationManager(Context context, RFSpy rfspy) {
+    public OmnipodCommunicationManager(Context context, IRFSpy rfspy) {
         super(context, rfspy, RileyLinkTargetFrequency.Omnipod);
         omnipodCommunicationManager = this;
     }
