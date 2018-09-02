@@ -27,7 +27,7 @@ public class RFSpyReader {
     private static final Logger LOG = LoggerFactory.getLogger(RFSpyReader.class);
 
     //private Context context;
-    private RileyLinkBLE rileyLinkBle;
+    private IRileyLinkBLE rileyLinkBle;
     private Semaphore waitForRadioData = new Semaphore(0, true);
     AsyncTask<Void, Void, Void> readerTask;
     private LinkedBlockingQueue<byte[]> mDataQueue = new LinkedBlockingQueue<>();
@@ -35,7 +35,7 @@ public class RFSpyReader {
     private int releaseCount = 0;
 
 
-    public RFSpyReader(/*Context context,*/ RileyLinkBLE rileyLinkBle) {
+    public RFSpyReader(/*Context context,*/ IRileyLinkBLE rileyLinkBle) {
         //this.context = context;
         this.rileyLinkBle = rileyLinkBle;
     }

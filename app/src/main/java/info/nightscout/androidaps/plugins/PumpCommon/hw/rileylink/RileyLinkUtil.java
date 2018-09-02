@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import info.nightscout.androidaps.plugins.PumpCommon.defs.PumpType;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.IRileyLinkBLE;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RileyLinkBLE;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkEncodingType;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkTargetFrequency;
@@ -39,7 +40,7 @@ public class RileyLinkUtil {
     private static final Logger LOG = LoggerFactory.getLogger(RileyLinkUtil.class);
 
     private static Context context;
-    private static RileyLinkBLE rileyLinkBLE;
+    private static IRileyLinkBLE rileyLinkBLE;
     private static RileyLinkServiceData rileyLinkServiceData;
     private static List<RLHistoryItem> historyRileyLink = new ArrayList<>();
     private static PumpType pumpType;
@@ -99,12 +100,12 @@ public class RileyLinkUtil {
     }
 
 
-    public static void setRileyLinkBLE(RileyLinkBLE rileyLinkBLEIn) {
+    public static void setRileyLinkBLE(IRileyLinkBLE rileyLinkBLEIn) {
         RileyLinkUtil.rileyLinkBLE = rileyLinkBLEIn;
     }
 
 
-    public static RileyLinkBLE getRileyLinkBLE() {
+    public static IRileyLinkBLE getRileyLinkBLE() {
         return RileyLinkUtil.rileyLinkBLE;
     }
 

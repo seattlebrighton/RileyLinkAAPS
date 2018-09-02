@@ -22,6 +22,7 @@ import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkCommu
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkConst;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.IRFSpy;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.IRileyLinkBLE;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RFSpy;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RileyLinkBLE;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkEncodingType;
@@ -54,7 +55,7 @@ public abstract class RileyLinkService extends Service {
     protected BluetoothAdapter bluetoothAdapter;
 
     // Our hardware/software connection
-    public RileyLinkBLE rileyLinkBLE; // android-bluetooth management
+    public IRileyLinkBLE rileyLinkBLE; // android-bluetooth management
     protected IRFSpy rfspy; // interface for RL xxx Mhz radio.
     //protected boolean needBluetoothPermission = true;
     protected RileyLinkIPCConnection rileyLinkIPCConnection;

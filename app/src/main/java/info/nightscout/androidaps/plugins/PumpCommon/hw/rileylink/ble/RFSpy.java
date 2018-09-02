@@ -43,7 +43,7 @@ public class RFSpy implements IRFSpy {
 
     public static final int EXPECTED_MAX_BLUETOOTH_LATENCY_MS = 7500; // 1500
 
-    private RileyLinkBLE rileyLinkBle;
+    private IRileyLinkBLE rileyLinkBle;
     private RFSpyReader reader;
     private RileyLinkTargetFrequency selectedTargetFrequency;
 
@@ -55,7 +55,7 @@ public class RFSpy implements IRFSpy {
     private RileyLinkFirmwareVersion firmwareVersion;
     private String bleVersion; //We don't use it so no need of sofisticated logic
 
-    public RFSpy(RileyLinkBLE rileyLinkBle) {
+    public RFSpy(IRileyLinkBLE rileyLinkBle) {
         this.rileyLinkBle = rileyLinkBle;
         reader = new RFSpyReader(rileyLinkBle);
     }

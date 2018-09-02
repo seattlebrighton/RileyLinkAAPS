@@ -9,13 +9,6 @@ import android.support.annotation.Nullable;
 
 import com.gxwtech.roundtrip2.MainApp;
 import com.gxwtech.roundtrip2.RT2Const;
-import com.gxwtech.roundtrip2.RoundtripService.Tasks.FetchPumpHistoryTask;
-import com.gxwtech.roundtrip2.RoundtripService.Tasks.ReadBolusWizardCarbProfileTask;
-import com.gxwtech.roundtrip2.RoundtripService.Tasks.ReadISFProfileTask;
-import com.gxwtech.roundtrip2.RoundtripService.Tasks.ReadPumpClockTask;
-import com.gxwtech.roundtrip2.RoundtripService.Tasks.RetrieveHistoryPageTask;
-import com.gxwtech.roundtrip2.RoundtripService.Tasks.UpdatePumpStatusTask;
-import com.gxwtech.roundtrip2.RoundtripService.medtronic.PumpData.PumpHistoryManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,22 +16,14 @@ import org.slf4j.LoggerFactory;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkCommunicationManager;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkConst;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkUtil;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RFSpy;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RileyLinkBLEFake;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RFSpyFake;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RileyLinkBLE;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkEncodingType;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkTargetFrequency;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.defs.RileyLinkTargetDevice;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.RileyLinkService;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.RileyLinkServiceData;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.ServiceResult;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.ServiceTransport;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.tasks.ServiceTask;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.tasks.ServiceTaskExecutor;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.tasks.WakeAndTuneTask;
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.MedtronicCommunicationManager;
-import info.nightscout.androidaps.plugins.PumpMedtronic.service.RileyLinkMedtronicService;
-import info.nightscout.androidaps.plugins.PumpMedtronic.util.MedtronicConst;
 import info.nightscout.androidaps.plugins.PumpOmnipod.comm.OmnipodCommunicationManager;
 import info.nightscout.utils.SP;
 
@@ -90,6 +75,7 @@ public class RileyLinkOmnipodService extends RileyLinkService {
         //rileyLinkBLE = new RileyLinkBLE(this.context); // or this
         //rfspy = new RFSpy(rileyLinkBLE);
 
+        rileyLinkBLE = new RileyLinkBLEFake();
         rfspy = new RFSpyFake()
         ;
         rfspy.startReader();
