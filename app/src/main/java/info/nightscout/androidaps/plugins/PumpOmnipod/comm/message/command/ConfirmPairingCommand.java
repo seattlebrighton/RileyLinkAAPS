@@ -32,8 +32,8 @@ public class ConfirmPairingCommand extends MessageBlock {
         data = ByteUtil.concat(data, ByteUtil.getBytesFromInt(address));
         data = ByteUtil.concat(data, getByteArray((byte)0x14, (byte)0x04));
         data = ByteUtil.concat(data, getByteArray(
-                (byte)(date.dayOfMonth().get())
-                , (byte)date.monthOfYear().get()
+                  (byte)date.monthOfYear().get()
+                , (byte)(date.dayOfMonth().get())
                 , (byte)(date.year().get() - 2000)
                 , (byte)date.hourOfDay().get()
                 , (byte)date.minuteOfHour().get()
