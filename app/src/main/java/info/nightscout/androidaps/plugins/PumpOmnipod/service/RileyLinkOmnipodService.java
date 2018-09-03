@@ -75,19 +75,27 @@ public class RileyLinkOmnipodService extends RileyLinkService {
         //rileyLinkBLE = new RileyLinkBLE(this.context); // or this
         //rfspy = new RFSpy(rileyLinkBLE);
 
-        rileyLinkBLE = new RileyLinkBLEFake();
-        rfspy = new RFSpyFake()
-        ;
-        rfspy.startReader();
 
-        RileyLinkUtil.setRileyLinkBLE(rileyLinkBLE);
-
-        omnipodCommunicationManager = new OmnipodCommunicationManager(context, rfspy);
     }
 
     @Override
     public RileyLinkCommunicationManager getDeviceCommunicationManager() {
         return this.omnipodCommunicationManager;
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        //delete when capture-debug is finished
+        RileyLinkUtil.setRileyLinkService(this);
+        rfspy = new RFSpyFake();
+        //this.onCreate();
+        rileyLinkBLE = new RileyLinkBLEFake();
+        rfspy.startReader();
+
+        RileyLinkUtil.setRileyLinkBLE(rileyLinkBLE);
+
+        omnipodCommunicationManager = new OmnipodCommunicationManager(context, rfspy);
     }
 
 

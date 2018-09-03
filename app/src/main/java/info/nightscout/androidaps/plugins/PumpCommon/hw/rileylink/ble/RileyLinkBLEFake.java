@@ -2,11 +2,23 @@ package info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble;
 
 import android.bluetooth.BluetoothGattService;
 
+import com.gxwtech.roundtrip2.RT2Const;
+
 import java.util.UUID;
 
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkConst;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.operations.BLECommOperationResult;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.ServiceNotification;
 
 public class RileyLinkBLEFake implements IRileyLinkBLE {
+
+    public RileyLinkBLEFake() {
+        RileyLinkUtil.sendBroadcastMessage(RileyLinkConst.Intents.RileyLinkReady);
+        RileyLinkUtil.sendNotification(new ServiceNotification(RT2Const.IPC.MSG_BLE_RileyLinkReady), null);
+
+    }
+
     @Override
     public void debugService(BluetoothGattService service, int indentCount) {
 
