@@ -295,9 +295,9 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
     public Object initializePod() {
         Random rnd = new Random();
         int newAddress = rnd.nextInt();
-        this.packetNumber = 0x0;
+        this.packetNumber = 0x0A;
         this.messageNumber = 0;
-        //newAddress = 0x05e70b;
+        newAddress = 0x1f05e70b;
         //LOG.debug("New address: " + ByteUtil.shortHexString());
         newAddress = (newAddress & 0x001fffff) | 0x1f000000;
         AssignAddressCommand assignAddress = new AssignAddressCommand(newAddress);
@@ -313,7 +313,13 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
         }
 
 
-        DateTime activationDate = DateTime.now();
+        //DateTime activationDate = DateTime.now();
+        DateTime activationDate = new DateTime(
+                2018,
+                8,
+                18,
+                20,
+                5);
 
         ConfirmPairingCommand confirmPairing = new ConfirmPairingCommand(
                 newAddress
