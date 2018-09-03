@@ -1,12 +1,17 @@
 package info.nightscout.androidaps.plugins.PumpOmnipod.comm.message;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
+import info.nightscout.androidaps.plugins.PumpOmnipod.comm.OmnipodCommunicationManager;
 import info.nightscout.androidaps.plugins.PumpOmnipod.util.OmniCRC;
 
 public class OmnipodMessage {
 
+    private static final Logger LOG = LoggerFactory.getLogger(OmnipodCommunicationManager.class);
     private int address;
     private MessageBlock[] messageBlocks;
     private int sequenceNumber;
@@ -61,6 +66,7 @@ public class OmnipodMessage {
         byte bodyLength = data[5];
         if (data.length - 8 < bodyLength) {
             //FIXME: Throw or log: not enough data
+            LOG.info("OmnipodMessage: not enough data (" + (data.length - 8) + " instead of " + bodyLength + ")");
             return null;
         }
         int sequenceNumber = (((int)b9 >> 2) & 0b11111);
@@ -68,11 +74,13 @@ public class OmnipodMessage {
         int calculatedCrc = OmniCRC.crc16(ByteUtil.substring(data, 0, data.length - 2));
         if (crc != calculatedCrc) {
             //FIXME: Throw or log CRC error
+            LOG.warn("OmnipodMessage: CRC mismatch");
             return null;
         }
         MessageBlock[] blocks = decodeBlocks(ByteUtil.substring(data, 6, data.length - 6 - 2));
         if (blocks == null || blocks.length == 0) {
             //FIXME: Throw/log no blocks decoded
+            LOG.warn("OmnipodMessage: No blocks decoded");
             return null;
         }
 
@@ -88,6 +96,7 @@ public class OmnipodMessage {
             MessageBlock block = blockType.Decode(data);
             if (block == null) {
                 //FIXME: Throw/log: unknown block
+                LOG.warn("OmnipodMessage: Unknown block type: " + data[index]);
                 return null;
             }
             blocks.add(block);

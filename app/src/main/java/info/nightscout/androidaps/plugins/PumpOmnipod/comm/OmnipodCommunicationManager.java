@@ -321,6 +321,8 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
                 20,
                 5);
 
+        //at this point for an unknown reason PDM starts counting messages from 0 again
+        messageNumber = 0;
         ConfirmPairingCommand confirmPairing = new ConfirmPairingCommand(
                 newAddress
                 , activationDate

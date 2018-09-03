@@ -58,7 +58,7 @@ public class RFSpyFake implements IRFSpy {
         byte[] assignAddressResponse = ByteUtil.fromHexString("000000ffffffffebffffffff0417011502070002070002020000aaa700099d818e1f05e70b8321a6");
         byte[] confirmPairingRequest = ByteUtil.fromHexString("ffffffffadffffffff001503131f05e70b140408121214050000aaa700099d81016802");
         byte[] confirmPairingResponse1 = ByteUtil.fromHexString("000000ffffffffeeffffffff041d011b13881008340a5002070002070002030000aaa700099d8120");
-        byte[] ackForConfirmPairingResponse1 = ByteUtil.fromHexString(""); //baga
+        byte[] ackForConfirmPairingResponse1 = ByteUtil.fromHexString("FFFFFFFF4F1F05E70BAB"); //baga
         byte[] conForConfirmPairingResponse1 = ByteUtil.fromHexString("000000ffffffff901f05e70b035dc1");
 
 
@@ -66,24 +66,28 @@ public class RFSpyFake implements IRFSpy {
             case 0:
                 if (ByteUtil.compare(bytesToSend, assignAddressRequest) == 0 )
                     return new RFSpyResponse(assignAddressResponse);
-                break;
+                else
+                    return null;
             case 1:
                 return new RFSpyResponse(new byte[] {(byte) 0xAA});
             case 2:
                 if (ByteUtil.compare(bytesToSend, confirmPairingRequest) == 0 )
                     return new RFSpyResponse(confirmPairingResponse1);
-                break;
+                else
+                    return null;
             case 3:
                 if (ByteUtil.compare(bytesToSend, ackForConfirmPairingResponse1) == 0 )
                     return new RFSpyResponse(conForConfirmPairingResponse1);
-                break;
+                else
+                    return null;
 
             case 4:
+                return new RFSpyResponse(new byte[] {(byte) 0xAA});
             default:
                 return null;
 
         }
-        return null;
+        //return null;
 
     }
 

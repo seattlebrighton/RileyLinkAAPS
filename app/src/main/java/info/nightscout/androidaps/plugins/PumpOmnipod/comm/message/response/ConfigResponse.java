@@ -22,10 +22,10 @@ public class ConfigResponse extends MessageBlock {
         int length = encodedData[1] + 2;
         switch (length) {
             case 0x17:
-                initializeMembers(2, encodedData);
+                initializeMembers(2, encodedData, true);
                 break;
             case 0x1D:
-                initializeMembers(9, encodedData);
+                initializeMembers(9, encodedData, false);
                 break;
             default:
                 return;
@@ -34,7 +34,7 @@ public class ConfigResponse extends MessageBlock {
 
     }
 
-    private void initializeMembers(int startOffset, byte[] data) {
+    private void initializeMembers(int startOffset, byte[] data, boolean extraByte) {
         this.pairingState = PairingState.fromByte(data[startOffset + 7]);
         this.pmVersion = new FirmwareVersion(data[startOffset + 0], data[startOffset + 1], data[startOffset + 2]);
         this.piVersion = new FirmwareVersion(data[startOffset + 3], data[startOffset + 4], data[startOffset + 5]);
@@ -50,11 +50,13 @@ public class ConfigResponse extends MessageBlock {
                 , new Integer(data[startOffset + 14])
                 , new Integer(data[startOffset + 15])
                 , ByteUtil.BitConversion.BIG_ENDIAN);
+        if (extraByte)
+            startOffset++;
         this.address = ByteUtil.toInt(
-                new Integer(data[startOffset + 17])
+                new Integer(data[startOffset + 16])
+                , new Integer(data[startOffset + 17])
                 , new Integer(data[startOffset + 18])
                 , new Integer(data[startOffset + 19])
-                , new Integer(data[startOffset + 20])
                 , ByteUtil.BitConversion.BIG_ENDIAN);
 
     }
