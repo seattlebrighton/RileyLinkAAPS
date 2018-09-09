@@ -1,12 +1,12 @@
 package info.nightscout.androidaps.plugins.PumpMedtronic.comm.history.cgms;
 
-import org.joda.time.LocalDateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import org.joda.time.LocalDateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.history.MedtronicHistoryDecoder;
@@ -14,30 +14,24 @@ import info.nightscout.androidaps.plugins.PumpMedtronic.comm.history.MedtronicHi
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.history.RawHistoryPage;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.history.RecordDecodeStatus;
 
-
 /**
- * Application:   GGC - GNU Gluco Control
- * Plug-in:       GGC PlugIn Base (base class for all plugins)
+ * Application: GGC - GNU Gluco Control
+ * Plug-in: GGC PlugIn Base (base class for all plugins)
  * <p>
  * See AUTHORS for copyright information.
  * <p>
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free Software
- * Foundation; either version 2 of the License, or (at your option) any later
+ * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later
  * version.
  * <p>
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
- * details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  * <p>
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
- * Place, Suite 330, Boston, MA 02111-1307 USA
+ * You should have received a copy of the GNU General Public License along with this program; if not, write to the Free
+ * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * <p>
- * Filename:     MinimedCGMSHistoryDecoder
- * Description:  Decoder for CGMS history data. For now we support just data from GlucoseHistory command.
- * ISIGHistory and VCntrHistory are IGNORED for now.
+ * Filename: MinimedCGMSHistoryDecoder Description: Decoder for CGMS history data. For now we support just data from
+ * GlucoseHistory command. ISIGHistory and VCntrHistory are IGNORED for now.
  * <p>
  * Author: Andy {andy@atech-software.com}
  */
@@ -46,15 +40,15 @@ public class MedtronicCGMSHistoryDecoder extends MedtronicHistoryDecoder {
 
     private static final Logger LOG = LoggerFactory.getLogger(MedtronicCGMSHistoryDecoder.class);
 
-    //CGMSValuesWriter cgmsValuesWriter = null;
 
+    // CGMSValuesWriter cgmsValuesWriter = null;
 
     public MedtronicCGMSHistoryDecoder() {
     }
 
 
     public RecordDecodeStatus decodeRecord(MedtronicHistoryEntry entryIn) {
-        CGMSHistoryEntry precord = (CGMSHistoryEntry) entryIn;
+        CGMSHistoryEntry precord = (CGMSHistoryEntry)entryIn;
         try {
             return decodeRecord(precord, false);
         } catch (Exception ex) {
@@ -76,7 +70,7 @@ public class MedtronicCGMSHistoryDecoder extends MedtronicHistoryDecoder {
 
         // LOG.debug("decodeRecord: type={}", entry.getEntryType());
 
-        switch ((CGMSHistoryEntryType) entry.getEntryType()) {
+        switch ((CGMSHistoryEntryType)entry.getEntryType()) {
 
             case SensorWeakSignal:
                 break;
@@ -166,14 +160,14 @@ public class MedtronicCGMSHistoryDecoder extends MedtronicHistoryDecoder {
                     // listRawData.add((byte) opCode);
 
                     // pe.setOpCode(opCode);
-                    pe.setData(Arrays.asList((byte) opCode), false);
+                    pe.setData(Arrays.asList((byte)opCode), false);
 
                     // System.out.println("Record: " + pe);
 
                     outList.add(pe);
                 } else {
                     List<Byte> listRawData = new ArrayList<Byte>();
-                    listRawData.add((byte) opCode);
+                    listRawData.add((byte)opCode);
 
                     for (int j = 0; j < (entryType.getTotalLength() - 1); j++) {
                         listRawData.add(dataClear.get(counter));
@@ -198,7 +192,7 @@ public class MedtronicCGMSHistoryDecoder extends MedtronicHistoryDecoder {
                 // listRawData.add((byte) opCode);
 
                 // pe.setOpCode(opCode);
-                pe.setData(Arrays.asList((byte) opCode), false);
+                pe.setData(Arrays.asList((byte)opCode), false);
 
                 // System.out.println("Record: " + pe);
 
@@ -210,7 +204,7 @@ public class MedtronicCGMSHistoryDecoder extends MedtronicHistoryDecoder {
         int i = outList.size() - 1;
 
         for (; i >= 0; i--) {
-            //CGMSHistoryEntryType type = (CGMSHistoryEntryType) outList.get(i).getDateLength();
+            // CGMSHistoryEntryType type = (CGMSHistoryEntryType) outList.get(i).getDateLength();
 
             if (outList.get(i).getDateLength() > 0) {
                 System.out.println("Recordccc2: " + outList.get(i));
@@ -231,7 +225,7 @@ public class MedtronicCGMSHistoryDecoder extends MedtronicHistoryDecoder {
         for (; i >= 0; i--) {
             // System.out.println("Record2: " + outList.get(i));
 
-            CGMSHistoryEntry che = (CGMSHistoryEntry) outList.get(i);
+            CGMSHistoryEntry che = (CGMSHistoryEntry)outList.get(i);
 
             parseDate(che);
 
@@ -337,7 +331,8 @@ public class MedtronicCGMSHistoryDecoder extends MedtronicHistoryDecoder {
         // date is reversed
 
         if (entry.getEntryType().getDateType() == CGMSHistoryEntryType.DateType.MinuteSpecific) {
-            LocalDateTime date = new LocalDateTime(parseDay(data[2]), parseMonths(data[0], data[1]), parseYear(data[3]), parseHours(data[0]), parseMinutes(data[1]), 0);
+            LocalDateTime date = new LocalDateTime(parseDay(data[2]), parseMonths(data[0], data[1]),
+                parseYear(data[3]), parseHours(data[0]), parseMinutes(data[1]), 0);
 
             // ATechDate date = new ATechDate(parseDay(data[0]),
             // parseMonths(data[2], data[1]), parseYear(data[2]),

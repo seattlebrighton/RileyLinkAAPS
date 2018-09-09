@@ -8,11 +8,12 @@ abstract public class Record {
 
     protected MedtronicDeviceType model;
     protected byte recordOp;
-    //protected int length;
+    // protected int length;
     protected int foundAtOffset;
     protected byte[] rawbytes = new byte[0];
-    //protected String recordTypeName = this.getClass().getSimpleName();
 
+
+    // protected String recordTypeName = this.getClass().getSimpleName();
 
     public Record() {
 

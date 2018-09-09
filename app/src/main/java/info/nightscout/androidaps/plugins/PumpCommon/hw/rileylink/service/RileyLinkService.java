@@ -45,24 +45,20 @@ import info.nightscout.utils.SP;
  */
 public abstract class RileyLinkService extends Service {
 
+    protected static final String WAKELOCKNAME = "com.gxwtech.roundtrip2.RoundtripServiceWakeLock";
     private static final Logger LOG = LoggerFactory.getLogger(RileyLinkService.class);
-
-    protected BluetoothAdapter bluetoothAdapter;
-
+    protected static volatile PowerManager.WakeLock lockStatic = null;
     // Our hardware/software connection
     public RileyLinkBLE rileyLinkBLE; // android-bluetooth management
+    protected BluetoothAdapter bluetoothAdapter;
     protected RFSpy rfspy; // interface for RL xxx Mhz radio.
     // protected boolean needBluetoothPermission = true;
     protected RileyLinkIPCConnection rileyLinkIPCConnection;
     protected Context context;
     // public RileyLinkCommunicationManager pumpCommunicationManager;
     protected BroadcastReceiver mBroadcastReceiver;
-
     protected RileyLinkServiceData rileyLinkServiceData;
     protected RileyLinkTargetFrequency rileyLinkTargetFrequency;
-
-    protected static final String WAKELOCKNAME = "com.gxwtech.roundtrip2.RoundtripServiceWakeLock";
-    protected static volatile PowerManager.WakeLock lockStatic = null;
 
 
     public RileyLinkService(Context context) {
@@ -74,6 +70,18 @@ public abstract class RileyLinkService extends Service {
         RileyLinkUtil.setRileyLinkTargetFrequency(rileyLinkTargetFrequency);
         RileyLinkUtil.setEncoding(getEncoding());
         initRileyLinkServiceData();
+    }
+
+
+    public synchronized static PowerManager.WakeLock getLock(Context context) {
+        if (lockStatic == null) {
+            PowerManager mgr = (PowerManager)context.getSystemService(Context.POWER_SERVICE);
+
+            lockStatic = mgr.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, WAKELOCKNAME);
+            lockStatic.setReferenceCounted(true);
+        }
+
+        return lockStatic;
     }
 
 
@@ -352,18 +360,6 @@ public abstract class RileyLinkService extends Service {
 
             return true;
         }
-    }
-
-
-    public synchronized static PowerManager.WakeLock getLock(Context context) {
-        if (lockStatic == null) {
-            PowerManager mgr = (PowerManager)context.getSystemService(Context.POWER_SERVICE);
-
-            lockStatic = mgr.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, WAKELOCKNAME);
-            lockStatic.setReferenceCounted(true);
-        }
-
-        return lockStatic;
     }
 
 

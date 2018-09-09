@@ -6,6 +6,7 @@ import android.os.Bundle;
  * Created by geoff on 6/25/16.
  */
 public class ServiceResult extends ServiceMessage {
+
     public static final int ERROR_MALFORMED_PUMP_RESPONSE = 1;
     public static final int ERROR_NULL_PUMP_RESPONSE = 2;
     public static final int ERROR_INVALID_PUMP_RESPONSE = 3;
@@ -91,6 +92,5 @@ public class ServiceResult extends ServiceMessage {
     public String getResult() {
         return map.getString("result", "");
     }
-
 
 }

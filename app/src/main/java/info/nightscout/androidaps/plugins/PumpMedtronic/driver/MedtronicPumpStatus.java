@@ -1,15 +1,14 @@
 package info.nightscout.androidaps.plugins.PumpMedtronic.driver;
 
-
-import com.gxwtech.roundtrip2.MainApp;
-import com.gxwtech.roundtrip2.R;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import com.gxwtech.roundtrip2.MainApp;
+import com.gxwtech.roundtrip2.R;
 
 import info.nightscout.androidaps.interfaces.PumpDescription;
 import info.nightscout.androidaps.plugins.PumpCommon.data.PumpStatus;
@@ -29,8 +28,7 @@ import info.nightscout.utils.SP;
 
 public class MedtronicPumpStatus extends PumpStatus {
 
-
-    //private static MedtronicPumpStatus medtronicPumpStatus = new MedtronicPumpStatus();
+    // private static MedtronicPumpStatus medtronicPumpStatus = new MedtronicPumpStatus();
     private static Logger LOG = LoggerFactory.getLogger(MedtronicPumpStatus.class);
 
     public String errorDescription = null;
@@ -69,14 +67,13 @@ public class MedtronicPumpStatus extends PumpStatus {
 
     // fixme
 
-
     public MedtronicPumpStatus(PumpDescription pumpDescription) {
         super(pumpDescription);
     }
 
 
     public long getTimeIndex() {
-        return (long) Math.ceil(time.getTime() / 60000d);
+        return (long)Math.ceil(time.getTime() / 60000d);
     }
 
 
@@ -150,7 +147,6 @@ public class MedtronicPumpStatus extends PumpStatus {
             if (this.medtronicPumpMap == null)
                 createMedtronicPumpMap();
 
-
             this.errorDescription = null;
             this.serialNumber = null;
             this.pumpType = null;
@@ -158,7 +154,6 @@ public class MedtronicPumpStatus extends PumpStatus {
             this.rileyLinkAddress = null;
             this.maxBolus = null;
             this.maxBasal = null;
-
 
             String serialNr = SP.getString(MedtronicConst.Prefs.PumpSerial, null);
 
@@ -173,7 +168,6 @@ public class MedtronicPumpStatus extends PumpStatus {
                     this.serialNumber = serialNr;
                 }
             }
-
 
             String pumpType = SP.getString(MedtronicConst.Prefs.PumpType, null);
 
@@ -198,7 +192,6 @@ public class MedtronicPumpStatus extends PumpStatus {
                 }
             }
 
-
             String pumpFrequency = SP.getString(MedtronicConst.Prefs.PumpFrequency, null);
 
             if (pumpFrequency == null) {
@@ -214,7 +207,6 @@ public class MedtronicPumpStatus extends PumpStatus {
                 }
             }
 
-
             String rileyLinkAddress = SP.getString(RileyLinkConst.Prefs.RileyLinkAddress, null);
 
             if (rileyLinkAddress == null) {
@@ -227,7 +219,6 @@ public class MedtronicPumpStatus extends PumpStatus {
                     this.rileyLinkAddress = rileyLinkAddress;
                 }
             }
-
 
             String value = SP.getString(MedtronicConst.Prefs.MaxBolus, "25");
 
@@ -263,6 +254,5 @@ public class MedtronicPumpStatus extends PumpStatus {
     public void refreshConfiguration() {
         verifyConfiguration();
     }
-
 
 }

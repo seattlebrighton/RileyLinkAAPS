@@ -15,7 +15,6 @@ public enum PumpDeviceState {
     ProblemContacting, //
     InvalidConfiguration;
 
-
     Integer resourceId = null;
 
 

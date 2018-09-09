@@ -1,37 +1,31 @@
 package info.nightscout.androidaps.plugins.PumpMedtronic.comm.history;
 
-
-import org.joda.time.LocalDateTime;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.joda.time.LocalDateTime;
 
 import info.nightscout.androidaps.plugins.PumpCommon.utils.HexDump;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.StringUtil;
 
 /**
- * Application:   GGC - GNU Gluco Control
- * Plug-in:       GGC PlugIn Base (base class for all plugins)
+ * Application: GGC - GNU Gluco Control
+ * Plug-in: GGC PlugIn Base (base class for all plugins)
  * <p>
  * See AUTHORS for copyright information.
  * <p>
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free Software
- * Foundation; either version 2 of the License, or (at your option) any later
+ * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later
  * version.
  * <p>
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
- * details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  * <p>
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
- * Place, Suite 330, Boston, MA 02111-1307 USA
+ * You should have received a copy of the GNU General Public License along with this program; if not, write to the Free
+ * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * <p>
- * Filename:     MinimedHistoryRecord
- * Description:  Minimed History Record.
+ * Filename: MinimedHistoryRecord Description: Minimed History Record.
  * <p>
  * Author: Andy {andy@atech-software.com}
  */
@@ -47,7 +41,7 @@ public abstract class MedtronicHistoryEntry implements MedtronicHistoryEntryInte
     protected byte[] body;
 
     protected LocalDateTime dateTime;
-    //protected PumpTimeStampedRecord historyEntryDetails;
+    // protected PumpTimeStampedRecord historyEntryDetails;
 
     private Map<String, Object> decodedData;
 
@@ -132,7 +126,9 @@ public abstract class MedtronicHistoryEntry implements MedtronicHistoryEntryInte
         StringBuilder sb = new StringBuilder();
 
         sb.append(getToStringStart());
-        sb.append(", DT: " + StringUtil.getStringInLength((this.dateTime == null) ? "x" : StringUtil.toDateTimeString(this.dateTime), 19));
+        sb.append(", DT: "
+            + StringUtil.getStringInLength((this.dateTime == null) ? "x" : StringUtil.toDateTimeString(this.dateTime),
+                19));
         sb.append(", length=");
         sb.append(getHeadLength());
         sb.append(",");
@@ -173,10 +169,10 @@ public abstract class MedtronicHistoryEntry implements MedtronicHistoryEntryInte
         sb.append(HexDump.toHexStringDisplayable(this.rawData));
         sb.append("]");
 
-        //sb.append(" DT: ");
-        //sb.append(this.dateTime == null ? " - " : this.dateTime.toString("dd.MM.yyyy HH:mm:ss"));
+        // sb.append(" DT: ");
+        // sb.append(this.dateTime == null ? " - " : this.dateTime.toString("dd.MM.yyyy HH:mm:ss"));
 
-        //sb.append(" Ext: ");
+        // sb.append(" Ext: ");
 
         return sb.toString();
     }
@@ -254,8 +250,7 @@ public abstract class MedtronicHistoryEntry implements MedtronicHistoryEntryInte
         }
     }
 
-
     // if we extend to CGMS this need to be changed back
-    //public abstract PumpHistoryEntryType getEntryType();
+    // public abstract PumpHistoryEntryType getEntryType();
 
 }

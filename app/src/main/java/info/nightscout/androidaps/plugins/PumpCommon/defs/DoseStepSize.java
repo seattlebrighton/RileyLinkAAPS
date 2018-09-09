@@ -7,17 +7,16 @@ package info.nightscout.androidaps.plugins.PumpCommon.defs;
 public enum DoseStepSize {
 
     ComboBasal( //
-            new DoseStepSizeEntry(0f, 1f, 0.01f), //
-            new DoseStepSizeEntry(1f, 10f, 0.05f), //
-            new DoseStepSizeEntry(10f, Float.MAX_VALUE, 0.1f)), //
+    new DoseStepSizeEntry(0f, 1f, 0.01f), //
+    new DoseStepSizeEntry(1f, 10f, 0.05f), //
+    new DoseStepSizeEntry(10f, Float.MAX_VALUE, 0.1f)), //
 
     MedtronicVeoBasal( //
-            new DoseStepSizeEntry(0f, 1f, 0.025f), //
-            new DoseStepSizeEntry(1f, 10f, 0.05f), //
-            new DoseStepSizeEntry(10f, Float.MAX_VALUE, 0.1f)), //
+    new DoseStepSizeEntry(0f, 1f, 0.025f), //
+    new DoseStepSizeEntry(1f, 10f, 0.05f), //
+    new DoseStepSizeEntry(10f, Float.MAX_VALUE, 0.1f)), //
 
     ;
-
 
     DoseStepSizeEntry[] entries;
 
@@ -59,14 +58,15 @@ public enum DoseStepSize {
         return sb.toString();
     }
 
-
     static class DoseStepSizeEntry {
+
         float from;
         float to;
         float value;
 
 
-        // to = this value is not included, but would actually mean <, so for rates between 0.025-0.975 u/h, we would have [from=0, to=10]
+        // to = this value is not included, but would actually mean <, so for rates between 0.025-0.975 u/h, we would
+        // have [from=0, to=10]
         DoseStepSizeEntry(float from, float to, float value) {
             this.from = from;
             this.to = to;

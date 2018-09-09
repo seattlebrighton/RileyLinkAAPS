@@ -4,6 +4,7 @@ package info.nightscout.androidaps.plugins.PumpMedtronic.comm.message;
  * Created by geoff on 6/2/16.
  */
 public class CarelinkLongMessageBody extends MessageBody {
+
     public static final int LONG_MESSAGE_BODY_LENGTH = 65;
     protected byte[] data;
 

@@ -1,6 +1,5 @@
 package info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history_old.record;
 
-
 import android.os.Bundle;
 
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history_old.TimeStampedRecord;
@@ -8,6 +7,7 @@ import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicDeviceType
 
 @Deprecated
 public class PrimePumpEvent extends TimeStampedRecord {
+
     private double amount = 0.0;
     private double programmedAmount = 0.0;
     private String primeType = "unknown";
@@ -34,8 +34,8 @@ public class PrimePumpEvent extends TimeStampedRecord {
         if (!simpleParse(data, 5)) {
             return false;
         }
-        amount = (double) (asUINT8(data[4]) << 2) / 40.0;
-        programmedAmount = (double) (asUINT8(data[2]) << 2) / 40.0;
+        amount = (double)(asUINT8(data[4]) << 2) / 40.0;
+        programmedAmount = (double)(asUINT8(data[2]) << 2) / 40.0;
         primeType = programmedAmount == 0 ? "manual" : "fixed";
         return true;
     }

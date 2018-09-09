@@ -1,16 +1,15 @@
 package info.nightscout.androidaps.plugins.PumpMedtronic.comm.message;
 
-
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
 
 /**
  * Created by geoff on 6/2/16.
  */
 public class GetHistoryPageCarelinkMessageBody extends CarelinkLongMessageBody {
-    //public boolean wasLastFrame = false;
-    //public int frameNumber = 0;
-    //public byte[] frame = new byte[] {};
 
+    // public boolean wasLastFrame = false;
+    // public int frameNumber = 0;
+    // public byte[] frame = new byte[] {};
 
     public GetHistoryPageCarelinkMessageBody(byte[] frameData) {
         init(frameData);
@@ -36,7 +35,7 @@ public class GetHistoryPageCarelinkMessageBody extends CarelinkLongMessageBody {
 
     public void init(int pageNum) {
         byte numArgs = 1;
-        super.init(new byte[]{numArgs, (byte) pageNum});
+        super.init(new byte[] { numArgs, (byte)pageNum });
     }
 
 

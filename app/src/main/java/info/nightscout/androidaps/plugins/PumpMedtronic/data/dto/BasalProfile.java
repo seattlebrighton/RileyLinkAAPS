@@ -26,11 +26,10 @@ import info.nightscout.androidaps.plugins.PumpMedtronic.util.MedtronicUtil;
  */
 public class BasalProfile {
 
+    public static final int MAX_RAW_DATA_SIZE = (48 * 3) + 1;
     // private static final String TAG = "BasalProfile";
     private static final Logger LOG = LoggerFactory.getLogger(BasalProfile.class);
-
     private static final boolean DEBUG_BASALPROFILE = false;
-    public static final int MAX_RAW_DATA_SIZE = (48 * 3) + 1;
     protected byte[] mRawData; // store as byte array to make transport (via parcel) easier
     List<BasalProfileEntry> listEntries;
 
@@ -45,17 +44,17 @@ public class BasalProfile {
     }
 
 
+    // this asUINT8 should be combined with Record.asUINT8, and placed in a new util class.
+    protected static int readUnsignedByte(byte b) {
+        return (b < 0) ? b + 256 : b;
+    }
+
+
     public void init() {
         mRawData = new byte[MAX_RAW_DATA_SIZE];
         mRawData[0] = 0;
         mRawData[1] = 0;
         mRawData[2] = 0x3f;
-    }
-
-
-    // this asUINT8 should be combined with Record.asUINT8, and placed in a new util class.
-    protected static int readUnsignedByte(byte b) {
-        return (b < 0) ? b + 256 : b;
     }
 
 

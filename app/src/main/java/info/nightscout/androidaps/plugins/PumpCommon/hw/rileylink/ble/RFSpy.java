@@ -33,21 +33,17 @@ import info.nightscout.androidaps.plugins.PumpCommon.utils.ThreadUtil;
  */
 public class RFSpy {
 
-    private static final Logger LOG = LoggerFactory.getLogger(RFSpy.class);
-
     public static final long RILEYLINK_FREQ_XTAL = 24000000;
-
     public static final int EXPECTED_MAX_BLUETOOTH_LATENCY_MS = 7500; // 1500
-
+    private static final Logger LOG = LoggerFactory.getLogger(RFSpy.class);
+    public int notConnectedCount = 0;
     private RileyLinkBLE rileyLinkBle;
     private RFSpyReader reader;
     private RileyLinkTargetFrequency selectedTargetFrequency;
-
     private UUID radioServiceUUID = UUID.fromString(GattAttributes.SERVICE_RADIO);
     private UUID radioDataUUID = UUID.fromString(GattAttributes.CHARA_RADIO_DATA);
     private UUID radioVersionUUID = UUID.fromString(GattAttributes.CHARA_RADIO_VERSION);
     private UUID responseCountUUID = UUID.fromString(GattAttributes.CHARA_RADIO_RESPONSE_COUNT);
-
     private RileyLinkFirmwareVersion firmwareVersion;
     private String bleVersion; // We don't use it so no need of sofisticated logic
 
@@ -108,8 +104,6 @@ public class RFSpy {
         // pass the message to the reader (which should be internal to RFSpy)
         reader.newDataIsAvailable();
     }
-
-    public int notConnectedCount = 0;
 
 
     // This gets the version from the BLE113, not from the CC1110.

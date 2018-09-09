@@ -45,7 +45,7 @@ public abstract class PumpStatus {
     public Integer constraintCarbs;
     public Double constraintMaxIob;
     public Double[] basalsByHour;
-    //public double remainUnits = 0;
+    // public double remainUnits = 0;
     public int remainBattery = 0;
     public double currentBasal = 0;
     public int tempBasalInProgress = 0;
@@ -61,20 +61,20 @@ public abstract class PumpStatus {
         this.initSettings();
     }
 
+
     // FIXME cleanup this is from RT2
 
-    //    public long getTimeIndex() {
-    //        return (long) Math.ceil(time.getTime() / 60000d);
-    //    }
+    // public long getTimeIndex() {
+    // return (long) Math.ceil(time.getTime() / 60000d);
+    // }
     //
-    //    public void setTimeIndex(long timeIndex) {
-    //        this.timeIndex = timeIndex;
-    //    }
+    // public void setTimeIndex(long timeIndex) {
+    // this.timeIndex = timeIndex;
+    // }
     //
-    //    public long timeIndex;
+    // public long timeIndex;
     //
-    //    public Date time;
-
+    // public Date time;
 
     public abstract void initSettings();
 
@@ -100,8 +100,7 @@ public abstract class PumpStatus {
         this.pumpType = pumpType;
     }
 
-    //public Date last_bolus_time;
-    //public double last_bolus_amount = 0;
-
+    // public Date last_bolus_time;
+    // public double last_bolus_amount = 0;
 
 }

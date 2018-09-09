@@ -1,14 +1,14 @@
 package info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.operations;
 
-import android.bluetooth.BluetoothGatt;
-import android.bluetooth.BluetoothGattCharacteristic;
-import android.os.SystemClock;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
+import android.bluetooth.BluetoothGatt;
+import android.bluetooth.BluetoothGattCharacteristic;
+import android.os.SystemClock;
 
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RileyLinkBLE;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.GattAttributes;
@@ -39,7 +39,8 @@ public class CharacteristicWriteOperation extends BLECommOperation {
         try {
             boolean didAcquire = operationComplete.tryAcquire(getGattOperationTimeout_ms(), TimeUnit.MILLISECONDS);
             if (didAcquire) {
-                SystemClock.sleep(1); // This is to allow the IBinder thread to exit before we continue, allowing easier understanding of the sequence of events.
+                SystemClock.sleep(1); // This is to allow the IBinder thread to exit before we continue, allowing easier
+                                      // understanding of the sequence of events.
                 // success
             } else {
                 LOG.error("Timeout waiting for gatt write operation to complete");
@@ -57,10 +58,11 @@ public class CharacteristicWriteOperation extends BLECommOperation {
     @Override
     public void gattOperationCompletionCallback(UUID uuid, byte[] value) {
         if (!characteristic.getUuid().equals(uuid)) {
-            LOG.error(String.format("Completion callback: UUID does not match! out of sequence? Found: %s, should be %s", GattAttributes.lookup(characteristic.getUuid()), GattAttributes.lookup(uuid)));
+            LOG.error(String.format(
+                "Completion callback: UUID does not match! out of sequence? Found: %s, should be %s",
+                GattAttributes.lookup(characteristic.getUuid()), GattAttributes.lookup(uuid)));
         }
         operationComplete.release();
     }
-
 
 }

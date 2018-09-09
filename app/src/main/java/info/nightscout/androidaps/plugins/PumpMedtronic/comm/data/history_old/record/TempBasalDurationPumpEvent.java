@@ -7,6 +7,7 @@ import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicDeviceType
 
 @Deprecated
 public class TempBasalDurationPumpEvent extends TimeStampedRecord {
+
     private int durationMinutes = 0;
 
 
@@ -53,6 +54,5 @@ public class TempBasalDurationPumpEvent extends TimeStampedRecord {
     public boolean isAAPSRelevant() {
         return true;
     }
-
 
 }

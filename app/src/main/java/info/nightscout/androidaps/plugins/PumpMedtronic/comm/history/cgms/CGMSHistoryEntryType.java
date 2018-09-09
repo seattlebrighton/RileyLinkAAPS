@@ -3,33 +3,25 @@ package info.nightscout.androidaps.plugins.PumpMedtronic.comm.history.cgms;
 import java.util.HashMap;
 import java.util.Map;
 
-
 /**
- * Application:   GGC - GNU Gluco Control
- * Plug-in:       GGC PlugIn Base (base class for all plugins)
+ * Application: GGC - GNU Gluco Control
+ * Plug-in: GGC PlugIn Base (base class for all plugins)
  * <p>
  * See AUTHORS for copyright information.
  * <p>
- * This program is free software; you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free Software
- * Foundation; either version 2 of the License, or (at your option) any later
+ * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later
  * version.
  * <p>
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
- * details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  * <p>
- * You should have received a copy of the GNU General Public License along with
- * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
- * Place, Suite 330, Boston, MA 02111-1307 USA
+ * You should have received a copy of the GNU General Public License along with this program; if not, write to the Free
+ * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * <p>
- * Filename:     PumpHistoryEntryType
- * Description:  Pump History Entry Type.
+ * Filename: PumpHistoryEntryType Description: Pump History Entry Type.
  * <p>
- * Data is from several sources, so in comments there are "versions".
- * Version:
- * v1 - default doc fromc decoding-carelink
+ * Data is from several sources, so in comments there are "versions". Version: v1 - default doc fromc decoding-carelink
  * v2 - Andy testing (?)
  * <p>
  * Author: Andy {andy@atech-software.com}
@@ -68,7 +60,8 @@ public enum CGMSHistoryEntryType {
     // V2
     Something05(0x05, "05-Something", 1, 0, 0, DateType.PreviousTimeStamp),
 
-    GlucoseSensorData(0xFF, "GlucoseSensorData", 1, 0, 0, DateType.PreviousTimeStamp);;
+    GlucoseSensorData(0xFF, "GlucoseSensorData", 1, 0, 0, DateType.PreviousTimeStamp);
+    ;
 
     private static Map<Integer, CGMSHistoryEntryType> opCodeMap = new HashMap<Integer, CGMSHistoryEntryType>();
 
@@ -109,7 +102,6 @@ public enum CGMSHistoryEntryType {
     // this.bodyLength = 0;
     // this.totalLength = length + 1; // opCode
     // }
-
 
     public static CGMSHistoryEntryType getByCode(int opCode) {
         if (opCodeMap.containsKey(opCode)) {
@@ -162,7 +154,6 @@ public enum CGMSHistoryEntryType {
     public boolean hasDate() {
         return (this.dateType == DateType.MinuteSpecific) || (this.dateType == DateType.SecondSpecific);
     }
-
 
     public enum DateType {
         None, //

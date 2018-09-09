@@ -7,6 +7,7 @@ import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RFSpy
  * Created by geoff on 5/26/16.
  */
 public class RFSpyResponse {
+
     // 0xaa == timeout
     // 0xbb == interrupted
     // 0xcc == zero-data
@@ -58,7 +59,7 @@ public class RFSpyResponse {
 
     public boolean wasTimeout() {
         if ((raw.length == 1) || (raw.length == 2)) {
-            if (raw[0] == (byte) 0xaa) {
+            if (raw[0] == (byte)0xaa) {
                 return true;
             }
         }
@@ -68,25 +69,27 @@ public class RFSpyResponse {
 
     public boolean wasInterrupted() {
         if ((raw.length == 1) || (raw.length == 2)) {
-            if (raw[0] == (byte) 0xbb) {
+            if (raw[0] == (byte)0xbb) {
                 return true;
             }
         }
         return false;
     }
+
 
     public boolean isInvalidParam() {
         if ((raw.length == 1) || (raw.length == 2)) {
-            if (raw[0] == (byte) 0x11) {
+            if (raw[0] == (byte)0x11) {
                 return true;
             }
         }
         return false;
     }
 
+
     public boolean isUnknownCommand() {
         if ((raw.length == 1) || (raw.length == 2)) {
-            if (raw[0] == (byte) 0x22) {
+            if (raw[0] == (byte)0x22) {
                 return true;
             }
         }
@@ -96,7 +99,7 @@ public class RFSpyResponse {
 
     public boolean isOK() {
         if ((raw.length == 1) || (raw.length == 2)) {
-            if (raw[0] == (byte) 0x01 || raw[0] == (byte) 0xDD) {
+            if (raw[0] == (byte)0x01 || raw[0] == (byte)0xDD) {
                 return true;
             }
         }
@@ -111,6 +114,7 @@ public class RFSpyResponse {
         return false;
     }
 
+
     @Override
     public String toString() {
         if (raw.length > 2) {
@@ -120,6 +124,7 @@ public class RFSpyResponse {
             return r.toString();
         }
     }
+
 
     public byte[] getRaw() {
         return raw;

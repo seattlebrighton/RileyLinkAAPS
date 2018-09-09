@@ -4,6 +4,7 @@ import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history_old.Ti
 
 @Deprecated
 public class ClearAlarmPumpEvent extends TimeStampedRecord {
+
     public ClearAlarmPumpEvent() {
     }
 

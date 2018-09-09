@@ -21,21 +21,20 @@ public enum RileyLinkServiceState {
 
     // Tunning
     TuneUpDevice, // (S)
-    //TuneUpPumpError, //
+    // TuneUpPumpError, //
     PumpConnectorError, // either TuneUp Error or pump couldn't not be contacted error
     PumpConnectorReady, // (OK) RileyLink Ready for Pump Communication
 
-    //Initializing, // get all parameters required for connection (if not possible -> Disabled, if sucessful -> EnableBluetooth)
+    // Initializing, // get all parameters required for connection (if not possible -> Disabled, if sucessful ->
+    // EnableBluetooth)
 
+    // EnableBlueTooth, // enable BT (if error no BT interface -> Disabled, BT not enabled -> BluetoothError)
+    // BlueToothEnabled, // -> InitializeRileyLink
+    // RileyLinkInitialized, //
 
-    //EnableBlueTooth, // enable BT (if error no BT interface -> Disabled, BT not enabled -> BluetoothError)
-    //BlueToothEnabled, // -> InitializeRileyLink
-    //RileyLinkInitialized, //
+    // RileyLinkConnected, // -> TuneUpPump (on 1st), else PumpConnectorReady
 
-    //RileyLinkConnected, // -> TuneUpPump (on 1st), else PumpConnectorReady
-
-    //PumpConnected, //
-
+    // PumpConnected, //
 
     ;
 

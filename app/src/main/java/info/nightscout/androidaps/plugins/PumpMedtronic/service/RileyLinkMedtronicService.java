@@ -1,5 +1,14 @@
 package info.nightscout.androidaps.plugins.PumpMedtronic.service;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -19,15 +28,6 @@ import com.gxwtech.roundtrip2.RoundtripService.Tasks.ReadPumpClockTask;
 import com.gxwtech.roundtrip2.RoundtripService.Tasks.RetrieveHistoryPageTask;
 import com.gxwtech.roundtrip2.RoundtripService.Tasks.UpdatePumpStatusTask;
 import com.gxwtech.roundtrip2.RoundtripService.medtronic.PumpData.PumpHistoryManager;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
 
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkCommunicationManager;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkConst;
@@ -62,25 +62,24 @@ public class RileyLinkMedtronicService extends RileyLinkService {
 
     private static RileyLinkMedtronicService instance;
 
-
     // saved settings
-    //private String pumpIDString;
-    //private byte[] pumpIDBytes;
+    // private String pumpIDString;
+    // private byte[] pumpIDBytes;
     private static ServiceTask currentTask = null;
     public MedtronicCommunicationManager medtronicCommunicationManager;
     // cache of most recently received set of pump history pages. Probably shouldn't be here.
     ArrayList<Page> mHistoryPages;
     PumpHistoryManager pumpHistoryManager;
 
-    //MedtronicPumpStatus pumpStatus = (MedtronicPumpStatus) MedtronicPumpPlugin.getPlugin().getPumpStatusData();
 
+    // MedtronicPumpStatus pumpStatus = (MedtronicPumpStatus) MedtronicPumpPlugin.getPlugin().getPumpStatusData();
 
     public RileyLinkMedtronicService() {
         super(MainApp.instance().getApplicationContext());
         instance = this;
         LOG.debug("RileyLinkMedtronicService newly constructed");
         MedtronicUtil.setMedtronicService(this);
-        //pumpStatus = (MedtronicPumpStatus) MedtronicPumpPlugin.getPlugin().getPumpStatusData();
+        // pumpStatus = (MedtronicPumpStatus) MedtronicPumpPlugin.getPlugin().getPumpStatusData();
     }
 
 
@@ -147,7 +146,7 @@ public class RileyLinkMedtronicService extends RileyLinkService {
 
             // Set payload
             msg.setData(bundle);
-            rileyLinkIPCConnection.sendMessage(msg, null/*broadcast*/);
+            rileyLinkIPCConnection.sendMessage(msg, null/* broadcast */);
             LOG.debug("sendMessage: sent Full history report");
         } else if (RT2Const.IPC.MSG_PUMP_fetchSavedHistory.equals(action)) {
             LOG.info("Fetching saved history");
@@ -162,7 +161,7 @@ public class RileyLinkMedtronicService extends RileyLinkService {
                     int numRead = inputStream.read(buffer, 0, 1024);
                     if (numRead == 1024) {
                         Page p = new Page();
-                        //p.parseFrom(buffer, PumpModel.MM522);
+                        // p.parseFrom(buffer, PumpModel.MM522);
                         // FIXME
                         p.parseFrom(buffer, MedtronicDeviceType.Medtronic_522);
                         storedHistoryPages.add(p);
@@ -199,7 +198,7 @@ public class RileyLinkMedtronicService extends RileyLinkService {
 
                 // Set payload
                 msg.setData(bundle);
-                rileyLinkIPCConnection.sendMessage(msg, null/*broadcast*/);
+                rileyLinkIPCConnection.sendMessage(msg, null/* broadcast */);
 
             }
         }
@@ -225,9 +224,11 @@ public class RileyLinkMedtronicService extends RileyLinkService {
         return RileyLinkEncodingType.FourByteSixByte;
     }
 
+
     @Override
     protected void determineRileyLinkTargetFrequency() {
-        boolean hasUSFrequency = SP.getString(MedtronicConst.Prefs.PumpFrequency, MainApp.gs(R.string.medtronic_pump_frequency_us)).equals(MainApp.gs(R.string.medtronic_pump_frequency_us));
+        boolean hasUSFrequency = SP.getString(MedtronicConst.Prefs.PumpFrequency,
+            MainApp.gs(R.string.medtronic_pump_frequency_us)).equals(MainApp.gs(R.string.medtronic_pump_frequency_us));
 
         if (hasUSFrequency)
             this.rileyLinkTargetFrequency = RileyLinkTargetFrequency.Medtronic_US;
@@ -256,7 +257,6 @@ public class RileyLinkMedtronicService extends RileyLinkService {
 
         RileyLinkUtil.setRileyLinkBLE(rileyLinkBLE);
 
-
         // init rileyLinkCommunicationManager
         medtronicCommunicationManager = new MedtronicCommunicationManager(context, rfspy, rileyLinkTargetFrequency);
 
@@ -279,7 +279,6 @@ public class RileyLinkMedtronicService extends RileyLinkService {
 
     /* private functions */
 
-
     private void setPumpIDString(String pumpID) {
         if (pumpID.length() != 6) {
             LOG.error("setPumpIDString: invalid pump id string: " + pumpID);
@@ -288,23 +287,22 @@ public class RileyLinkMedtronicService extends RileyLinkService {
 
         byte[] pumpIDBytes = ByteUtil.fromHexString(pumpID);
 
-
-        //SP.putString(MedtronicConst.Prefs.PumpSerial, pumpIDString);
+        // SP.putString(MedtronicConst.Prefs.PumpSerial, pumpIDString);
 
         if (pumpIDBytes == null) {
             LOG.error("Invalid pump ID? " + ByteUtil.shortHexString(pumpIDBytes));
 
-            rileyLinkServiceData.setPumpID("000000", new byte[]{0, 0, 0});
+            rileyLinkServiceData.setPumpID("000000", new byte[] { 0, 0, 0 });
 
         } else if (pumpIDBytes.length != 3) {
             LOG.error("Invalid pump ID? " + ByteUtil.shortHexString(pumpIDBytes));
 
-            rileyLinkServiceData.setPumpID("000000", new byte[]{0, 0, 0});
+            rileyLinkServiceData.setPumpID("000000", new byte[] { 0, 0, 0 });
 
         } else if (pumpID.equals("000000")) {
             LOG.error("Using pump ID " + pumpID);
 
-            rileyLinkServiceData.setPumpID(pumpID, new byte[]{0, 0, 0});
+            rileyLinkServiceData.setPumpID(pumpID, new byte[] { 0, 0, 0 });
 
         } else {
             LOG.info("Using pump ID " + pumpID);
@@ -312,7 +310,7 @@ public class RileyLinkMedtronicService extends RileyLinkService {
             rileyLinkServiceData.setPumpID(pumpID, pumpIDBytes);
         }
 
-        //LOG.info("setPumpIDString: saved pumpID " + idString);
+        // LOG.info("setPumpIDString: saved pumpID " + idString);
     }
 
 
@@ -336,20 +334,20 @@ public class RileyLinkMedtronicService extends RileyLinkService {
                     break;
                 case "ReadISFProfile":
                     ServiceTaskExecutor.startTask(new ReadISFProfileTask(serviceTransport));
-                /*
-                ISFTable table = pumpCommunicationManager.getPumpISFProfile();
-                ServiceResult result = new ServiceResult();
-                if (table.isValid()) {
-                    // convert from ISFTable to ISFProfile
-                    Bundle map = result.getMap();
-                    map.putIntArray("times", table.getTimes());
-                    map.putFloatArray("rates", table.getRates());
-                    map.putString("ValidDate", TimeFormat.standardFormatter().print(table.getValidDate()));
-                    result.setMap(map);
-                    result.setResultOK();
-                }
-                sendServiceTransportResponse(serviceTransport,result);
-                */
+                    /*
+                     * ISFTable table = pumpCommunicationManager.getPumpISFProfile();
+                     * ServiceResult result = new ServiceResult();
+                     * if (table.isValid()) {
+                     * // convert from ISFTable to ISFProfile
+                     * Bundle map = result.getMap();
+                     * map.putIntArray("times", table.getTimes());
+                     * map.putFloatArray("rates", table.getRates());
+                     * map.putString("ValidDate", TimeFormat.standardFormatter().print(table.getValidDate()));
+                     * result.setMap(map);
+                     * result.setResultOK();
+                     * }
+                     * sendServiceTransportResponse(serviceTransport,result);
+                     */
                     break;
                 case "ReadBolusWizardCarbProfile":
                     ServiceTaskExecutor.startTask(new ReadBolusWizardCarbProfileTask());
@@ -394,7 +392,8 @@ public class RileyLinkMedtronicService extends RileyLinkService {
                     ServiceTaskExecutor.startTask(new WakeAndTuneTask());
 
                 default:
-                    LOG.error("handleIncomingServiceTransport: Failed to handle service command '" + serviceTransport.getOriginalCommandName() + "'");
+                    LOG.error("handleIncomingServiceTransport: Failed to handle service command '"
+                        + serviceTransport.getOriginalCommandName() + "'");
                     break;
             }
         }
@@ -431,6 +430,4 @@ public class RileyLinkMedtronicService extends RileyLinkService {
         }
     }
 
-
 }
-

@@ -6,6 +6,7 @@ import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history_old.Ti
 import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicDeviceType;
 
 public class CalBgForPhPumpEvent extends TimeStampedRecord {
+
     private int amount = 0;
 
 

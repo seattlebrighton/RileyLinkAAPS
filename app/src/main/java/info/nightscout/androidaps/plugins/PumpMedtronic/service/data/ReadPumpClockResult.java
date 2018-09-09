@@ -1,11 +1,11 @@
 package info.nightscout.androidaps.plugins.PumpMedtronic.service.data;
 
-import android.os.Bundle;
-import android.util.Log;
-
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+
+import android.os.Bundle;
+import android.util.Log;
 
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.ServiceResult;
 
@@ -13,6 +13,7 @@ import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.S
  * Created by geoff on 6/25/16.
  */
 public class ReadPumpClockResult extends ServiceResult {
+
     private static final String TAG = "ReadPumpClockResult";
 
 

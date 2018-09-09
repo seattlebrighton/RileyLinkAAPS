@@ -41,6 +41,7 @@ public abstract class RileyLinkCommunicationManager {
     private double[] scanFrequencies;
     // internal flag
     private boolean showPumpMessages = true;
+    private int timeoutCount = 0;
 
 
     public RileyLinkCommunicationManager(Context context, RFSpy rfspy, RileyLinkTargetFrequency targetFrequency) {
@@ -55,13 +56,11 @@ public abstract class RileyLinkCommunicationManager {
     }
 
 
-    protected abstract void configurePumpSpecificSettings();
-
     // protected <E extends RLMessage> E sendAndListen(RLMessage msg, Class<E> clazz) {
     // return sendAndListen(msg, 4000, clazz); // 2000
     // }
 
-    private int timeoutCount = 0;
+    protected abstract void configurePumpSpecificSettings();
 
 
     // All pump communications go through this function.

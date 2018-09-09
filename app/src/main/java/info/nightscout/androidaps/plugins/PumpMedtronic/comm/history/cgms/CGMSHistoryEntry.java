@@ -5,7 +5,6 @@ import java.util.List;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.history.MedtronicHistoryEntry;
 
-
 /**
  * Created by andy on 27.03.15.
  */
@@ -66,7 +65,8 @@ public class CGMSHistoryEntry extends MedtronicHistoryEntry {
 
     @Override
     public String getToStringStart() {
-        return "CGMSHistoryEntry [type=" + entryType.name() + " [" + getOpCode() + ", 0x" + ByteUtil.getCorrectHexValue(getOpCode()) + "]";
+        return "CGMSHistoryEntry [type=" + entryType.name() + " [" + getOpCode() + ", 0x"
+            + ByteUtil.getCorrectHexValue(getOpCode()) + "]";
     }
 
 }
