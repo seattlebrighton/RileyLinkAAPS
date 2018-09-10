@@ -3,7 +3,7 @@ package info.nightscout.androidaps.plugins.PumpOmnipod.defs;
 import org.apache.commons.lang3.NotImplementedException;
 
 public class NonceState {
-    private int[] table;
+    private long[] table;
     private int index;
 
     public NonceState(int lot, int tid) {
@@ -17,29 +17,29 @@ public class NonceState {
     }
 
     private void InitializeTable(int lot, int tid, byte seed) {
-        table = new int[21];
+        table = new long[21];
         table[0] = (lot & 0xFFFF) + 0x55543DC3 + (lot >> 16);
-        table[0] = table[0] & 0xFFFFFFFF;
-        table[1] = (tid & 0xFFFF) + 0xAAAAE44E + (tid >> 16);
-        table[1] = table[1] & 0xFFFFFFFF;
+        table[0] = table[0] & 0xFFFFFFFFl;
+        table[1] = (tid & 0xFFFF) + 0xAAAAE44El + (tid >> 16);
+        table[1] = table[1] & 0xFFFFFFFFl;
         index = 0;
         table[0] += seed;
         for(int i = 0; i< 16;i++) {
             table[2+i] = generateEntry();
         }
-        index = (table[0] + table[1]) & 0X0F;
+        index = (int) ((table[0] + table[1]) & 0X0F);
 
 
     }
 
     private int generateEntry() {
-        table[0] = (((table[0] >> 16) + (table[0] & 0xFFFF) * 0x5D7F) & 0xFFFFFFFF);
-        table[1] = (((table[1] >> 16) + (table[1] & 0xFFFF) * 0x8CA0) & 0xFFFFFFFF);
-        return (int)(((long)(table[1]) + ((long)(table[0]) << 16)) & 0xFFFFFFFF);
+        table[0] = (((table[0] >> 16) + (table[0] & 0xFFFF) * 0x5D7Fl) & 0xFFFFFFFFl);
+        table[1] = (((table[1] >> 16) + (table[1] & 0xFFFF) * 0x8CA0l) & 0xFFFFFFFFl);
+        return (int)(((long)(table[1]) + ((long)(table[0]) << 16)) & 0xFFFFFFFFl);
 
     }
     public int getCurrentNonce() {
-        return table[(2 + index)];
+        return (int) table[(2 + index)];
 
     }
 
