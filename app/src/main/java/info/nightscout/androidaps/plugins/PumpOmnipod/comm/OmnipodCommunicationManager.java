@@ -357,11 +357,12 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
                 true,
                 false,
                 0,
-                new ExpirationAdvisory(ExpirationAdvisory.ExpirationType.Reservoir, 10),
+                new ExpirationAdvisory(ExpirationAdvisory.ExpirationType.Reservoir, 50), //50 to match the capture
                 0x0102
                 );
+        int nonce = nonceValue();
         ConfigureAlertsCommand lowReservoirCommand = new ConfigureAlertsCommand(
-                nonceValue(),
+                nonce,
                 new AlertConfiguration[]{lweReservoir});
         StatusResponse status = sendCommand(lowReservoirCommand);
         advanceToNextNonce();

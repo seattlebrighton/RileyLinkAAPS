@@ -10,8 +10,8 @@ public class ExpirationAdvisory {
     public double reservoirLevel;
 
     public enum ExpirationType {
-        Reservoir(2),
-        Timer(4);
+        Reservoir(4),
+        Timer(0);
         byte value;
 
         ExpirationType(int value) {

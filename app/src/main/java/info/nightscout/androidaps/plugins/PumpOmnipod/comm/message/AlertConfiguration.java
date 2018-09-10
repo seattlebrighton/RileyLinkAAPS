@@ -34,15 +34,17 @@ public class AlertConfiguration{
     public byte[] getRawData() {
         byte[] encodedData = new byte[6];
 
-        byte firstByte = (byte) (alertType.getValue() << 4);
+        int firstByte = (alertType.getValue() << 4);
         firstByte |= expirationType.expirationType.getValue();
+        firstByte += audible ? (1 << 3) : 0;
+
         byte[] valueBuffer = new byte[0];
         valueBuffer = ByteUtil.getBytesFromInt(duration);
 
         byte durationHigh = (byte) (valueBuffer[2] & (byte)1);
         firstByte |= durationHigh;
 
-        encodedData[0] = firstByte;
+        encodedData[0] = (byte) (firstByte & 0xFF);
         encodedData[1] = valueBuffer[3];
 
         switch (expirationType.expirationType) {

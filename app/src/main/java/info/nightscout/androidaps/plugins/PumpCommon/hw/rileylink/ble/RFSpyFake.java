@@ -53,13 +53,15 @@ public class RFSpyFake implements IRFSpy {
     @Override
     public RFSpyResponse transmitThenReceive(RadioPacket pkt, byte sendChannel, byte repeatCount, byte delay_ms, byte listenChannel, int timeout_ms, byte retryCount, int extendPreamble_ms) {
         byte[] bytesToSend = pkt.getRaw();
-        String myString = ByteUtil.shortHexString(bytesToSend);
+        String myString = ByteUtil.shortHexString(bytesToSend).replace(" ", "");
         byte[] assignAddressRequest = ByteUtil.fromHexString("ffffffffaaffffffff000607041f05e70b834ce2");
         byte[] assignAddressResponse = ByteUtil.fromHexString("000000ffffffffebffffffff0417011502070002070002020000aaa700099d818e1f05e70b8321a6");
         byte[] confirmPairingRequest = ByteUtil.fromHexString("ffffffffadffffffff001503131f05e70b140408121214050000aaa700099d81016802");
         byte[] confirmPairingResponse1 = ByteUtil.fromHexString("000000ffffffffeeffffffff041d011b13881008340a5002070002070002030000aaa700099d8120");
         byte[] ackForConfirmPairingResponse1 = ByteUtil.fromHexString("FFFFFFFF4F1F05E70BAB"); //baga
         byte[] conForConfirmPairingResponse1 = ByteUtil.fromHexString("000000ffffffff901f05e70b035dc1");
+        byte[] setAlertConfig1Request = ByteUtil.fromHexString("1f05e70bb21f05e70b080c190a9e5759aa4c0001f40102023c39");
+        byte[] setAlertConfig1Response = ByteUtil.fromHexString("0000001f05e70bf31f05e70b0c0a1d0300001000000007ff026717");
 
 
         switch(commsCount++) {
@@ -68,8 +70,6 @@ public class RFSpyFake implements IRFSpy {
                     return new RFSpyResponse(assignAddressResponse);
                 else
                     return null;
-            case 1:
-                return new RFSpyResponse(new byte[] {(byte) 0xAA});
             case 2:
                 if (ByteUtil.compare(bytesToSend, confirmPairingRequest) == 0 )
                     return new RFSpyResponse(confirmPairingResponse1);
@@ -81,7 +81,14 @@ public class RFSpyFake implements IRFSpy {
                 else
                     return null;
 
+            case 5:
+                if (ByteUtil.compare(bytesToSend, setAlertConfig1Request) == 0 )
+                    return new RFSpyResponse(setAlertConfig1Response);
+                else
+                    return null;
+            case 1:
             case 4:
+            case 6:
                 return new RFSpyResponse(new byte[] {(byte) 0xAA});
             default:
                 return null;
