@@ -27,6 +27,7 @@ import info.nightscout.utils.SP;
 public abstract class RileyLinkCommunicationManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(RileyLinkCommunicationManager.class);
+
     private static final int SCAN_TIMEOUT = 1500;
     protected final RFSpy rfspy;
     protected final Context context;
@@ -40,10 +41,6 @@ public abstract class RileyLinkCommunicationManager {
     private double[] scanFrequencies;
     // internal flag
     private boolean showPumpMessages = true;
-
-    // protected <E extends RLMessage> E sendAndListen(RLMessage msg, Class<E> clazz) {
-    // return sendAndListen(msg, 4000, clazz); // 2000
-    // }
     private int timeoutCount = 0;
 
 
@@ -58,6 +55,10 @@ public abstract class RileyLinkCommunicationManager {
         configurePumpSpecificSettings();
     }
 
+
+    // protected <E extends RLMessage> E sendAndListen(RLMessage msg, Class<E> clazz) {
+    // return sendAndListen(msg, 4000, clazz); // 2000
+    // }
 
     protected abstract void configurePumpSpecificSettings();
 

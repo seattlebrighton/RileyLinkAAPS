@@ -34,6 +34,7 @@ import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkConst
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RFSpy;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RileyLinkBLE;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkEncodingType;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkTargetFrequency;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.defs.RileyLinkTargetDevice;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.RileyLinkService;
@@ -215,6 +216,12 @@ public class RileyLinkMedtronicService extends RileyLinkService {
     @Override
     public IBinder onBind(Intent intent) {
         return rileyLinkIPCConnection.doOnBind(intent);
+    }
+
+
+    @Override
+    public RileyLinkEncodingType getEncoding() {
+        return RileyLinkEncodingType.FourByteSixByte;
     }
 
 

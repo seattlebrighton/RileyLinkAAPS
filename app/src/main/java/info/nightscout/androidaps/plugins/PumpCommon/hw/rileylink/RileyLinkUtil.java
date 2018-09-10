@@ -14,6 +14,7 @@ import com.gxwtech.roundtrip2.RT2Const;
 import com.gxwtech.roundtrip2.RoundtripService.RileyLinkIPCConnection;
 
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RileyLinkBLE;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkEncodingType;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkTargetFrequency;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.data.RLHistoryItem;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.defs.RileyLinkError;
@@ -50,9 +51,22 @@ public class RileyLinkUtil {
     // Broadcasts: RileyLinkBLE, RileyLinkService,
     private static RileyLinkIPCConnection rileyLinkIPCConnection;
 
+    private static RileyLinkEncodingType encoding;
+
 
     public static void setContext(Context contextIn) {
         RileyLinkUtil.context = contextIn;
+    }
+
+
+    public static RileyLinkEncodingType getEncoding() {
+        return encoding;
+
+    }
+
+
+    public static void setEncoding(RileyLinkEncodingType encoding) {
+        RileyLinkUtil.encoding = encoding;
     }
 
 

@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkUtil;
@@ -357,7 +358,7 @@ public class ShowAAPS2Activity extends AppCompatActivity {
             case "RefreshData.GetSettings": {
                 Map<String, PumpSettingDTO> settings = (Map<String, PumpSettingDTO>) data;
 
-                putOnDisplay("Settings on pump: (" + settings.size() + "/" + settings.values().size() + ")");
+                putOnDisplay("Settings on pump: (" + settings.size() + "/" + settings.values().size() + ")" );
                 LOG.debug("Settings on front: " + settings);
                 for(PumpSettingDTO entry : settings.values()) {
                     putOnDisplay(entry.key + " = " + entry.value);

@@ -37,6 +37,7 @@ public class InitializePumpManagerTask extends ServiceTask {
 
         // FIXME
         double lastGoodFrequency = SP.getFloat(RileyLinkConst.Prefs.LastGoodDeviceFrequency, (float)0.0);
+        lastGoodFrequency = Math.round(lastGoodFrequency * 1000d) / 1000d;
 
         if ((lastGoodFrequency > 0.0d)
             && RileyLinkUtil.getRileyLinkCommunicationManager().isValidFrequency(lastGoodFrequency)) {
