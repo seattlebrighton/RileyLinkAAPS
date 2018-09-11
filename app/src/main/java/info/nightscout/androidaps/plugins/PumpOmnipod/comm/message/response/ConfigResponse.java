@@ -6,12 +6,16 @@ import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.MessageBlockT
 
 public class ConfigResponse extends MessageBlock {
 
-    public PairingState pairingState;
+    //Documentation is here: https://github.com/openaps/openomni/wiki/Command-01-Version-response
+
+    public PodLifeStage podLifeStage;
     public FirmwareVersion pmVersion;
     public FirmwareVersion piVersion;
     public int lot;
     public int tid;
     public int address;
+    public Integer gain;
+    public Integer rssi;
 
 
 
@@ -35,7 +39,7 @@ public class ConfigResponse extends MessageBlock {
     }
 
     private void initializeMembers(int startOffset, byte[] data, boolean extraByte) {
-        this.pairingState = PairingState.fromByte(data[startOffset + 7]);
+        this.podLifeStage = PodLifeStage.fromByte(data[startOffset + 7]);
         this.pmVersion = new FirmwareVersion(data[startOffset + 0], data[startOffset + 1], data[startOffset + 2]);
         this.piVersion = new FirmwareVersion(data[startOffset + 3], data[startOffset + 4], data[startOffset + 5]);
         this.lot = ByteUtil.toInt(
@@ -50,8 +54,11 @@ public class ConfigResponse extends MessageBlock {
                 , new Integer(data[startOffset + 14])
                 , new Integer(data[startOffset + 15])
                 , ByteUtil.BitConversion.BIG_ENDIAN);
-        if (extraByte)
+        if (extraByte) {
+            this.gain = (data[startOffset + 16] & 0b11000000) >>6;
+            this.rssi = (data[startOffset + 16] & 0b00111111);
             startOffset++;
+        }
         this.address = ByteUtil.toInt(
                 new Integer(data[startOffset + 16])
                 , new Integer(data[startOffset + 17])

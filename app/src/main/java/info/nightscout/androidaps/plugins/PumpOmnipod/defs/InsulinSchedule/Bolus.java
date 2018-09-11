@@ -20,16 +20,19 @@ public class Bolus extends DeliverySchedule implements IRawRepresentable {
 
     @Override
     public byte[] getRawData() {
-        byte[] rawData = new byte[5];
+        byte[] rawData = new byte[7];
 
         int pulseCount = (int) (units / Constants.PodPulseSize);
         int fieldA = pulseCount * multiplier;
         rawData[0] = 1;
-        byte[] buffer = ByteUtil.getBytesFromInt(pulseCount);
+        byte[] buffer = ByteUtil.getBytesFromInt(fieldA);
         rawData[1] = buffer[2];
         rawData[2] = buffer[3];
+        buffer = ByteUtil.getBytesFromInt(pulseCount);
         rawData[3] = buffer[2];
         rawData[4] = buffer[3];
+        rawData[5] = buffer[2];
+        rawData[6] = buffer[3];
         return rawData;
 
     }

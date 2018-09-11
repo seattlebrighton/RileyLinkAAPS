@@ -12,7 +12,6 @@ import java.util.Random;
 
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkCommunicationManager;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.IRFSpy;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RFSpy;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RLMessage;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RLMessageType;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkTargetFrequency;
@@ -31,7 +30,7 @@ import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.OmnipodMessag
 import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.OmnipodPacket;
 import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.response.ErrorResponse;
 import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.response.ErrorResponseType;
-import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.response.PairingState;
+import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.response.PodLifeStage;
 import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.response.StatusResponse;
 import info.nightscout.androidaps.plugins.PumpOmnipod.defs.AlertType;
 import info.nightscout.androidaps.plugins.PumpOmnipod.defs.ExpirationAdvisory;
@@ -338,7 +337,7 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
             return null;
         }
 
-        if (config2.pairingState != PairingState.Paired) {
+        if (config2.podLifeStage != PodLifeStage.Paired) {
             //FIXME: Log invalid data (we should have received a paired-state response
             LOG.error("Invalid pairing state");
             return null;
@@ -372,7 +371,7 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
                 true,
                 false,
                 55,
-                new ExpirationAdvisory(ExpirationAdvisory.ExpirationType.Timer, new Duration(60 * 60 * 1000)), //1 hour
+                new ExpirationAdvisory(ExpirationAdvisory.ExpirationType.Timer, new Duration(5 * 60 * 1000)), //1 hour // 5 minutes to match the capture
                 0x0802
         );
         ConfigureAlertsCommand insertionTimerCommand = new ConfigureAlertsCommand(nonceValue(), new AlertConfiguration[]{insertionTimer});

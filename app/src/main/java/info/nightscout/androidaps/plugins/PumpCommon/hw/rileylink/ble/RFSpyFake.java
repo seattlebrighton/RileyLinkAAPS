@@ -58,10 +58,19 @@ public class RFSpyFake implements IRFSpy {
         byte[] assignAddressResponse = ByteUtil.fromHexString("000000ffffffffebffffffff0417011502070002070002020000aaa700099d818e1f05e70b8321a6");
         byte[] confirmPairingRequest = ByteUtil.fromHexString("ffffffffadffffffff001503131f05e70b140408121214050000aaa700099d81016802");
         byte[] confirmPairingResponse1 = ByteUtil.fromHexString("000000ffffffffeeffffffff041d011b13881008340a5002070002070002030000aaa700099d8120");
-        byte[] ackForConfirmPairingResponse1 = ByteUtil.fromHexString("FFFFFFFF4F1F05E70BAB"); //baga
+        byte[] ackForConfirmPairingResponse1 = ByteUtil.fromHexString("FFFFFFFF4F1F05E70BAB");
         byte[] conForConfirmPairingResponse1 = ByteUtil.fromHexString("000000ffffffff901f05e70b035dc1");
         byte[] setAlertConfig1Request = ByteUtil.fromHexString("1f05e70bb21f05e70b080c190a9e5759aa4c0001f40102023c39");
         byte[] setAlertConfig1Response = ByteUtil.fromHexString("0000001f05e70bf31f05e70b0c0a1d0300001000000007ff026717");
+        byte[] setAlertConfig2Request = ByteUtil.fromHexString("1f05e70bb51f05e70b100c190a395e56c17837000508028183d5");
+        byte[] setAlertConfig2Response = ByteUtil.fromHexString("0000001f05e70bf61f05e70b140a1d0300002000000007ff03f665");
+
+        byte[] primeRequest1 = ByteUtil.fromHexString("1f05e70bb81f05e70b18 1f1a0eacb8d63302010a0101a000340034170d000208000186a0da");
+        byte[] primeAckForCon = ByteUtil.fromHexString("0000001f05e70b591f05e70bd7");
+        byte[] primeConForConRequest = ByteUtil.fromHexString("0000001f05e70b591f05e70bd7");
+        byte[] primeResponse = ByteUtil.fromHexString("0000001f05e70bfb1f05e70b1c0a1d4400003034000007ff80ff73");
+
+
 
 
         switch(commsCount++) {
@@ -89,7 +98,25 @@ public class RFSpyFake implements IRFSpy {
             case 1:
             case 4:
             case 6:
+            case 8:
+            case 11:
                 return new RFSpyResponse(new byte[] {(byte) 0xAA});
+            case 7:
+                if (ByteUtil.compare(bytesToSend, setAlertConfig2Request) == 0 )
+                    return new RFSpyResponse(setAlertConfig2Response);
+                else
+                    return null;
+            case 9:
+                if (ByteUtil.compare(bytesToSend, primeRequest1) == 0 )
+                    return new RFSpyResponse(primeAckForCon);
+                else
+                    return null;
+            case 10:
+                if (ByteUtil.compare(bytesToSend, primeConForConRequest) == 0 )
+                    return new RFSpyResponse(primeResponse);
+                else
+                    return null;
+
             default:
                 return null;
 

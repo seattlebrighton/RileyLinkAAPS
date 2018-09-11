@@ -8,6 +8,8 @@ import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.MessageBlockT
 
 public class ConfirmPairingCommand extends MessageBlock {
 
+    // Documentation is here: https://github.com/openaps/openomni/wiki/Command-03-Setup-Pod
+
     private int lot;
     private int tid;
     private DateTime date;

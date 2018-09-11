@@ -1,18 +1,26 @@
 package info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.response;
 
-public enum PairingState  {
+public enum PodLifeStage {
     Sleeping(0),
     ReadyToPair(1),
     AddressAssigned(2),
     Paired(3),
-    PairingExpired(14)
+    Purging(4),
+    ReadyForInjection(5),
+    InjectionDone(6),
+    PrimingCanula(7),
+    Running(8),
+    RunningLeffThan50u(9),
+    ErrorLoggedShuttingDown(0x0D),
+    PairingExpired(0x0E),
+    PodInactivated(0x0F)
     ;
 
 
 
     byte value;
 
-    PairingState(int value) {
+    PodLifeStage(int value) {
         this.value = (byte)value;
     }
 
@@ -20,8 +28,8 @@ public enum PairingState  {
         return value;
     }
 
-    public static PairingState fromByte(byte input) {
-        for (PairingState type : values()) {
+    public static PodLifeStage fromByte(byte input) {
+        for (PodLifeStage type : values()) {
             if (type.value == input) {
                 return type;
             }

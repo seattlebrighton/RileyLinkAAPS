@@ -7,6 +7,8 @@ import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.MessageBlockT
 
 public class AssignAddressCommand extends MessageBlock {
 
+    //Documentation is here: https://github.com/openaps/openomni/wiki/Command-07-Assign-ID
+
     int address;
 
     public int getAddress() {
