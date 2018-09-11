@@ -1,5 +1,12 @@
 package com.gxwtech.roundtrip2;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.joda.time.LocalDateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -13,14 +20,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
-
-import org.joda.time.LocalDateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkUtil;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.MedtronicCommunicationManager;
@@ -50,37 +49,41 @@ public class ShowAAPS2Activity extends AppCompatActivity {
 
     public ShowAAPS2Activity() {
 
-        // FIXME
-        addCommandAction("Set TBR", ImplementationStatus.Done, "RefreshData.SetTBR"); // not working
-        addCommandAction("Set Basal Profile", ImplementationStatus.WorkInProgress, "RefreshData.SetBasalProfile");
-        addCommandAction("Status - Bolus", ImplementationStatus.WorkInProgress, "RefreshData.GetStatus"); // weird on 512?
+        addCommandAction("Get Model", ImplementationStatus.Done, "RefreshData.PumpModel");
+
+        addCommandAction("Set TBR", ImplementationStatus.Done, "RefreshData.SetTBR");
+        addCommandAction("Cancel TBR", ImplementationStatus.Done, "RefreshData.CancelTBR");
+        addCommandAction("Status - TBR", ImplementationStatus.Done, "RefreshData.GetTBR");
+
+        addCommandAction("Get Basal Profile", ImplementationStatus.Done, "RefreshData.BasalProfile");
+        addCommandAction("Set Bolus", ImplementationStatus.Done, "RefreshData.SetBolus");
+
+        addCommandAction("Status - Remaining Insulin", ImplementationStatus.Done, "RefreshData.RemainingInsulin");
+        addCommandAction("Status - Get Time", ImplementationStatus.Done, "RefreshData.GetTime");
+        addCommandAction("Status - Settings", ImplementationStatus.Done, "RefreshData.GetSettings");
+        addCommandAction("Status - Remaining Power", ImplementationStatus.WorkInProgress, "RefreshData.RemainingPower");
+
+        // addCommandAction("Status - Bolus", ImplementationStatus.WorkInProgress, "RefreshData.GetStatus"); // weird on
+        // 512?
 
         // STATUS: has Bolus / is running / is beeing primed
 
         // WORK IN PROGRESS - waiting for something
-        addCommandAction("Status - Remaining Power", ImplementationStatus.WorkInProgress, "RefreshData.RemainingPower");
-        addCommandAction("Set Bolus", ImplementationStatus.Done, "RefreshData.SetBolus"); // works for less <25
 
         // LOW PRIORITY
         addCommandAction("Read History", ImplementationStatus.NotStarted, null);
         addCommandAction("Set Ext Bolus", ImplementationStatus.NotStarted, null);
-        addCommandAction("Status - Ext. Bolus", ImplementationStatus.WorkInProgress, "RefreshData.GetBolus");
-        //addCommandAction("Load TDD", ImplementationStatus.NotStarted, null); Not needed, we have good history
-
+        // addCommandAction("Status - Ext. Bolus", ImplementationStatus.WorkInProgress, "RefreshData.GetBolus");
+        // addCommandAction("Load TDD", ImplementationStatus.NotStarted, null); Not needed, we have good history
 
         // DONE
-        addCommandAction("Cancel TBR", ImplementationStatus.WorkInProgress, "RefreshData.CancelTBR");
 
-        addCommandAction("Get Model", ImplementationStatus.Done, "RefreshData.PumpModel");
-        addCommandAction("Get Basal Profile", ImplementationStatus.Done, "RefreshData.BasalProfile");
-        addCommandAction("Status - Remaining Insulin", ImplementationStatus.Done, "RefreshData.RemainingInsulin");
-        addCommandAction("Status - Get Time", ImplementationStatus.Done, "RefreshData.GetTime");
-        addCommandAction("Status - TBR", ImplementationStatus.Done, "RefreshData.GetTBR");
-        addCommandAction("Status - Settings", ImplementationStatus.Done, "RefreshData.GetSettings");
+        // TODO
+        addCommandAction("Set Basal Profile", ImplementationStatus.NotStarted, "RefreshData.SetBasalProfile");
 
         // NOT SUPPORTED
-        addCommandAction("Cancel Ext Bolus", ImplementationStatus.NotSupportedByDevice, null);
-        addCommandAction("Cancel Bolus", ImplementationStatus.NotSupportedByDevice, null);
+        // addCommandAction("Cancel Ext Bolus", ImplementationStatus.NotSupportedByDevice, null);
+        // addCommandAction("Cancel Bolus", ImplementationStatus.NotSupportedByDevice, null);
 
     }
 
@@ -105,6 +108,7 @@ public class ShowAAPS2Activity extends AppCompatActivity {
 
         this.btnStart = findViewById(R.id.btnStart);
         this.btnStart.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
                 // bolus, duration
@@ -112,10 +116,10 @@ public class ShowAAPS2Activity extends AppCompatActivity {
             }
         });
 
-
-        tvCommandStatusText = (TextView) findViewById(R.id.tvCommandStatusText);
-        spinner = (Spinner) findViewById(R.id.spinnerPumpCommands);
+        tvCommandStatusText = (TextView)findViewById(R.id.tvCommandStatusText);
+        spinner = (Spinner)findViewById(R.id.spinnerPumpCommands);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 Object itemAtPosition = parent.getItemAtPosition(position);
@@ -129,13 +133,14 @@ public class ShowAAPS2Activity extends AppCompatActivity {
             }
         });
 
-
         mBroadcastReceiver = new BroadcastReceiver() {
+
             @Override
             public void onReceive(Context context, Intent intent) {
-            /* here we can listen for local broadcasts, then send ourselves
-             * a specific intent to deal with them, if we wish
-              */
+                /*
+                 * here we can listen for local broadcasts, then send ourselves
+                 * a specific intent to deal with them, if we wish
+                 */
                 if (intent == null) {
                     LOG.error("onReceive: received null intent");
                 } else {
@@ -147,10 +152,10 @@ public class ShowAAPS2Activity extends AppCompatActivity {
 
         IntentFilter intentFilter = new IntentFilter();
 
-        for(CommandAction commandAction : allCommands.values()) {
+        for (CommandAction commandAction : allCommands.values()) {
 
             if (commandAction.implementationStatus == ImplementationStatus.Done || //
-                    commandAction.implementationStatus == ImplementationStatus.WorkInProgress) {
+                commandAction.implementationStatus == ImplementationStatus.WorkInProgress) {
                 if (commandAction.intentString != null) {
                     intentFilter.addAction(commandAction.intentString);
                 }
@@ -159,12 +164,12 @@ public class ShowAAPS2Activity extends AppCompatActivity {
 
         intentFilter.addAction("RefreshData.ErrorCode");
 
-        LocalBroadcastManager.getInstance(MainApp.instance().getApplicationContext()).registerReceiver(mBroadcastReceiver, intentFilter);
+        LocalBroadcastManager.getInstance(MainApp.instance().getApplicationContext()).registerReceiver(
+            mBroadcastReceiver, intentFilter);
     }
 
 
     public void commandSelected(Object id) {
-
 
         if (id == null) {
             tvCommandStatusText.setText("Nothing");
@@ -172,11 +177,11 @@ public class ShowAAPS2Activity extends AppCompatActivity {
             this.btnStart.setEnabled(false);
         } else {
 
-            this.selectedCommandAction = allCommands.get((String) id);
+            this.selectedCommandAction = allCommands.get((String)id);
             tvCommandStatusText.setText(selectedCommandAction.implementationStatus.text);
             enableFields(isAmountEnabled(), isDurationEnabled());
             this.btnStart.setEnabled((selectedCommandAction.implementationStatus == ImplementationStatus.Done || //
-                    selectedCommandAction.implementationStatus == ImplementationStatus.WorkInProgress));
+                selectedCommandAction.implementationStatus == ImplementationStatus.WorkInProgress));
         }
 
     }
@@ -186,8 +191,8 @@ public class ShowAAPS2Activity extends AppCompatActivity {
         String action = this.selectedCommandAction.action;
 
         return (action.equals("Set TBR") || //
-                action.equals("Set Bolus") || //
-                action.equals("Set Basal Profile"));
+            action.equals("Set Bolus") || //
+        action.equals("Set Basal Profile"));
     }
 
 
@@ -218,7 +223,6 @@ public class ShowAAPS2Activity extends AppCompatActivity {
         this.textViewComm.append(text + "\n");
     }
 
-
     public enum ImplementationStatus {
         NotStarted("Not Started"), //
         WorkInProgress("Work In Progress"), //
@@ -233,17 +237,16 @@ public class ShowAAPS2Activity extends AppCompatActivity {
         }
     }
 
-
     public class CommandAction {
+
         String action;
         ImplementationStatus implementationStatus;
         String intentString;
 
 
         public CommandAction(String action, //
-                             ImplementationStatus implementationStatus, //
-                             String intentString
-        ) {
+                ImplementationStatus implementationStatus, //
+                String intentString) {
             this.action = action;
             this.implementationStatus = implementationStatus;
             this.intentString = intentString;
@@ -262,7 +265,6 @@ public class ShowAAPS2Activity extends AppCompatActivity {
         return mcmInstance;
     }
 
-
     Object data;
     String errorCode;
 
@@ -272,105 +274,107 @@ public class ShowAAPS2Activity extends AppCompatActivity {
         // FIXME
         switch (action) {
             case "RefreshData.PumpModel": {
-                MedtronicDeviceType pumpModel = (MedtronicDeviceType) data;
+                MedtronicDeviceType pumpModel = (MedtronicDeviceType)data;
                 putOnDisplay("Model: " + pumpModel.name());
             }
-            break;
+                break;
 
             case "RefreshData.BasalProfile": {
-                BasalProfile basalProfile = (BasalProfile) data;
+                BasalProfile basalProfile = (BasalProfile)data;
                 putOnDisplay("Basal Profile: " + basalProfile.getBasalProfileAsString());
             }
-            break;
+                break;
 
             case "RefreshData.RemainingInsulin": {
-                Float remainingInsulin = (Float) data;
+                Float remainingInsulin = (Float)data;
                 putOnDisplay("Remaining Insulin: " + remainingInsulin);
             }
-            break;
+                break;
 
             case "RefreshData.RemainingPower": {
-                BatteryStatusDTO status = (BatteryStatusDTO) data;
+                BatteryStatusDTO status = (BatteryStatusDTO)data;
                 putOnDisplay("Remaining Battery: " + status.batteryStatusType.name() + //
-                        ", voltage=" + status.voltage + //
-                        ", percent(Alkaline)=" + status.getCalculatedPercent(BatteryType.Alkaline) + //
-                        ", percent(Lithium)=" + status.getCalculatedPercent(BatteryType.Lithium));
+                    ", voltage=" + status.voltage + //
+                    ", percent(Alkaline)=" + status.getCalculatedPercent(BatteryType.Alkaline) + //
+                    ", percent(Lithium)=" + status.getCalculatedPercent(BatteryType.Lithium));
             }
-            break;
+                break;
 
             case "RefreshData.GetTime": {
-                LocalDateTime ldt = (LocalDateTime) data;
+                LocalDateTime ldt = (LocalDateTime)data;
                 putOnDisplay("Pump Time: " + ldt.toString("dd.MM.yyyy HH:mm:ss"));
             }
-            break;
+                break;
 
             case "RefreshData.ErrorCode": {
                 putOnDisplay("Error: " + errorCode);
             }
-            break;
+                break;
 
             case "RefreshData.SetTBR": {
-                Boolean response = (Boolean) data;
+                Boolean response = (Boolean)data;
                 TempBasalPair tbr = getTBRSettings();
 
-                putOnDisplay(String.format("TBR: Amount: %.3f, Duration: %s - %s", tbr.getInsulinRate(), "" + tbr.getDurationMinutes(), (response ? "Was set." : "Was NOT set.")));
+                putOnDisplay(String.format("TBR: Amount: %.3f, Duration: %s - %s", tbr.getInsulinRate(),
+                    "" + tbr.getDurationMinutes(), (response ? "Was set." : "Was NOT set.")));
             }
-            break;
+                break;
 
             case "RefreshData.GetTBR": {
-                TempBasalPair tbr = (TempBasalPair) data;
+                TempBasalPair tbr = (TempBasalPair)data;
 
-                putOnDisplay(String.format("TBR: Amount: %s, Duration: %s", "" + tbr.getInsulinRate(), "" + tbr.getDurationMinutes()));
+                putOnDisplay(String.format("TBR: Amount: %s, Duration: %s", "" + tbr.getInsulinRate(),
+                    "" + tbr.getDurationMinutes()));
             }
-            break;
+                break;
 
             case "RefreshData.SetBolus": {
-                Boolean response = (Boolean) data;
+                Boolean response = (Boolean)data;
 
                 Float amount = getAmount();
 
                 putOnDisplay(String.format("Bolus: %.2f - %s", amount, (response ? "Was set." : "Was NOT set.")));
             }
-            break;
+                break;
 
             case "RefreshData.CancelTBR": {
-                Boolean response = (Boolean) data;
+                Boolean response = (Boolean)data;
 
                 putOnDisplay(String.format("TBR %s cancelled.", (response ? "was" : "was NOT")));
             }
-            break;
+                break;
 
             case "RefreshData.SetBasalProfile": {
-                Boolean response = (Boolean) data;
+                Boolean response = (Boolean)data;
 
                 putOnDisplay(String.format("Basal profile %s set.", (response ? "was" : "was NOT")));
             }
-            break;
-
+                break;
 
             case "RefreshData.GetStatus": {
                 // FIXME
                 putOnDisplay("Status undefined ?");
             }
-            break;
-
+                break;
 
             case "RefreshData.GetSettings": {
-                Map<String, PumpSettingDTO> settings = (Map<String, PumpSettingDTO>) data;
+                Map<String, PumpSettingDTO> settings = (Map<String, PumpSettingDTO>)data;
 
-                putOnDisplay("Settings on pump: (" + settings.size() + "/" + settings.values().size() + ")" );
+                putOnDisplay("Settings on pump: (" + settings.size() + "/" + settings.values().size() + ")");
                 LOG.debug("Settings on front: " + settings);
-                for(PumpSettingDTO entry : settings.values()) {
+                for (PumpSettingDTO entry : settings.values()) {
                     putOnDisplay(entry.key + " = " + entry.value);
                 }
             }
-            break;
+                break;
 
             default:
                 putOnDisplay("Unsupported action: " + action);
         }
 
         this.data = null;
+        this.btnStart.setEnabled((selectedCommandAction.implementationStatus == ImplementationStatus.Done || //
+            selectedCommandAction.implementationStatus == ImplementationStatus.WorkInProgress));
     }
 
 
@@ -378,8 +382,11 @@ public class ShowAAPS2Activity extends AppCompatActivity {
 
         putOnDisplay("Start Action: " + selectedCommandAction.action);
 
+        this.btnStart.setEnabled(false);
+
         // FIXME
         new Thread(new Runnable() {
+
             @Override
             public void run() {
 
@@ -391,27 +398,27 @@ public class ShowAAPS2Activity extends AppCompatActivity {
                     case "RefreshData.PumpModel": {
                         returnData = getCommunicationManager().getPumpModel();
                     }
-                    break;
+                        break;
 
                     case "RefreshData.BasalProfile": {
                         returnData = getCommunicationManager().getBasalProfile();
                     }
-                    break;
+                        break;
 
                     case "RefreshData.RemainingInsulin": {
                         returnData = getCommunicationManager().getRemainingInsulin();
                     }
-                    break;
+                        break;
 
                     case "RefreshData.GetTime": {
                         returnData = getCommunicationManager().getPumpTime();
                     }
-                    break;
+                        break;
 
                     case "RefreshData.RemainingPower": {
                         returnData = getCommunicationManager().getRemainingBattery();
                     }
-                    break;
+                        break;
 
                     case "RefreshData.SetTBR": {
                         TempBasalPair tbr = getTBRSettings();
@@ -419,27 +426,27 @@ public class ShowAAPS2Activity extends AppCompatActivity {
                             returnData = getCommunicationManager().setTBR(tbr);
                         }
                     }
-                    break;
+                        break;
 
                     case "RefreshData.GetTBR": {
                         returnData = getCommunicationManager().getTemporaryBasal();
                     }
-                    break;
+                        break;
 
                     case "RefreshData.GetStatus": {
                         returnData = getCommunicationManager().getPumpState();
                     }
-                    break;
+                        break;
 
                     case "RefreshData.GetBolus": {
                         returnData = getCommunicationManager().getBolusStatus();
                     }
-                    break;
+                        break;
 
                     case "RefreshData.GetSettings": {
                         returnData = getCommunicationManager().getPumpSettings();
                     }
-                    break;
+                        break;
 
                     case "RefreshData.SetBolus": {
                         Float amount = getAmount();
@@ -447,12 +454,12 @@ public class ShowAAPS2Activity extends AppCompatActivity {
                         if (amount != null)
                             returnData = getCommunicationManager().setBolus(amount);
                     }
-                    break;
+                        break;
 
                     case "RefreshData.CancelTBR": {
                         returnData = getCommunicationManager().cancelTBR();
                     }
-                    break;
+                        break;
 
                     case "RefreshData.SetBasalProfile": {
 
@@ -465,21 +472,21 @@ public class ShowAAPS2Activity extends AppCompatActivity {
                             int basalStrokes1 = MedtronicUtil.getBasalStrokesInt(amount);
                             int basalStrokes2 = MedtronicUtil.getBasalStrokesInt(amount * 2);
 
-                            for(int i = 0; i < 24; i++) {
-                                profile.addEntry(new BasalProfileEntry(i % 2 == 0 ? basalStrokes1 : basalStrokes2, i * 2));
+                            for (int i = 0; i < 24; i++) {
+                                profile.addEntry(new BasalProfileEntry(i % 2 == 0 ? basalStrokes1 : basalStrokes2,
+                                    i * 2));
                             }
 
                             returnData = getCommunicationManager().setBasalProfile(profile);
                         }
 
                     }
-                    break;
+                        break;
 
                     default:
                         LOG.warn("Action is not supported {}.", selectedCommandAction);
 
                 }
-
 
                 if (returnData == null) {
                     data = null;
@@ -490,7 +497,6 @@ public class ShowAAPS2Activity extends AppCompatActivity {
                     errorCode = null;
                     RileyLinkUtil.sendBroadcastMessage(selectedCommandAction.intentString);
                 }
-
 
             }
         }).start();

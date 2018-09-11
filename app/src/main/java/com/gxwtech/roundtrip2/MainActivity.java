@@ -344,6 +344,7 @@ public class MainActivity extends AppCompatActivity {
         intentFilter.addAction(RT2Const.IPC.MSG_ServiceResult);
         intentFilter.addAction(RT2Const.IPC.MSG_ServiceNotification);
         intentFilter.addAction(RT2Const.local.INTENT_historyPageViewerReady);
+        intentFilter.addAction(RT2Const.local.INTENT_NEW_disconnectRileyLink);
 
         linearProgressBar = (ProgressBar)findViewById(R.id.progressBarCommandActivity);
         spinnyProgressBar = (ProgressBar)findViewById(R.id.progressBarSpinny);

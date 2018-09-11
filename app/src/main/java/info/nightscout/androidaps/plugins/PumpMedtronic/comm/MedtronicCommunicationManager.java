@@ -576,7 +576,7 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
 
         MedtronicUtil.setPumpDeviceState(PumpDeviceState.Active);
 
-        MedtronicCommandType commandType = MedtronicCommandType.GetBasalProfileSTD;
+        MedtronicCommandType commandType = MedtronicCommandType.GetBasalProfileA;
 
         for (int retries = 0; retries <= MAX_COMMAND_RETRIES; retries++) {
 
@@ -588,9 +588,6 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
 
             // send and wait for response
             PumpMessage response = sendAndListen(msg, DEFAULT_TIMEOUT + (DEFAULT_TIMEOUT * retries));
-
-            // LOG.debug("1st Response: " + HexDump.toHexStringDisplayable(response.getRawContent()));
-            // LOG.debug("1st Response: " + HexDump.toHexStringDisplayable(response.getMessageBody().getTxData()));
 
             String check = checkResponseContent(response, commandType.commandDescription, commandType.expectedLength);
 
@@ -656,6 +653,10 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
             LOG.debug("Length: " + data.length);
 
             if (data.length >= BasalProfile.MAX_RAW_DATA_SIZE) {
+                return false;
+            }
+
+            if (responseRaw.length == 1) {
                 return false;
             }
 

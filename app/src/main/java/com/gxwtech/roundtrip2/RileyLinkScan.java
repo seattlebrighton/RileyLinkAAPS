@@ -1,6 +1,7 @@
 package com.gxwtech.roundtrip2;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +44,7 @@ import android.widget.Toast;
 import com.gxwtech.roundtrip2.util.LocationHelper;
 
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkConst;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.GattAttributes;
 import info.nightscout.utils.SP;
 
@@ -193,11 +195,14 @@ public class RileyLinkScan extends AppCompatActivity {
                 mLEScanner = mBluetoothAdapter.getBluetoothLeScanner();
                 // settings = new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();
                 settings = new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build();
-                filters = new ArrayList<ScanFilter>();
+                filters = Arrays.asList(new ScanFilter.Builder().setServiceUuid(
+                    ParcelUuid.fromString(GattAttributes.SERVICE_RADIO)).build());
 
                 // scanLeDevice(true);
             }
         }
+
+        RileyLinkUtil.sendBroadcastMessage(RT2Const.local.INTENT_NEW_disconnectRileyLink);
     }
 
 

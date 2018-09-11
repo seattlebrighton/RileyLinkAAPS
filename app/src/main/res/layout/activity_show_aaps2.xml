@@ -82,7 +82,7 @@
                 android:id="@+id/tvDuration"
                 android:layout_width="180dp"
                 android:layout_height="40dp"
-                android:text="Duration:" />
+                android:text="Duration (HH:mm):" />
 
             <EditText
                 android:id="@+id/tfDuration"
