@@ -382,7 +382,8 @@ public class RileyLinkMedtronicService extends RileyLinkService {
                     // If we are connected and the addresses are the same, ignore.
                     String deviceAddress = serviceTransport.getServiceCommand().getMap().getString("rlAddress", "");
                     if ("".equals(deviceAddress)) {
-                        LOG.error("handleIPCMessage: null RL address passed");
+                        LOG.error("handleIPCMessage: null RL address passed, disconnecting RL if it was connected.");
+                        disconnectRileyLink();
                     } else {
                         reconfigureRileyLink(deviceAddress);
                     }

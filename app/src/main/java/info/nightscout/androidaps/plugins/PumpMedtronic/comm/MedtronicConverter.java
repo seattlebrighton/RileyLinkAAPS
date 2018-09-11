@@ -9,10 +9,9 @@ import org.joda.time.LocalTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.gxwtech.roundtrip2.util.StringUtil;
-
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.HexDump;
+import info.nightscout.androidaps.plugins.PumpCommon.utils.StringUtil;
 import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.BasalProfile;
 import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.BatteryStatusDTO;
 import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.PumpSettingDTO;

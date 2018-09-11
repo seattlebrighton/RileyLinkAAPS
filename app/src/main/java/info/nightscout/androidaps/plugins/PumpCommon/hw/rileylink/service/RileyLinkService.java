@@ -436,7 +436,11 @@ public abstract class RileyLinkService extends Service {
 
 
     public void disconnectRileyLink() {
-        this.rileyLinkBLE.disconnect();
+
+        if (this.rileyLinkBLE.isConnected()) {
+            this.rileyLinkBLE.disconnect();
+            rileyLinkServiceData.rileylinkAddress = null;
+        }
     }
 
 
