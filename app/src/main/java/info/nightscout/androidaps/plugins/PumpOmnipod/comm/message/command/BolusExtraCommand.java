@@ -1,4 +1,4 @@
-package info.nightscout.androidaps.plugins.PumpOmnipod.defs.InsulinSchedule;
+package info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.command;
 
 import info.nightscout.androidaps.Constants;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
@@ -22,7 +22,7 @@ public class BolusExtraCommand extends MessageBlock {
         encodedData = new byte[] {byte2};
         encodedData = ByteUtil.concat(encodedData,
                 ByteUtil.substring(
-                        ByteUtil.getBytesFromInt((int) (units / Constants.PodPulseSize)), 2, 2
+                        ByteUtil.getBytesFromInt((int) (units / Constants.PodPulseSize * 10)), 2, 2
                 ));
         encodedData = ByteUtil.concat(encodedData, unknownPart);
         encodedData = ByteUtil.concat(encodedData, new byte[6]);

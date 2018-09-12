@@ -35,7 +35,7 @@ import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.response.Stat
 import info.nightscout.androidaps.plugins.PumpOmnipod.defs.AlertType;
 import info.nightscout.androidaps.plugins.PumpOmnipod.defs.ExpirationAdvisory;
 import info.nightscout.androidaps.plugins.PumpOmnipod.defs.InsulinSchedule.Bolus;
-import info.nightscout.androidaps.plugins.PumpOmnipod.defs.InsulinSchedule.BolusExtraCommand;
+import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.command.BolusExtraCommand;
 import info.nightscout.androidaps.plugins.PumpOmnipod.defs.PacketType;
 import info.nightscout.androidaps.plugins.PumpOmnipod.defs.PodState;
 
@@ -120,7 +120,7 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
             OmnipodPacket packet = new OmnipodPacket(packetAddress, packetType,packetNumber, encodedMessage);
             byte[] encodedMessageInPacket = packet.getEncodedMessage();
             //getting the data remaining to be sent
-            encodedMessage = ByteUtil.substring(encodedMessage, encodedMessageInPacket.length - 1, encodedMessage.length - encodedMessageInPacket.length);
+            encodedMessage = ByteUtil.substring(encodedMessage, encodedMessageInPacket.length, encodedMessage.length - encodedMessageInPacket.length);
             firstPacket = false;
             response = exchangePackets(packet);
             //We actually ignore (ack) responses if it is not last packet to send
@@ -385,14 +385,7 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
         OmnipodMessage prime = new OmnipodMessage(newAddress, new MessageBlock[]{primeCommand, extraBolusCommand}, messageNumber);
         status = exchangeMessages(prime);
 
-
-
-
-
-
-
-
-
+        //FIXME: should we return something like "OK"?
         return null;
     }
 }

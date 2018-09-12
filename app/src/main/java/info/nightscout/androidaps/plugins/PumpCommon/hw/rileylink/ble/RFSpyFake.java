@@ -67,7 +67,7 @@ public class RFSpyFake implements IRFSpy {
 
         byte[] primeRequest1 = ByteUtil.fromHexString("1f05e70bb81f05e70b18 1f1a0eacb8d63302010a0101a000340034170d000208000186a0da");
         byte[] primeAckForCon = ByteUtil.fromHexString("0000001f05e70b591f05e70bd7");
-        byte[] primeConForConRequest = ByteUtil.fromHexString("0000001f05e70b591f05e70bd7");
+        byte[] primeConForConRequest = ByteUtil.fromHexString("1f05e70b9a000000000000813791");
         byte[] primeResponse = ByteUtil.fromHexString("0000001f05e70bfb1f05e70b1c0a1d4400003034000007ff80ff73");
 
 
