@@ -42,4 +42,6 @@ public interface IRFSpy {
     RFSpyResponse updateRegister(CC111XRegister reg, int val);
 
     void setBaseFrequency(double freqMHz);
+
+    void setTestingFunction(String functionName);
 }

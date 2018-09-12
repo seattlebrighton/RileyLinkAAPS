@@ -2,6 +2,8 @@ package info.nightscout.androidaps.plugins.PumpOmnipod.comm;
 
 import android.content.Context;
 
+import com.google.gson.Gson;
+
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.slf4j.Logger;
@@ -38,6 +40,8 @@ import info.nightscout.androidaps.plugins.PumpOmnipod.defs.InsulinSchedule.Bolus
 import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.command.BolusExtraCommand;
 import info.nightscout.androidaps.plugins.PumpOmnipod.defs.PacketType;
 import info.nightscout.androidaps.plugins.PumpOmnipod.defs.PodState;
+import info.nightscout.androidaps.plugins.PumpOmnipod.util.OmniPodConst;
+import info.nightscout.utils.SP;
 
 /**
  * Created by andy on 6/29/18.
@@ -292,6 +296,14 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
 
 
     public Object initializePod() {
+
+        if (SP.contains(OmniPodConst.Prefs.PodState)) {
+            //FIXME: We should ask "are you sure?"
+            SP.remove(OmniPodConst.Prefs.PodState);
+        }
+
+        rfspy.setTestingFunction("initializePod");
+
         Random rnd = new Random();
         int newAddress = rnd.nextInt();
         this.packetNumber = 0x0A;
@@ -385,7 +397,31 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
         OmnipodMessage prime = new OmnipodMessage(newAddress, new MessageBlock[]{primeCommand, extraBolusCommand}, messageNumber);
         status = exchangeMessages(prime);
 
+
+        Gson gson = new Gson();
+        String s = gson.toJson(podState);
+        SP.putString(OmniPodConst.Prefs.PodState, s);
+
         //FIXME: should we return something like "OK"?
-        return null;
+        return "OK";
     }
+
+    public Object finishPrime() {
+        rfspy.setTestingFunction("finishPrime");
+
+        if (this.podState == null) {
+            String serialized = "{\"ActivatedAt\":{\"iChronology\":{\"iBase\":{\"iMinDaysInFirstWeek\":4}},\"iMillis\":1534622700000},\"Address\":520480523,\"Lot\":43687,\"PiVersion\":{\"major\":2,\"minor\":7,\"patch\":0},\"PmVersion\":{\"major\":2,\"minor\":7,\"patch\":0},\"Tid\":630145,\"nonceState\":{\"index\":1,\"table\":[1159728387,1369320680,1799221675,-1397172685,1859143840,497915028,-1194513883,1557972065,1353375686,-736718945,541733452,-833859995,1587621096,-543494224,426786215,-1655021558,-1174888418,-1772703871,0,0,0]}}";
+            Gson gson = new Gson();
+            this.podState = gson.fromJson(serialized, PodState.class);
+        }
+
+        //Fere goes new alarm settings and basal schedule set
+
+
+
+
+        return "OK";
+    }
+
+
 }

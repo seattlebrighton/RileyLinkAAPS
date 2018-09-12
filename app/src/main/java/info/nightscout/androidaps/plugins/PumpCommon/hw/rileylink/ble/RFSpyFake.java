@@ -1,5 +1,7 @@
 package info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble;
 
+import android.support.annotation.Nullable;
+
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.RFSpyResponse;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.RadioPacket;
@@ -53,6 +55,23 @@ public class RFSpyFake implements IRFSpy {
     @Override
     public RFSpyResponse transmitThenReceive(RadioPacket pkt, byte sendChannel, byte repeatCount, byte delay_ms, byte listenChannel, int timeout_ms, byte retryCount, int extendPreamble_ms) {
         byte[] bytesToSend = pkt.getRaw();
+        if (testingFunction == "initializePod") {
+            return testInitializePod(bytesToSend);
+        }
+        if (testingFunction == "finishPrime") {
+            return testFinishPrime(bytesToSend);
+        }
+        return null;
+
+    }
+
+    @Nullable
+    private RFSpyResponse testFinishPrime(byte[] bytesToSend) {
+        return null;
+    }
+
+    @Nullable
+    private RFSpyResponse testInitializePod(byte[] bytesToSend) {
         String myString = ByteUtil.shortHexString(bytesToSend).replace(" ", "");
         byte[] assignAddressRequest = ByteUtil.fromHexString("ffffffffaaffffffff000607041f05e70b834ce2");
         byte[] assignAddressResponse = ByteUtil.fromHexString("000000ffffffffebffffffff0417011502070002070002020000aaa700099d818e1f05e70b8321a6");
@@ -69,8 +88,6 @@ public class RFSpyFake implements IRFSpy {
         byte[] primeAckForCon = ByteUtil.fromHexString("0000001f05e70b591f05e70bd7");
         byte[] primeConForConRequest = ByteUtil.fromHexString("1f05e70b9a000000000000813791");
         byte[] primeResponse = ByteUtil.fromHexString("0000001f05e70bfb1f05e70b1c0a1d4400003034000007ff80ff73");
-
-
 
 
         switch(commsCount++) {
@@ -121,8 +138,6 @@ public class RFSpyFake implements IRFSpy {
                 return null;
 
         }
-        //return null;
-
     }
 
     @Override
@@ -133,6 +148,15 @@ public class RFSpyFake implements IRFSpy {
     @Override
     public void setBaseFrequency(double freqMHz) {
         RileyLinkUtil.setEncoding(RileyLinkEncodingType.Manchester);
+
+    }
+
+    String testingFunction = null;
+
+    @Override
+    public void setTestingFunction(String functionName) {
+        commsCount = 0;
+        this.testingFunction = functionName;
 
     }
 }

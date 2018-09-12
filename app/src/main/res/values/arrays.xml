@@ -3,6 +3,7 @@
 
     <string-array name="pumpCommands">
         <item>@string/cmd_aaps_initialize_pod</item>
+        <item>@string/cmd_aaps_finish_prime</item>
         <!--<item>@string/cmd_aaps_cancel_tbr</item>-->
         <!--<item>@string/cmd_aaps_get_model</item>-->
         <!--<item>@string/cmd_aaps_set_bolus</item>-->

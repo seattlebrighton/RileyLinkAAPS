@@ -290,6 +290,11 @@ public String getBLEVersionCached() {
         configureRadioForRegion(RileyLinkUtil.getRileyLinkTargetFrequency());
     }
 
+    @Override
+    public void setTestingFunction(String functionName) {
+        //FIXME: this is a test-only function, it should be deleted after capture-testing is not needed
+    }
+
 
     private void configureRadioForRegion(RileyLinkTargetFrequency frequency) {
 
