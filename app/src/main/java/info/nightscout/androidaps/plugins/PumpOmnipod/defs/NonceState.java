@@ -18,9 +18,9 @@ public class NonceState {
 
     private void InitializeTable(int lot, int tid, byte seed) {
         table = new long[21];
-        table[0] = (lot & 0xFFFF) + 0x55543DC3 + (lot >> 16);
+        table[0] = (long)(lot & 0xFFFF) + 0x55543DC3l + (((long)(lot) & 0xFFFFFFFFl) >> 16);
         table[0] = table[0] & 0xFFFFFFFFl;
-        table[1] = (tid & 0xFFFF) + 0xAAAAE44El + (tid >> 16);
+        table[1] = (tid & 0xFFFF) + 0xAAAAE44El + (((long)(tid) & 0xFFFFFFFFl) >> 16);
         table[1] = table[1] & 0xFFFFFFFFl;
         index = 0;
         table[0] += seed;

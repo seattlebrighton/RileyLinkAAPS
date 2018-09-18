@@ -14,9 +14,11 @@ public class PodState {
     public FirmwareVersion PmVersion;
     public int Lot;
     public int Tid;
+    public int messageNumber;
+    public int packetNumber;
     private NonceState nonceState;
 
-    public PodState(int address, DateTime activatedAt,FirmwareVersion piVersion, FirmwareVersion pmVersion, int lot, int tid) {
+    public PodState(int address, DateTime activatedAt,FirmwareVersion piVersion, FirmwareVersion pmVersion, int lot, int tid, int packetNumber, int messageNumber) {
 
         this.Address = address;
         this.ActivatedAt = activatedAt;
@@ -24,6 +26,8 @@ public class PodState {
         this.PmVersion = pmVersion;
         this.Lot = lot;
         this.Tid = tid;
+        this.packetNumber = packetNumber;
+        this.messageNumber = messageNumber;
         this.nonceState = new NonceState(lot, tid);
     }
 

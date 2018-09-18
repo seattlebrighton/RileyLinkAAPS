@@ -67,7 +67,20 @@ public class RFSpyFake implements IRFSpy {
 
     @Nullable
     private RFSpyResponse testFinishPrime(byte[] bytesToSend) {
-        return null;
+        String myString = ByteUtil.shortHexString(bytesToSend).replace(" ", "");
+        byte[] setAlertConfig1Request = ByteUtil.fromHexString("1f05e70bbd1f05e70b200c190a1dad9494380010a203020045b1");
+        byte[] setAlertConfig1Response = ByteUtil.fromHexString("0000001f05e70bfe1f05e70b240a1d050015c00000000bff82840b");
+        switch(commsCount++) {
+            case 0:
+                if (ByteUtil.compare(bytesToSend, setAlertConfig1Request) == 0)
+                    return new RFSpyResponse(setAlertConfig1Response);
+                else
+                    return null;
+            case 1:
+                return new RFSpyResponse(new byte[] {(byte) 0xAA});
+            default:
+                return null;
+        }
     }
 
     @Nullable

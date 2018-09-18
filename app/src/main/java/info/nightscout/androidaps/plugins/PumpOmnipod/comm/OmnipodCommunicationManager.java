@@ -3,13 +3,22 @@ package info.nightscout.androidaps.plugins.PumpOmnipod.comm;
 import android.content.Context;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
+import org.joda.time.Interval;
+import org.joda.time.format.ISODateTimeFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Random;
 
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkCommunicationManager;
@@ -22,6 +31,7 @@ import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.Riley
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.AlertConfiguration;
 import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.command.AssignAddressCommand;
+import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.command.BasalScheduleExtraCommand;
 import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.command.ConfigureAlertsCommand;
 import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.command.ConfirmPairingCommand;
 import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.command.SetInsulinScheduleCommand;
@@ -36,11 +46,13 @@ import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.response.PodL
 import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.response.StatusResponse;
 import info.nightscout.androidaps.plugins.PumpOmnipod.defs.AlertType;
 import info.nightscout.androidaps.plugins.PumpOmnipod.defs.ExpirationAdvisory;
+import info.nightscout.androidaps.plugins.PumpOmnipod.defs.InsulinSchedule.BasalSchedule;
 import info.nightscout.androidaps.plugins.PumpOmnipod.defs.InsulinSchedule.Bolus;
 import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.command.BolusExtraCommand;
 import info.nightscout.androidaps.plugins.PumpOmnipod.defs.PacketType;
 import info.nightscout.androidaps.plugins.PumpOmnipod.defs.PodState;
 import info.nightscout.androidaps.plugins.PumpOmnipod.util.OmniPodConst;
+import info.nightscout.androidaps.plugins.PumpOmnipod.util.Utils;
 import info.nightscout.utils.SP;
 
 /**
@@ -50,8 +62,8 @@ import info.nightscout.utils.SP;
 public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
 
     private static final int defaultAddress = 0xFFFFFFFF;
-    private int messageNumber = 0;
-    private int packetNumber = 0;
+    private Integer messageNumber;
+    private Integer packetNumber;
     private PodState podState;
 
     private static final Logger LOG = LoggerFactory.getLogger(OmnipodCommunicationManager.class);
@@ -121,7 +133,7 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
         OmnipodPacket response = null;
         while(encodedMessage.length > 0) {
             PacketType packetType = firstPacket? PacketType.Pdm : PacketType.Con;
-            OmnipodPacket packet = new OmnipodPacket(packetAddress, packetType,packetNumber, encodedMessage);
+            OmnipodPacket packet = new OmnipodPacket(packetAddress, packetType,podState == null? packetNumber : podState.packetNumber, encodedMessage);
             byte[] encodedMessageInPacket = packet.getEncodedMessage();
             //getting the data remaining to be sent
             encodedMessage = ByteUtil.substring(encodedMessage, encodedMessageInPacket.length, encodedMessage.length - encodedMessageInPacket.length);
@@ -189,10 +201,18 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
     }
 
     private void incrementMessageNumber(int increment) {
-        messageNumber = (messageNumber + increment) & 0b1111;
+        if (podState == null)
+            messageNumber = (messageNumber + increment) & 0b1111;
+        else
+            podState.messageNumber = (podState.messageNumber + increment) & 0b1111;
+
     }
     private void incrementPacketNumber(int increment) {
-        packetNumber = (packetNumber + increment) & 0b11111;
+        if (podState == null)
+            packetNumber = (packetNumber + increment) & 0b11111;
+        else
+            podState.packetNumber = (podState.packetNumber + increment) & 0b11111;
+
     }
 
     private OmnipodPacket makeAckPacket(Integer packetAddress, Integer messageAddress) {
@@ -205,7 +225,7 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
             pktAddress = packetAddress;
         if (messageAddress != null)
             msgAddress = messageAddress;
-        return new OmnipodPacket(pktAddress, PacketType.Ack, packetNumber, ByteUtil.getBytesFromInt(msgAddress));
+        return new OmnipodPacket(pktAddress, PacketType.Ack, podState == null ? packetNumber : podState.packetNumber, ByteUtil.getBytesFromInt(msgAddress));
 
     }
 
@@ -259,7 +279,7 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
             if (response.getAddress() != packet.getAddress()) {
                 continue;
             }
-            if (response.getSequenceNumber() != ((packetNumber + 1) & 0b11111))
+            if (response.getSequenceNumber() != (((podState == null ? packetNumber : podState.packetNumber) + 1) & 0b11111))
                 continue;
 
             incrementPacketNumber(2);
@@ -275,7 +295,7 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
         if (this.podState != null) {
             msgAddress = podState.Address;
         }
-        OmnipodMessage message = new OmnipodMessage(msgAddress, new MessageBlock[]{command}, messageNumber);
+        OmnipodMessage message = new OmnipodMessage(msgAddress, new MessageBlock[]{command}, podState == null ? messageNumber : podState.messageNumber);
         return exchangeMessages(message);
 
     }
@@ -361,7 +381,11 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
                 , config2.piVersion
                 , config2.pmVersion
                 , config2.lot
-                , config2.tid);
+                , config2.tid
+                , packetNumber
+                , messageNumber
+        );
+        packetNumber = messageNumber = null;
 
         AlertConfiguration lweReservoir = new AlertConfiguration(
                 AlertType.LowReservoir,
@@ -394,11 +418,11 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
         Bolus primeBolus = new Bolus(primeUnits, 8);
         SetInsulinScheduleCommand primeCommand = new SetInsulinScheduleCommand(nonceValue(), primeBolus);
         BolusExtraCommand extraBolusCommand = new BolusExtraCommand(primeUnits, (byte) 0, ByteUtil.fromHexString("000186a0"));
-        OmnipodMessage prime = new OmnipodMessage(newAddress, new MessageBlock[]{primeCommand, extraBolusCommand}, messageNumber);
+        OmnipodMessage prime = new OmnipodMessage(newAddress, new MessageBlock[]{primeCommand, extraBolusCommand}, podState.messageNumber);
         status = exchangeMessages(prime);
+        advanceToNextNonce();
 
-
-        Gson gson = new Gson();
+        Gson gson = Utils.gsonDateTime();
         String s = gson.toJson(podState);
         SP.putString(OmniPodConst.Prefs.PodState, s);
 
@@ -410,17 +434,34 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
         rfspy.setTestingFunction("finishPrime");
 
         if (this.podState == null) {
-            String serialized = "{\"ActivatedAt\":{\"iChronology\":{\"iBase\":{\"iMinDaysInFirstWeek\":4}},\"iMillis\":1534622700000},\"Address\":520480523,\"Lot\":43687,\"PiVersion\":{\"major\":2,\"minor\":7,\"patch\":0},\"PmVersion\":{\"major\":2,\"minor\":7,\"patch\":0},\"Tid\":630145,\"nonceState\":{\"index\":1,\"table\":[1159728387,1369320680,1799221675,-1397172685,1859143840,497915028,-1194513883,1557972065,1353375686,-736718945,541733452,-833859995,1587621096,-543494224,426786215,-1655021558,-1174888418,-1772703871,0,0,0]}}";
-            Gson gson = new Gson();
+            String serialized = "{\"ActivatedAt\":\"2018-08-18T20:05:00.000Z\",\"Address\":520480523,\"Lot\":43687,\"PiVersion\":{\"major\":2,\"minor\":7,\"patch\":0},\"PmVersion\":{\"major\":2,\"minor\":7,\"patch\":0},\"Tid\":630145,\"nonceState\":{\"index\":3,\"table\":[79745181,413876894,1799221675,-381140322,1859143840,497915028,-1194513883,1557972065,1353375686,-736718945,541733452,-833859995,1587621096,-543494224,426786215,-1655021558,-1174888418,-1772703871,0,0,0]}}";
+            Gson gson = Utils.gsonDateTime();
             this.podState = gson.fromJson(serialized, PodState.class);
         }
 
-        //Fere goes new alarm settings and basal schedule set
+        AlertConfiguration alert = new AlertConfiguration(
+                AlertType.ExpirationAdvisory,
+                true,
+                false,
+                0,
+                new ExpirationAdvisory(
+                        ExpirationAdvisory.ExpirationType.Timer,
+                        new Duration(70*60*60*1000 + 58*60*1000)), //70h58m
+                0x0302);
+        ConfigureAlertsCommand alertCommand = new ConfigureAlertsCommand(
+                nonceValue(),
+                new AlertConfiguration[] {alert});
+        StatusResponse status = sendCommand(alertCommand);
 
-
-
+        //Here goes new alarm settings and basal schedule set
 
         return "OK";
+    }
+
+    public void setBasalSchedule(BasalSchedule schedule, boolean confidenceReminder, Duration scheduleOffset, Duration programReminderInterval) {
+        SetInsulinScheduleCommand setBasal = new SetInsulinScheduleCommand(nonceValue(), schedule, scheduleOffset);
+        BasalScheduleExtraCommand extraCommand = new BasalScheduleExtraCommand(null);
+
     }
 
 
