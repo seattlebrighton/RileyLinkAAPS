@@ -24,6 +24,7 @@ import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.data.BleAdvert
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.data.RLHistoryItem;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.defs.RileyLinkError;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.defs.RileyLinkServiceState;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.defs.RileyLinkTargetDevice;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.RileyLinkService;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.RileyLinkServiceData;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.ServiceNotification;
@@ -57,6 +58,7 @@ public class RileyLinkUtil {
     private static RileyLinkIPCConnection rileyLinkIPCConnection;
 
     private static RileyLinkEncodingType encoding;
+    private static RileyLinkTargetDevice targetDevice;
 
 
     public static void setContext(Context contextIn) {
@@ -123,28 +125,10 @@ public class RileyLinkUtil {
     }
 
 
-    // public static void setMedtronicPumpStatus(MedtronicPumpStatus medtronicPumpStatus) {
-    //
-    // RileyLinkUtil.medtronicPumpStatus = medtronicPumpStatus;
-    // }
-
-    // public static void addHistoryEntry(RLHistoryItem rlHistoryItem) {
-    // historyRileyLink.add(rlHistoryItem);
-    // }
-
-    // public static MedtronicPumpStatus getMedtronicPumpStatus() {
-    //
-    // return RileyLinkUtil.medtronicPumpStatus;
-    // }
-
     public static void setRileyLinkServiceData(RileyLinkServiceData rileyLinkServiceData) {
         RileyLinkUtil.rileyLinkServiceData = rileyLinkServiceData;
     }
 
-
-    // public static void tuneUpPump() {
-    // RileyLinkUtil.rileyLinkService.doTunePump(); // FIXME thread
-    // }
 
     public static boolean hasPumpBeenTunned() {
         return RileyLinkUtil.rileyLinkServiceData.tuneUpDone;
@@ -281,4 +265,13 @@ public class RileyLinkUtil {
         return new BleAdvertisedData(uuids, name);
     }
 
+
+    public static void setTargetDevice(RileyLinkTargetDevice targetDevice) {
+        RileyLinkUtil.targetDevice = targetDevice;
+    }
+
+
+    public static RileyLinkTargetDevice getTargetDevice() {
+        return targetDevice;
+    }
 }

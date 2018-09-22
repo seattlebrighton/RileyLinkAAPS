@@ -344,4 +344,5 @@ public class ByteUtil {
         LITTLE_ENDIAN, // 20 0 0 0 = reverse
         BIG_ENDIAN // 0 0 0 20 = normal - java
     }
+
 }

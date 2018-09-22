@@ -245,6 +245,7 @@ public class RileyLinkMedtronicService extends RileyLinkService {
         rileyLinkServiceData = new RileyLinkServiceData(RileyLinkTargetDevice.MedtronicPump);
 
         RileyLinkUtil.setRileyLinkServiceData(rileyLinkServiceData);
+        RileyLinkUtil.setTargetDevice(RileyLinkTargetDevice.MedtronicPump);
 
         setPumpIDString(SP.getString(MedtronicConst.Prefs.PumpSerial, "000000"));
 

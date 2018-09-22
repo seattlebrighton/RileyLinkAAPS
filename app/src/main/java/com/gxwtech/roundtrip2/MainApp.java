@@ -25,17 +25,21 @@ public class MainApp extends Application {
         sInstance = this;
         serviceClientConnection = new ServiceClientConnection();
 
-        //initialize Realm
-        RealmConfiguration realmConfiguration = new RealmConfiguration.Builder(instance()).name("rt2.realm").schemaVersion(0).deleteRealmIfMigrationNeeded() // TODO: 03/08/2016 @TIM remove
-                .build();
+        // initialize Realm
+        RealmConfiguration realmConfiguration = new RealmConfiguration.Builder(instance()).name("rt2.realm")
+            .schemaVersion(0).deleteRealmIfMigrationNeeded() // TODO: 03/08/2016 @TIM remove
+            .build();
         Realm.setDefaultConfiguration(realmConfiguration);
 
         sResources = getResources();
 
-        // you need to set frequency here (US = R.string.medtronic_pump_frequency_us, WW = R.string.medtronic_pump_frequency_worldwide)
-        SP.putString(MedtronicConst.Prefs.PumpFrequency, gs(R.string.medtronic_pump_frequency_us));
+        // you need to set frequency here (US = R.string.medtronic_pump_frequency_us, WW =
+        // R.string.medtronic_pump_frequency_worldwide)
 
-        //SP.putString(MedtronicConst.Prefs.RileyLinkAddress, "CD:72:E1:4C:D5:9D");
+        SP.putString(MedtronicConst.Prefs.PumpFrequency, gs(R.string.medtronic_pump_frequency_us));
+        // SP.putString(MedtronicConst.Prefs.PumpFrequency, gs(R.string.medtronic_pump_frequency_worldwide));
+
+        // SP.putString(MedtronicConst.Prefs.RileyLinkAddress, "CD:72:E1:4C:D5:9D");
     }
 
 
@@ -51,12 +55,11 @@ public class MainApp extends Application {
         return serviceClientConnection;
     }
 
-    // TODO: 09/07/2016 @TIM uncomment ServiceClientConnection once class is added
 
+    // TODO: 09/07/2016 @TIM uncomment ServiceClientConnection once class is added
 
     public static String gs(int id) {
         return sResources.getString(id);
     }
-
 
 }

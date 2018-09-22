@@ -17,6 +17,8 @@ import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RLMes
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkTargetFrequency;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.RileyLinkServiceData;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
+import info.nightscout.androidaps.plugins.PumpMedtronic.defs.PumpDeviceState;
+import info.nightscout.androidaps.plugins.PumpMedtronic.util.MedtronicUtil;
 import info.nightscout.utils.SP;
 
 /**
@@ -37,8 +39,9 @@ public abstract class RileyLinkCommunicationManager {
     protected PumpStatus pumpStatus;
     protected RileyLinkServiceData rileyLinkServiceData;
     protected RileyLinkTargetFrequency targetFrequency;
-    long nextWakeUpRequired = 0L;
+    private long nextWakeUpRequired = 0L;
     private double[] scanFrequencies;
+
     // internal flag
     private boolean showPumpMessages = true;
     private int timeoutCount = 0;
@@ -70,9 +73,9 @@ public abstract class RileyLinkCommunicationManager {
             LOG.info("Sent:" + ByteUtil.shortHexString(msg.getTxData()));
         }
 
-        RFSpyResponse resp = rfspy.transmitThenReceive(new RadioPacket(msg.getTxData()), timeout_ms);
+        RFSpyResponse rfSpyResponse = rfspy.transmitThenReceive(new RadioPacket(msg.getTxData()), timeout_ms);
 
-        E response = createResponseMessage(resp.getRadioResponse().getPayload(), clazz);
+        E response = createResponseMessage(rfSpyResponse.getRadioResponse().getPayload(), clazz);
 
         // PumpMessage rval = new PumpMessage(resp.getRadioResponse().getPayload());
         if (response.isValid()) {
@@ -83,7 +86,7 @@ public abstract class RileyLinkCommunicationManager {
         }
 
         if (showPumpMessages) {
-            LOG.info("Received:" + ByteUtil.shortHexString(resp.getRadioResponse().getPayload()));
+            LOG.info("Received:" + ByteUtil.shortHexString(rfSpyResponse.getRadioResponse().getPayload()));
         }
         return response;
     }
@@ -109,6 +112,8 @@ public abstract class RileyLinkCommunicationManager {
         // **** FIXME: this wakeup doesn't seem to work well... must revisit
         // receiverDeviceAwakeForMinutes = duration_minutes;
 
+        MedtronicUtil.setPumpDeviceState(PumpDeviceState.WakingUp);
+
         if (force)
             nextWakeUpRequired = 0L;
 
@@ -119,6 +124,8 @@ public abstract class RileyLinkCommunicationManager {
             RFSpyResponse resp = rfspy.transmitThenReceive(new RadioPacket(pumpMsgContent), (byte)0, (byte)200,
                 (byte)0, (byte)0, 25000, (byte)0);
             LOG.info("wakeup: raw response is " + ByteUtil.shortHexString(resp.getRaw()));
+
+            // FIXME wakeUp successful !!!!!!!!!!!!!!!!!!
 
             nextWakeUpRequired = System.currentTimeMillis() + (receiverDeviceAwakeForMinutes * 60 * 1000);
         } else {
@@ -220,8 +227,6 @@ public abstract class RileyLinkCommunicationManager {
 
             stringBuilder.append(String.format("Scan Result[%s]: Freq=%s, avg RSSI = %s\n", "" + k, ""
                 + one.frequencyMHz, "" + one.averageRSSI));
-
-            // LOG.debug("Scan Result[{}]: Freq={}, avg RSSI = {}", k, one.frequencyMHz, one.averageRSSI);
         }
 
         LOG.debug(stringBuilder.toString());

@@ -576,7 +576,7 @@ public class MedtronicCommunicationManager extends RileyLinkCommunicationManager
 
         MedtronicUtil.setPumpDeviceState(PumpDeviceState.Active);
 
-        MedtronicCommandType commandType = MedtronicCommandType.GetBasalProfileA;
+        MedtronicCommandType commandType = MedtronicCommandType.GetBasalProfileSTD;
 
         for (int retries = 0; retries <= MAX_COMMAND_RETRIES; retries++) {
 

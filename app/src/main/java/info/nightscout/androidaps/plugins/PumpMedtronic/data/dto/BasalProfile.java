@@ -213,6 +213,7 @@ public class BasalProfile {
     }
 
 
+    // TODO extend to be done by half hour
     public Double[] getProfilesByHour() {
 
         List<BasalProfileEntry> entries = getEntries();

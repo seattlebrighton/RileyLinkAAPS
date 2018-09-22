@@ -27,6 +27,11 @@ public class ServiceTaskExecutor extends ThreadPoolExecutor {
     }
 
 
+    public static ServiceTaskExecutor getInstance() {
+        return instance;
+    }
+
+
     public static ServiceTask startTask(ServiceTask task) {
         instance.execute(task); // task will be run on async thread from pool.
         return task;

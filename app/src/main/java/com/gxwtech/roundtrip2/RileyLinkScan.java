@@ -398,7 +398,7 @@ public class RileyLinkScan extends AppCompatActivity {
             // sb.append("MajorClass: " + bluetoothClass.getMajorDeviceClass());
             // sb.append("DeviceClass: " + bluetoothClass.getDeviceClass());
             // Log.d(TAG, sb.toString());
-
+            // FIXME remove most of code
             List<ParcelUuid> serviceUuids = result.getScanRecord().getServiceUuids();
 
             if (serviceUuids == null || serviceUuids.size() == 0) {

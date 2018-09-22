@@ -87,7 +87,6 @@ public enum MedtronicDeviceType {
         this.cgmsConverter = cgmsConverter;
 
         this.pumpModel = pumpModel;
-        // this.bigReservoirPump = bigReservoirPump;
     }
 
 
@@ -152,5 +151,10 @@ public enum MedtronicDeviceType {
 
     public int getBolusStrokes() {
         return (isLargerFormat(this)) ? 40 : 10;
+    }
+
+
+    public String getPumpModel() {
+        return pumpModel;
     }
 }
