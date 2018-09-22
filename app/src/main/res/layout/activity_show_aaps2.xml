@@ -115,27 +115,20 @@
 
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="720px"
-            android:orientation="vertical">
 
+        <ScrollView
+            android:id="@+id/scrollViewCommAAPS2"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp">
 
-            <ScrollView
-                android:id="@+id/scrollViewCommAAPS2"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp">
+            <TextView
+                android:id="@+id/textViewComm"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="" />
+        </ScrollView>
 
-                <TextView
-                    android:id="@+id/textViewComm"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text="" />
-            </ScrollView>
-
-
-        </LinearLayout>
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>
