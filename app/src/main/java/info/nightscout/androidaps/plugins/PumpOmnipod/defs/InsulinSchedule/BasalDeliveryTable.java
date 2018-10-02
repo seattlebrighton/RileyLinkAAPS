@@ -1,5 +1,6 @@
 package info.nightscout.androidaps.plugins.PumpOmnipod.defs.InsulinSchedule;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.joda.time.Duration;
 
 import java.util.ArrayList;
@@ -29,10 +30,13 @@ public class BasalDeliveryTable implements IRawRepresentable {
         }
         this.entries = entries.toArray(this.entries);
     }
+    public BasalTableEntry[] getEntries() {
+        return entries;
+    }
 
     @Override
     public byte[] getRawData() {
-        return new byte[0];
+        throw new NotImplementedException("BasalDeliveryTable.getRawData");
 
     }
 }

@@ -230,6 +230,11 @@ public class ByteUtil {
         return toInt(b1, b2, null, null, flag);
     }
 
+    public static byte[] getBytesFromInt16(int value) {
+        byte[] array = getBytesFromInt(value);
+        return getByteArray(array[2], array[3]);
+    }
+
 
     public enum BitConversion {
         LITTLE_ENDIAN, // 20 0 0 0 = reverse
@@ -245,6 +250,10 @@ public class ByteUtil {
         }
 
         return listOut;
+    }
+
+    public static byte[] getByteArray(byte... input) {
+        return input;
     }
 
 

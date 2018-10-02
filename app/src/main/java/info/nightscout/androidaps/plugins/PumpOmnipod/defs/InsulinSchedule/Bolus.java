@@ -42,12 +42,4 @@ public class Bolus extends DeliverySchedule implements IRawRepresentable {
         return InsulinScheduleType.Bolus;
     }
 
-    @Override
-    public int checksum() {
-        int checksum = 0;
-        for(byte b : getRawData()) {
-            checksum += (0xFF & b);
-        }
-        return checksum;
-    }
 }

@@ -2,6 +2,7 @@ package info.nightscout.androidaps.plugins.PumpOmnipod.defs.InsulinSchedule;
 
 import org.apache.commons.lang3.NotImplementedException;
 
+import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.IRawRepresentable;
 
 public class BasalScheduleCommandPart extends DeliverySchedule implements IRawRepresentable {
@@ -27,7 +28,13 @@ public class BasalScheduleCommandPart extends DeliverySchedule implements IRawRe
     @Override
     public byte[] getRawData() {
         byte[] rawData = new byte[0];
-        throw new NotImplementedException("BasalSchedule.getRawData");
+        rawData = ByteUtil.concat(rawData, currentSegment);
+        rawData = ByteUtil.concat(rawData, ByteUtil.getBytesFromInt16(secondsRemaining << 3));
+        rawData = ByteUtil.concat(rawData, ByteUtil.getBytesFromInt16(pulsesRemaining));
+        for (BasalTableEntry entry: basalTable.getEntries()) {
+            rawData = ByteUtil.concat(rawData, entry.getRawData());
+        }
+        return rawData;
     }
 
     @Override
@@ -35,9 +42,5 @@ public class BasalScheduleCommandPart extends DeliverySchedule implements IRawRe
         return InsulinScheduleType.BasalSchedule;
     }
 
-    @Override
-    public int checksum() {
-        throw new NotImplementedException("BasalScheduleCommandPart.checksum");
-        //return 0;
-    }
+
 }
