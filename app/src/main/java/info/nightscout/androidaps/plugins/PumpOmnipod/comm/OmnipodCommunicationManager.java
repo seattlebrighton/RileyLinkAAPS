@@ -47,6 +47,7 @@ import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.response.Stat
 import info.nightscout.androidaps.plugins.PumpOmnipod.defs.AlertType;
 import info.nightscout.androidaps.plugins.PumpOmnipod.defs.ExpirationAdvisory;
 import info.nightscout.androidaps.plugins.PumpOmnipod.defs.InsulinSchedule.BasalSchedule;
+import info.nightscout.androidaps.plugins.PumpOmnipod.defs.InsulinSchedule.BasalScheduleEntry;
 import info.nightscout.androidaps.plugins.PumpOmnipod.defs.InsulinSchedule.Bolus;
 import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.command.BolusExtraCommand;
 import info.nightscout.androidaps.plugins.PumpOmnipod.defs.PacketType;
@@ -454,6 +455,37 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
         StatusResponse status = sendCommand(alertCommand);
 
         //Here goes new alarm settings and basal schedule set
+
+
+        ArrayList<BasalScheduleEntry> basals = new ArrayList<>();
+        basals.add(new BasalScheduleEntry(4, Duration.standardMinutes(30)));    //00:00-00:30
+        basals.add(new BasalScheduleEntry(10, Duration.standardMinutes(30)));   //00:30-01:00
+        basals.add(new BasalScheduleEntry(1, Duration.standardMinutes(30)));    //01:00-01:30
+        basals.add(new BasalScheduleEntry(11.5, Duration.standardMinutes(30))); //01:30-02:00
+        basals.add(new BasalScheduleEntry(2, Duration.standardMinutes(30)));    //20:00-02:30
+        basals.add(new BasalScheduleEntry(12.5, Duration.standardMinutes(30))); //02:30-03:00
+        basals.add(new BasalScheduleEntry(3, Duration.standardMinutes(30)));    //03:00-03:30
+        basals.add(new BasalScheduleEntry(13.5, Duration.standardMinutes(30))); //03:30-04:00
+        basals.add(new BasalScheduleEntry(4, Duration.standardMinutes(30)));    //04:00-04:30
+        basals.add(new BasalScheduleEntry(14.5, Duration.standardMinutes(30))); //04:30-05:00
+        basals.add(new BasalScheduleEntry(5, Duration.standardMinutes(30)));    //05:00-05:30
+        basals.add(new BasalScheduleEntry(15.5, Duration.standardMinutes(30))); //05:30-06:00
+        basals.add(new BasalScheduleEntry(6, Duration.standardMinutes(30)));    //06:00-06:30
+        basals.add(new BasalScheduleEntry(16.5, Duration.standardMinutes(30))); //06:30-07:00
+        basals.add(new BasalScheduleEntry(7, Duration.standardMinutes(30)));    //07:00-07:30
+        basals.add(new BasalScheduleEntry(17.5, Duration.standardMinutes(30))); //07:30-08:00
+        basals.add(new BasalScheduleEntry(8, Duration.standardMinutes(30)));    //08:00-08:30
+        basals.add(new BasalScheduleEntry(18.5, Duration.standardMinutes(30))); //08:30-09:00
+        basals.add(new BasalScheduleEntry(9, Duration.standardMinutes(30)));    //09:00-09:30
+        basals.add(new BasalScheduleEntry(19.5, Duration.standardMinutes(30))); //09:30-10:00
+        basals.add(new BasalScheduleEntry(10, Duration.standardMinutes(30)));   //10:00-10:30
+        basals.add(new BasalScheduleEntry(1.05, Duration.standardMinutes(30))); //10:30-11:00
+        basals.add(new BasalScheduleEntry(11, Duration.standardMinutes(11*60)));//11:00-22:00
+        basals.add(new BasalScheduleEntry(1.15, Duration.standardMinutes(2*60)));//22:00-24:00
+        BasalSchedule schedule = new BasalSchedule(basals.toArray(new BasalScheduleEntry[0]));
+
+        setBasalSchedule(schedule, false, Duration.ZERO, Duration.ZERO);
+
 
         return "OK";
     }

@@ -7,5 +7,12 @@ import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.IRawRepresent
 public abstract class DeliverySchedule implements IRawRepresentable {
 
     public abstract InsulinScheduleType getType();
-    public abstract int checksum();
+
+    public int checksum() {
+        int checksum = 0;
+        for(byte b : getRawData()) {
+            checksum += (0xFF & b);
+        }
+        return checksum;
+    }
 }

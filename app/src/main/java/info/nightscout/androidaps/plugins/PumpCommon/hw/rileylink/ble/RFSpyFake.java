@@ -70,13 +70,74 @@ public class RFSpyFake implements IRFSpy {
         String myString = ByteUtil.shortHexString(bytesToSend).replace(" ", "");
         byte[] setAlertConfig1Request = ByteUtil.fromHexString("1f05e70bbd1f05e70b200c190a1dad9494380010a203020045b1");
         byte[] setAlertConfig1Response = ByteUtil.fromHexString("0000001f05e70bfe1f05e70b240a1d050015c00000000bff82840b");
+
+        byte[] setBasal1 = ByteUtil.fromHexString("1f05e70ba01f05e70ba8dc1a40b8cd2a250012ab282c30005600280064000a0073001400f2");
+        byte[] setBasal1Ack = ByteUtil.fromHexString("0000001f05e70b411f05e70bfc");
+        byte[] setBasal2 = ByteUtil.fromHexString("1f05e70b827d001e0087002800910032009b003c00a5004600af005000b9005a00c3006421");
+        byte[] setBasal2Ack = ByteUtil.fromHexString("0000001f05e70b431f05e70b38");
+        byte[] setBasal3 = ByteUtil.fromHexString("1f05e70b84000af06e506e000c280b1398401610450002c5a401900044aa2003e8001b779d");
+        byte[] setBasal3Ack = ByteUtil.fromHexString("0000001f05e70b451f05e70b73");
+        byte[] setBasal4 = ByteUtil.fromHexString("1f05e70b864000640112a880047e0017e22100c80089544004e20015f900012c005b8d807900");
+        byte[] setBasal4Ack = ByteUtil.fromHexString("0000001f05e70b471f05e70bb7");
+        byte[] setBasal5 = ByteUtil.fromHexString("1f05e70b8805460014585501900044aa2005aa0012f12301f40036ee80060e0011b84a02a5");
+        byte[] setBasal5Ack = ByteUtil.fromHexString("0000001f05e70b491f05e70be5");
+        byte[] setBasal6 = ByteUtil.fromHexString("");
+        byte[] setBasal6Ack = ByteUtil.fromHexString("0000001f05e70b4b1f05e70b21");
+        byte[] setBasal7 = ByteUtil.fromHexString("1f05e70b8c000ed8ac0384001e8480079e000e15c403e8001b77400069010594495e880031");
+        byte[] setBasal7Ack = ByteUtil.fromHexString("0000001f05e70b4d1f05e70b6a");
+        byte[] setBasal8 = ByteUtil.fromHexString("1f05e70b8e18f80b01cc00eed54d8091c5");
+        byte[] setBasal8Response = ByteUtil.fromHexString("0000001f05e70bef1f05e70b2c0a1d160015d00000000fff83464f");
+
+
         switch(commsCount++) {
             case 0:
                 if (ByteUtil.compare(bytesToSend, setAlertConfig1Request) == 0)
                     return new RFSpyResponse(setAlertConfig1Response);
                 else
                     return null;
+            case 2:
+                if (ByteUtil.compare(bytesToSend, setBasal1) == 0)
+                    return new RFSpyResponse(setBasal1Ack);
+                else
+                    return null;
+            case 3:
+                if (ByteUtil.compare(bytesToSend, setBasal2) == 0)
+                    return new RFSpyResponse(setBasal2Ack);
+                else
+                    return null;
+            case 4:
+                if (ByteUtil.compare(bytesToSend, setBasal3) == 0)
+                    return new RFSpyResponse(setBasal3Ack);
+                else
+                    return null;
+            case 5:
+                if (ByteUtil.compare(bytesToSend, setBasal4) == 0)
+                    return new RFSpyResponse(setBasal4Ack);
+                else
+                    return null;
+            case 6:
+                if (ByteUtil.compare(bytesToSend, setBasal5) == 0)
+                    return new RFSpyResponse(setBasal5Ack);
+                else
+                    return null;
+            case 7:
+                if (ByteUtil.compare(bytesToSend, setBasal6) == 0)
+                    return new RFSpyResponse(setBasal6Ack);
+                else
+                    return null;
+            case 8:
+                if (ByteUtil.compare(bytesToSend, setBasal7) == 0)
+                    return new RFSpyResponse(setBasal7Ack);
+                else
+                    return null;
+            case 9:
+                if (ByteUtil.compare(bytesToSend, setBasal8) == 0)
+                    return new RFSpyResponse(setBasal8Response);
+                else
+                    return null;
+
             case 1:
+            case 10:
                 return new RFSpyResponse(new byte[] {(byte) 0xAA});
             default:
                 return null;

@@ -38,7 +38,7 @@ public class SetInsulinScheduleCommand extends MessageBlock {
         int pulsesRemainingInSegment = pulsesPerSegment / 30 * timeRemainingInSegment;
 
         //FIXME: !!! We should check this very well as in the command there are seconds and we operate with minutes
-        BasalScheduleCommandPart deliverySchedule = new BasalScheduleCommandPart((byte) segment, timeRemainingInSegment, pulsesRemainingInSegment, table);
+        this.schedule = new BasalScheduleCommandPart((byte) segment, timeRemainingInSegment, pulsesRemainingInSegment, table);
         this.nonce = nonce;
 
         encode();
