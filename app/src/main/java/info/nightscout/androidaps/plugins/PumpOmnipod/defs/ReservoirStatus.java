@@ -1,6 +1,9 @@
 package info.nightscout.androidaps.plugins.PumpOmnipod.defs;
 
 public enum ReservoirStatus {
+    Initialized (0),
+    TankPowerActivated (1),
+    TankFillCompleted (2),
     PairingSuccess (3),
     Priming ( 4),
     ReadyForInjection ( 5),
@@ -8,10 +11,9 @@ public enum ReservoirStatus {
     InjectionDone ( 7),
     AboveFiftyUnits ( 8),
     BelowFiftyUnits ( 9),
+    ErrorEventLoggedShuttingDown (13),
     DelayedPrime ( 14 ),
     Inactive ( 15);
-
-
 
     byte value;
 
