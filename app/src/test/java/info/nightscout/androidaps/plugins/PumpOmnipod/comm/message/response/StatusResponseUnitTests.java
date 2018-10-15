@@ -18,7 +18,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * To work on unit tests, switch the Test Artifact in the Build Variants view.
  */
-public class StatusResponseUnitTest {
+public class StatusResponseUnitTests {
     @Test
     public void StatusResponse_EnumsCorrect() throws Exception {
         byte[] bytes = ByteUtil.fromHexString("00430000000038800000");
