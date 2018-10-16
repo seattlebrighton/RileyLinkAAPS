@@ -15,6 +15,7 @@ public enum MessageBlockType {
     ErrorResponse(0x06),
     AssignAddress(0x07),
     GetStatus(0x0e),
+    AcknowledgeAlerts(0x11),
     BasalScheduleExtra(0x13),
     TempBasalExtra(0x16),
     BolusExtra(0x17),

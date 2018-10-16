@@ -47,7 +47,7 @@ public class SetInsulinScheduleCommand extends MessageBlock {
 
 
 
-        private void encode() {
+    private void encode() {
         encodedData = ByteUtil.getBytesFromInt(nonce);
         encodedData = ByteUtil.concat(encodedData, schedule.getType().getValue());
         encodedData = ByteUtil.concat(encodedData,
