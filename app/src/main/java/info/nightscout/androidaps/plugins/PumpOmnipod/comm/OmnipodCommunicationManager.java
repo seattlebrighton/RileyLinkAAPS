@@ -3,21 +3,13 @@ package info.nightscout.androidaps.plugins.PumpOmnipod.comm;
 import android.content.Context;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
 
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
-import org.joda.time.Interval;
-import org.joda.time.format.ISODateTimeFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -45,6 +37,8 @@ import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.response.Erro
 import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.response.PodLifeStage;
 import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.response.StatusResponse;
 import info.nightscout.androidaps.plugins.PumpOmnipod.defs.AlertType;
+import info.nightscout.androidaps.plugins.PumpOmnipod.defs.BeepRepeat;
+import info.nightscout.androidaps.plugins.PumpOmnipod.defs.BeepType;
 import info.nightscout.androidaps.plugins.PumpOmnipod.defs.ExpirationAdvisory;
 import info.nightscout.androidaps.plugins.PumpOmnipod.defs.InsulinSchedule.BasalSchedule;
 import info.nightscout.androidaps.plugins.PumpOmnipod.defs.InsulinSchedule.BasalScheduleEntry;
@@ -394,7 +388,8 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
                 false,
                 0,
                 new ExpirationAdvisory(ExpirationAdvisory.ExpirationType.Reservoir, 50), //50 to match the capture
-                0x0102
+                BeepRepeat.EveryMinuteFor3MinutesRepeatEvery60Minutes,
+                BeepType.FourBipBeeps // was 0x0102
                 );
         int nonce = nonceValue();
         ConfigureAlertsCommand lowReservoirCommand = new ConfigureAlertsCommand(
@@ -409,8 +404,9 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
                 false,
                 55,
                 new ExpirationAdvisory(ExpirationAdvisory.ExpirationType.Timer, new Duration(5 * 60 * 1000)), //1 hour // 5 minutes to match the capture
-                0x0802
-        );
+                BeepRepeat.Every5Minutes,
+                BeepType.FourBipBeeps  // was 0x0802
+                );
         ConfigureAlertsCommand insertionTimerCommand = new ConfigureAlertsCommand(nonceValue(), new AlertConfiguration[]{insertionTimer});
         status = sendCommand(insertionTimerCommand);
         advanceToNextNonce();
@@ -448,7 +444,9 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
                 new ExpirationAdvisory(
                         ExpirationAdvisory.ExpirationType.Timer,
                         new Duration(70*60*60*1000 + 58*60*1000)), //70h58m
-                0x0302);
+                BeepRepeat.EveryMinuteFor3MinutesRepeatEvery15Minutes,
+                BeepType.FourBipBeeps  // was 0x0302
+                );
         ConfigureAlertsCommand alertCommand = new ConfigureAlertsCommand(
                 nonceValue(),
                 new AlertConfiguration[] {alert});

@@ -5,6 +5,8 @@ import org.joda.time.Interval;
 import info.nightscout.androidaps.Constants;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.PumpOmnipod.defs.AlertType;
+import info.nightscout.androidaps.plugins.PumpOmnipod.defs.BeepRepeat;
+import info.nightscout.androidaps.plugins.PumpOmnipod.defs.BeepType;
 import info.nightscout.androidaps.plugins.PumpOmnipod.defs.ExpirationAdvisory;
 
 public class AlertConfiguration{
@@ -13,7 +15,8 @@ public class AlertConfiguration{
     private boolean autoOffModifier;
     private int duration;
     private ExpirationAdvisory expirationType;
-    private int beepType;
+    private BeepRepeat beepRepeat;
+    private BeepType beepType;
 
     public AlertConfiguration(
             AlertType alertType,
@@ -21,13 +24,15 @@ public class AlertConfiguration{
             boolean autoOffModifier,
             int duration,
             ExpirationAdvisory expirationType,
-            int beepType
+            BeepRepeat beepRepeat,
+            BeepType beepType
     ) {
         this.alertType = alertType;
         this.audible = audible;
         this.autoOffModifier = autoOffModifier;
         this.duration = duration;
         this.expirationType = expirationType;
+        this.beepRepeat = beepRepeat;
         this.beepType = beepType;
     }
 
@@ -59,9 +64,8 @@ public class AlertConfiguration{
         }
         encodedData[2] = valueBuffer[2];
         encodedData[3] = valueBuffer[3];
-        valueBuffer = ByteUtil.getBytesFromInt(beepType);
-        encodedData[4] = valueBuffer[2];
-        encodedData[5] = valueBuffer[3];
+        encodedData[4] = beepRepeat.getValue();
+        encodedData[5] = beepType.getValue();
         return encodedData;
     }
 
