@@ -3,8 +3,6 @@ package com.gxwtech.roundtrip2;
 import android.app.Application;
 import android.content.res.Resources;
 
-import info.nightscout.androidaps.plugins.PumpMedtronic.util.MedtronicConst;
-import info.nightscout.utils.SP;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 
@@ -36,7 +34,7 @@ public class MainApp extends Application {
 
         sResources = getResources();
 
-        // you need to set where pump comes from (because US pumps have different freq. 
+        // you need to set where pump comes from (because US pumps have different freq.
         // that Worldwide pumps). You need this only once.
 
         // boolean isUSPump = true;
@@ -48,6 +46,14 @@ public class MainApp extends Application {
 
         // SP.putString(MedtronicConst.Prefs.RileyLinkAddress, "CD:72:E1:4C:D5:9D");
         // SP.remove(RileyLinkConst.Prefs.RileyLinkAddress);
+
+        // TODO: If you used RileyLinkAPS before 23/10/2018 you will need to enable this part of code
+        // (you need it just once, then comment back)
+        // float lastGoodFrequency = SP.getFloat(RileyLinkConst.Prefs.LastGoodDeviceFrequency, 0.0f);
+        // double lastGoodFrequency2 = lastGoodFrequency;
+        // lastGoodFrequency2 = Math.round(lastGoodFrequency2 * 1000d) / 1000d;
+        // SP.remove(RileyLinkConst.Prefs.LastGoodDeviceFrequency);
+        // SP.putDouble(RileyLinkConst.Prefs.LastGoodDeviceFrequency, lastGoodFrequency2);
 
     }
 

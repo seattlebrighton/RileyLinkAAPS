@@ -150,6 +150,7 @@ public abstract class RileyLinkService extends Service {
                     if (action == null) {
                         LOG.error("onReceive: null action");
                     } else {
+                        LOG.debug("Received Broadcast: " + action);
 
                         if (action.equals(RileyLinkConst.Intents.BluetoothConnected)) {
                             // LOG.warn("serviceLocal.bluetooth_connected");
@@ -157,7 +158,7 @@ public abstract class RileyLinkService extends Service {
                                 RT2Const.IPC.MSG_note_FindingRileyLink), null);
                             ServiceTaskExecutor.startTask(new DiscoverGattServicesTask());
                         } else if (action.equals(RileyLinkConst.Intents.RileyLinkDisconnected)) {
-                            if (bluetoothAdapter.isEnabled()) {
+                            if (BluetoothAdapter.getDefaultAdapter().isEnabled()) {
                                 RileyLinkUtil.setServiceState(RileyLinkServiceState.BluetoothReady,
                                     RileyLinkError.RileyLinkUnreachable);
                             } else {
@@ -183,7 +184,7 @@ public abstract class RileyLinkService extends Service {
                             LOG.debug("RfSpy Radio version (CC110): " + rlVersion.name());
                             rileyLinkServiceData.versionCC110 = rlVersion;
 
-                            ServiceTask task = new InitializePumpManagerTask();
+                            ServiceTask task = new InitializePumpManagerTask(RileyLinkUtil.getTargetDevice());
                             ServiceTaskExecutor.startTask(task);
                             LOG.info("Announcing RileyLink open For business");
                         } else if (action.equals(RileyLinkConst.Intents.BluetoothReconnected)) {
@@ -396,7 +397,7 @@ public abstract class RileyLinkService extends Service {
         double lastGoodFrequency = 0.0d;
 
         if (rileyLinkServiceData.lastGoodFrequency == null) {
-            lastGoodFrequency = SP.getFloat(RileyLinkConst.Prefs.LastGoodDeviceFrequency, 0.0f);
+            lastGoodFrequency = SP.getDouble(RileyLinkConst.Prefs.LastGoodDeviceFrequency, 0.0d);
         } else {
             lastGoodFrequency = rileyLinkServiceData.lastGoodFrequency;
         }
@@ -419,7 +420,7 @@ public abstract class RileyLinkService extends Service {
 
         if ((newFrequency != 0.0) && (newFrequency != lastGoodFrequency)) {
             LOG.info("Saving new pump frequency of {}MHz", newFrequency);
-            SP.putFloat(RileyLinkConst.Prefs.LastGoodDeviceFrequency, (float)newFrequency);
+            SP.putDouble(RileyLinkConst.Prefs.LastGoodDeviceFrequency, newFrequency);
             rileyLinkServiceData.lastGoodFrequency = newFrequency;
             rileyLinkServiceData.tuneUpDone = true;
             rileyLinkServiceData.lastTuneUpTime = System.currentTimeMillis();

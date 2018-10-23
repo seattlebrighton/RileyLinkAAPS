@@ -11,17 +11,7 @@ public enum RileyLinkTargetFrequency {
     Omnipod(433.91), //
     ;
 
-    double minFrequency;
-    double maxFrequency;
-    double step;
     double[] frequencies;
-
-
-    RileyLinkTargetFrequency(double minFrequency, double maxFrequency, double step) {
-        this.minFrequency = minFrequency;
-        this.maxFrequency = maxFrequency;
-        this.step = step;
-    }
 
 
     RileyLinkTargetFrequency(double... frequencies) {
