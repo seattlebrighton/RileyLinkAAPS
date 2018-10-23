@@ -34,6 +34,8 @@ import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.tasks.
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.tasks.InitializePumpManagerTask;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.tasks.ServiceTask;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.tasks.ServiceTaskExecutor;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.tasks.WakeAndTuneTask;
+import info.nightscout.utils.SP;
 
 /**
  * I added this class outside of RileyLinkService, because for now it's very important part of RL framework and
@@ -70,17 +72,23 @@ public class RileyLinkBroadcastReceiver extends BroadcastReceiver {
         // Bluetooth
         this.broadcastIdentifiers.put("Bluetooth", Arrays.asList( //
             RileyLinkConst.Intents.BluetoothConnected, //
+            RileyLinkConst.Intents.BluetoothReconnected, //
             RileyLinkConst.Intents.BluetoothReconnected));
 
         // TuneUp
         this.broadcastIdentifiers.put("TuneUp", Arrays.asList( //
             RT2Const.IPC.MSG_PUMP_tunePump, //
-            RT2Const.IPC.MSG_PUMP_quickTune));
+            RT2Const.IPC.MSG_PUMP_quickTune, //
+            RileyLinkConst.IPC.MSG_PUMP_tunePump, //
+            RileyLinkConst.IPC.MSG_PUMP_quickTune));
 
         // RileyLink
         this.broadcastIdentifiers.put("RileyLink", Arrays.asList( //
             RileyLinkConst.Intents.RileyLinkDisconnected, //
-            RileyLinkConst.Intents.RileyLinkReady));
+            RileyLinkConst.Intents.RileyLinkReady, //
+            RileyLinkConst.Intents.RileyLinkDisconnected, //
+            RileyLinkConst.Intents.RileyLinkNewAddressSet, //
+            RileyLinkConst.Intents.RileyLinkDisconnect));
 
         // Device Specific
         deviceSpecificPrefix = serviceInstance.getDeviceSpecificBroadcastsIdentifierPrefix();
@@ -141,6 +149,7 @@ public class RileyLinkBroadcastReceiver extends BroadcastReceiver {
 
 
     private boolean processRileyLinkBroadcasts(String action) {
+
         if (action.equals(RileyLinkConst.Intents.RileyLinkDisconnected)) {
             if (BluetoothAdapter.getDefaultAdapter().isEnabled()) {
                 RileyLinkUtil
@@ -148,6 +157,7 @@ public class RileyLinkBroadcastReceiver extends BroadcastReceiver {
             } else {
                 RileyLinkUtil.setServiceState(RileyLinkServiceState.BluetoothError, RileyLinkError.BluetoothDisabled);
             }
+
             return true;
         } else if (action.equals(RileyLinkConst.Intents.RileyLinkReady)) {
             LOG.warn("MedtronicConst.Intents.RileyLinkReady");
@@ -170,7 +180,31 @@ public class RileyLinkBroadcastReceiver extends BroadcastReceiver {
             LOG.info("Announcing RileyLink open For business");
 
             return true;
+        } else if (action.equals(RileyLinkConst.Intents.RileyLinkDisconnected)) {
+            if (BluetoothAdapter.getDefaultAdapter().isEnabled()) {
+                RileyLinkUtil
+                    .setServiceState(RileyLinkServiceState.BluetoothReady, RileyLinkError.RileyLinkUnreachable);
+            } else {
+                RileyLinkUtil.setServiceState(RileyLinkServiceState.BluetoothError, RileyLinkError.BluetoothDisabled);
+            }
 
+            return true;
+        } else if (action.equals(RileyLinkConst.Intents.RileyLinkNewAddressSet)) {
+            String RileylinkBLEAddress = SP.getString(RileyLinkConst.Prefs.RileyLinkAddress, "");
+            if (RileylinkBLEAddress.equals("")) {
+                LOG.error("No Rileylink BLE Address saved in app");
+            } else {
+                // showBusy("Configuring Service", 50);
+                // rileyLinkBLE.findRileyLink(RileylinkBLEAddress);
+                this.serviceInstance.reconfigureRileyLink(RileylinkBLEAddress);
+                // MainApp.getServiceClientConnection().setThisRileylink(RileylinkBLEAddress);
+            }
+
+            return true;
+        } else if (action.equals(RileyLinkConst.Intents.RileyLinkDisconnect)) {
+            this.serviceInstance.disconnectRileyLink();
+
+            return true;
         } else {
             return false;
         }
@@ -179,21 +213,30 @@ public class RileyLinkBroadcastReceiver extends BroadcastReceiver {
 
 
     public boolean processBluetoothBroadcasts(String action) {
+
         if (action.equals(RileyLinkConst.Intents.BluetoothConnected)) {
-            LOG.debug("Bluetooth Connected");
+            LOG.debug("Bluetooth - Connected");
             sendIPCNotification(RT2Const.IPC.MSG_note_FindingRileyLink);
             ServiceTaskExecutor.startTask(new DiscoverGattServicesTask());
+
             return true;
+
         } else if (action.equals(RileyLinkConst.Intents.BluetoothReconnected)) {
-            LOG.debug("Reconnecting Bluetooth");
-            rileyLinkIPCConnection.sendNotification(new ServiceNotification(RT2Const.IPC.MSG_note_FindingRileyLink),
-                null);
+            LOG.debug("Bluetooth - Reconnecting");
+            sendIPCNotification(RT2Const.IPC.MSG_note_FindingRileyLink);
             serviceInstance.bluetoothInit();
             ServiceTaskExecutor.startTask(new DiscoverGattServicesTask(true));
-            return true;
-        }
 
-        else {
+            return true;
+        } else if (action.equals(RileyLinkConst.Intents.BluetoothReconnected)) {
+            LOG.debug("Bluetooth - Reconnected");
+            sendIPCNotification(RT2Const.IPC.MSG_note_FindingRileyLink);
+            serviceInstance.bluetoothInit();
+            ServiceTaskExecutor.startTask(new DiscoverGattServicesTask(true));
+
+            return true;
+        } else {
+
             return false;
         }
 
@@ -204,7 +247,7 @@ public class RileyLinkBroadcastReceiver extends BroadcastReceiver {
 
         if (this.broadcastIdentifiers.get("TuneUp").contains(action)) {
             if (serviceInstance.getRileyLinkTargetDevice().isTuneUpEnabled()) {
-                serviceInstance.doTuneUpDevice();
+                ServiceTaskExecutor.startTask(new WakeAndTuneTask());
             }
             return true;
         } else {
