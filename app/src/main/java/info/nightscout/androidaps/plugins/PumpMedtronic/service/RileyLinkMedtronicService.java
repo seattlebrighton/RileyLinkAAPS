@@ -94,12 +94,6 @@ public class RileyLinkMedtronicService extends RileyLinkService {
     }
 
 
-    public void addPumpSpecificIntents(IntentFilter intentFilter) {
-        intentFilter.addAction(RT2Const.IPC.MSG_PUMP_fetchHistory);
-        intentFilter.addAction(RT2Const.IPC.MSG_PUMP_fetchSavedHistory);
-    }
-
-
     public boolean handleDeviceSpecificBroadcasts(Intent intent) {
         String action = intent.getAction();
 
@@ -214,7 +208,8 @@ public class RileyLinkMedtronicService extends RileyLinkService {
 
     @Override
     public void registerDeviceSpecificBroadcasts(IntentFilter intentFilter) {
-
+        intentFilter.addAction(RT2Const.IPC.MSG_PUMP_fetchHistory);
+        intentFilter.addAction(RT2Const.IPC.MSG_PUMP_fetchSavedHistory);
     }
 
 
@@ -335,7 +330,7 @@ public class RileyLinkMedtronicService extends RileyLinkService {
     @Override
     public String getDeviceSpecificBroadcastsIdentifierPrefix() {
 
-        return null;
+        return RT2Const.IPC.MSG_PUMP_Prefix;
     }
 
 

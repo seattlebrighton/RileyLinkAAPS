@@ -271,9 +271,6 @@ public abstract class RileyLinkService extends Service {
     public abstract RileyLinkCommunicationManager getDeviceCommunicationManager();
 
 
-    public abstract void addPumpSpecificIntents(IntentFilter intentFilter);
-
-
     public abstract boolean handleIncomingServiceTransport(Intent intent);
 
 
@@ -410,20 +407,22 @@ public abstract class RileyLinkService extends Service {
         }
 
         double newFrequency;
-        if ((lastGoodFrequency > 0.0d) && getRileyLinkCommunicationManager().isValidFrequency(lastGoodFrequency)) {
-            LOG.info("Checking for pump near last saved frequency of {}MHz", lastGoodFrequency);
-            // we have an old frequency, so let's start there.
-            newFrequency = getDeviceCommunicationManager().quickTuneForPump(lastGoodFrequency);
-            if (newFrequency == 0.0) {
-                // quick scan failed to find pump. Try full scan
-                LOG.warn("Failed to find pump near last saved frequency, doing full scan");
-                newFrequency = getDeviceCommunicationManager().tuneForDevice();
-            }
-        } else {
-            LOG.warn("No saved frequency for pump, doing full scan.");
-            // we don't have a saved frequency, so do the full scan.
-            newFrequency = getDeviceCommunicationManager().tuneForDevice();
-        }
+        // if ((lastGoodFrequency > 0.0d) && getRileyLinkCommunicationManager().isValidFrequency(lastGoodFrequency)) {
+        // LOG.info("Checking for pump near last saved frequency of {}MHz", lastGoodFrequency);
+        // // we have an old frequency, so let's start there.
+        // newFrequency = getDeviceCommunicationManager().quickTuneForPump(lastGoodFrequency);
+        // if (newFrequency == 0.0) {
+        // // quick scan failed to find pump. Try full scan
+        // LOG.warn("Failed to find pump near last saved frequency, doing full scan");
+        // newFrequency = getDeviceCommunicationManager().tuneForDevice();
+        // }
+        // } else {
+        // LOG.warn("No saved frequency for pump, doing full scan.");
+        // // we don't have a saved frequency, so do the full scan.
+        // newFrequency = getDeviceCommunicationManager().tuneForDevice();
+        // }
+
+        newFrequency = getDeviceCommunicationManager().tuneForDevice();
 
         if ((newFrequency != 0.0) && (newFrequency != lastGoodFrequency)) {
             LOG.info("Saving new pump frequency of {}MHz", newFrequency);
