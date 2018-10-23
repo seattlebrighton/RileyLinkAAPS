@@ -34,10 +34,11 @@ public class MainApp extends Application {
 
         sResources = getResources();
 
+        // TODO remove this code. Configuration of Frequency is now in UI
         // you need to set where pump comes from (because US pumps have different freq.
         // that Worldwide pumps). You need this only once.
 
-        // boolean isUSPump = true;
+        // boolean isUSPump = false;
         //
         // if (isUSPump)
         // SP.putString(MedtronicConst.Prefs.PumpFrequency, gs(R.string.medtronic_pump_frequency_us));

@@ -58,7 +58,7 @@ public class InitializePumpManagerTask extends ServiceTask {
                 RileyLinkUtil.sendNotification(new ServiceNotification(RT2Const.IPC.MSG_PUMP_pumpFound), null);
             } else {
                 RileyLinkUtil.setServiceState(RileyLinkServiceState.PumpConnectorError,
-                    RileyLinkError.GattDeviceNotFound);
+                    RileyLinkError.NoContactWithDevice);
                 RileyLinkUtil.sendNotification(new ServiceNotification(RT2Const.IPC.MSG_PUMP_pumpLost), null);
             }
 

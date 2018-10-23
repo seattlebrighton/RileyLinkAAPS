@@ -15,4 +15,9 @@ public enum RileyLinkError {
     RileyLinkUnreachable, //
     DeviceIsNotRileyLink, //
 
+    NoBluetoothAdapter, //
+
+    // Device
+    NoContactWithDevice
+
 }

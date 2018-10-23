@@ -23,12 +23,13 @@ public class RileyLinkConst {
 
         public static final String INTENT_NEW_rileylinkAddressKey = Prefix + "INTENT_NEW_rileylinkAddressKey";
         public static final String INTENT_NEW_pumpIDKey = Prefix + "INTENT_NEW_pumpIDKey";
+        public static final String RileyLinkDisconnect = Prefix + "RileyLink_Disconnect";
     }
 
     public class Prefs {
 
         public static final String PrefPrefix = "pref_rileylink_";
-        public static final String RileyLinkAddress = PrefPrefix + "mac_address";
+        public static final String RileyLinkAddress = PrefPrefix + "mac_address"; // pref_rileylink_mac_address
 
         public static final String LastGoodDeviceCommunicationTime = Prefix + "lastGoodDeviceCommunicationTime";
         public static final String LastGoodDeviceFrequency = Prefix + "LastGoodDeviceFrequency";

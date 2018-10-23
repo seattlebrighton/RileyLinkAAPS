@@ -31,6 +31,7 @@ import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.S
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.ServiceResult;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.ServiceTransport;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.tasks.ServiceTask;
+import info.nightscout.androidaps.plugins.PumpCommon.ui.RileyLinkSelectPreference;
 import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicDeviceType;
 
 /**
@@ -51,14 +52,14 @@ public class RileyLinkUtil {
     private static RileyLinkService rileyLinkService;
     // private static RileyLinkIPCConnection rileyLinkIPCConnection;
     private static MedtronicDeviceType medtronicPumpModel;
-    private static RileyLinkTargetFrequency rileyLinkTargetFrequency;
     // BAD dependencies in Classes: RileyLinkService
+    private static RileyLinkTargetFrequency rileyLinkTargetFrequency;
 
     // Broadcasts: RileyLinkBLE, RileyLinkService,
     private static RileyLinkIPCConnection rileyLinkIPCConnection;
-
-    private static RileyLinkEncodingType encoding;
     private static RileyLinkTargetDevice targetDevice;
+    private static RileyLinkEncodingType encoding;
+    private static RileyLinkSelectPreference rileyLinkSelectPreference;
 
 
     public static void setContext(Context contextIn) {
@@ -156,7 +157,7 @@ public class RileyLinkUtil {
 
 
     public static boolean sendNotification(ServiceNotification notification, Integer clientHashcode) {
-        return RileyLinkUtil.rileyLinkService.sendNotification(notification, clientHashcode);
+        return RileyLinkUtil.rileyLinkIPCConnection.sendNotification(notification, clientHashcode);
     }
 
 
@@ -199,6 +200,11 @@ public class RileyLinkUtil {
     }
 
 
+    public static RileyLinkIPCConnection getRileyLinkIPCConnection() {
+        return RileyLinkUtil.rileyLinkIPCConnection;
+    }
+
+
     public static RileyLinkTargetFrequency getRileyLinkTargetFrequency() {
         return RileyLinkUtil.rileyLinkTargetFrequency;
     }
@@ -216,6 +222,7 @@ public class RileyLinkUtil {
     }
 
 
+    @Deprecated
     public static BleAdvertisedData parseAdertisedData(byte[] advertisedData) {
         List<UUID> uuids = new ArrayList<UUID>();
         String name = null;
@@ -266,6 +273,11 @@ public class RileyLinkUtil {
     }
 
 
+    public static List<RLHistoryItem> getRileyLinkHistory() {
+        return historyRileyLink;
+    }
+
+
     public static void setTargetDevice(RileyLinkTargetDevice targetDevice) {
         RileyLinkUtil.targetDevice = targetDevice;
     }
@@ -274,4 +286,17 @@ public class RileyLinkUtil {
     public static RileyLinkTargetDevice getTargetDevice() {
         return targetDevice;
     }
+
+
+    public static void setRileyLinkSelectPreference(RileyLinkSelectPreference rileyLinkSelectPreference) {
+
+        RileyLinkUtil.rileyLinkSelectPreference = rileyLinkSelectPreference;
+    }
+
+
+    public static RileyLinkSelectPreference getRileyLinkSelectPreference() {
+
+        return rileyLinkSelectPreference;
+    }
+
 }

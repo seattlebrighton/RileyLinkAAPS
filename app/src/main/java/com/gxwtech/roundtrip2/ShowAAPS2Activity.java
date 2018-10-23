@@ -1,8 +1,10 @@
 package com.gxwtech.roundtrip2;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.joda.time.Hours;
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +25,8 @@ import android.widget.TextView;
 
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkUtil;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.MedtronicCommunicationManager;
+import info.nightscout.androidaps.plugins.PumpMedtronic.comm.history.pump.PumpHistoryEntry;
+import info.nightscout.androidaps.plugins.PumpMedtronic.comm.history.pump.PumpHistoryResult;
 import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.BasalProfile;
 import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.BasalProfileEntry;
 import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.BatteryStatusDTO;
@@ -45,6 +49,7 @@ public class ShowAAPS2Activity extends AppCompatActivity {
     private TextView tvDuration, tvAmount, tvCommandStatusText, textViewComm;
     private EditText tfDuration, tfAmount;
     CommandAction selectedCommandAction = null;
+    private PumpHistoryEntry lastEntry;
 
 
     public ShowAAPS2Activity() {
@@ -61,7 +66,7 @@ public class ShowAAPS2Activity extends AppCompatActivity {
         addCommandAction("Status - Remaining Insulin", ImplementationStatus.Done, "RefreshData.RemainingInsulin");
         addCommandAction("Status - Get Time", ImplementationStatus.Done, "RefreshData.GetTime");
         addCommandAction("Status - Settings", ImplementationStatus.Done, "RefreshData.GetSettings");
-        addCommandAction("Status - Remaining Power", ImplementationStatus.WorkInProgress, "RefreshData.RemainingPower");
+        addCommandAction("Status - Remaining Power", ImplementationStatus.Done, "RefreshData.RemainingPower");
 
         // addCommandAction("Status - Bolus", ImplementationStatus.WorkInProgress, "RefreshData.GetStatus"); // weird on
         // 512?
@@ -71,15 +76,16 @@ public class ShowAAPS2Activity extends AppCompatActivity {
         // WORK IN PROGRESS - waiting for something
 
         // LOW PRIORITY
-        addCommandAction("Read History", ImplementationStatus.NotStarted, null);
-        addCommandAction("Set Ext Bolus", ImplementationStatus.NotStarted, null);
+        addCommandAction("Read History", ImplementationStatus.WorkInProgress, "RefreshData.GetHistory");
+        addCommandAction("Read History 2", ImplementationStatus.WorkInProgress, "RefreshData.GetHistory2");
+        // addCommandAction("Set Extended Bolus", ImplementationStatus.WorkInProgress, "RefreshData.SetExtendedBolus");
         // addCommandAction("Status - Ext. Bolus", ImplementationStatus.WorkInProgress, "RefreshData.GetBolus");
         // addCommandAction("Load TDD", ImplementationStatus.NotStarted, null); Not needed, we have good history
 
         // DONE
 
         // TODO
-        addCommandAction("Set Basal Profile", ImplementationStatus.NotStarted, "RefreshData.SetBasalProfile");
+        addCommandAction("Set Basal Profile", ImplementationStatus.WorkInProgress, "RefreshData.SetBasalProfile");
 
         // NOT SUPPORTED
         // addCommandAction("Cancel Ext Bolus", ImplementationStatus.NotSupportedByDevice, null);
@@ -192,14 +198,16 @@ public class ShowAAPS2Activity extends AppCompatActivity {
 
         return (action.equals("Set TBR") || //
             action.equals("Set Bolus") || //
-        action.equals("Set Basal Profile"));
+            action.equals("Set Basal Profile") || //
+        action.equals("Set Extended Bolus") //
+        );
     }
 
 
     private boolean isDurationEnabled() {
         String action = this.selectedCommandAction.action;
 
-        return (action.equals("Set TBR"));
+        return (action.equals("Set TBR") || action.equals("Set Extended Bolus"));
     }
 
 
@@ -337,6 +345,16 @@ public class ShowAAPS2Activity extends AppCompatActivity {
             }
                 break;
 
+            case "RefreshData.SetExtendedBolus": {
+                Boolean response = (Boolean)data;
+
+                TempBasalPair tbr = new TempBasalPair(0.5d, false, 30); // getTBRSettings();
+
+                putOnDisplay(String.format("Extended Bolus: Amount: %.3f, Duration: %s - %s", tbr.getInsulinRate(), ""
+                    + tbr.getDurationMinutes(), (response ? "Was set." : "Was NOT set.")));
+            }
+                break;
+
             case "RefreshData.CancelTBR": {
                 Boolean response = (Boolean)data;
 
@@ -354,6 +372,48 @@ public class ShowAAPS2Activity extends AppCompatActivity {
             case "RefreshData.GetStatus": {
                 // FIXME
                 putOnDisplay("Status undefined ?");
+            }
+                break;
+
+            case "RefreshData.GetHistory": {
+
+                PumpHistoryResult result = (PumpHistoryResult)data;
+
+                List<PumpHistoryEntry> validEntries = result.getValidEntries();
+
+                if (validEntries != null) {
+
+                    putOnDisplay("History Entries: (" + validEntries.size() + ")");
+                    LOG.debug("History Entries: (" + validEntries.size() + ")");
+                    for (PumpHistoryEntry entry : validEntries) {
+                        putOnDisplay(entry.getLocalDateTime() + "   " + entry.getEntryType().name());
+                    }
+
+                    if (validEntries.size() > 6) {
+                        this.lastEntry = validEntries.get(5);
+                    }
+                } else {
+                    putOnDisplay("No History entries.");
+                }
+
+            }
+                break;
+
+            case "RefreshData.GetHistory2": {
+
+                PumpHistoryResult result = (PumpHistoryResult)data;
+
+                List<PumpHistoryEntry> validEntries = result.getValidEntries();
+
+                if (validEntries != null) {
+
+                    putOnDisplay("History Entries 2: (" + validEntries.size() + ")");
+                    LOG.debug("History Entries: (" + validEntries.size() + ")");
+                    for (PumpHistoryEntry entry : validEntries) {
+                        putOnDisplay(entry.getLocalDateTime() + "   " + entry.getEntryType().name());
+                    }
+                }
+
             }
                 break;
 
@@ -428,6 +488,18 @@ public class ShowAAPS2Activity extends AppCompatActivity {
                     }
                         break;
 
+                    // case "RefreshData.SetExtendedBolus": {
+                    // // TempBasalPair tbr = getTBRSettings();
+                    // // if (tbr != null) {
+                    // // returnData = getCommunicationManager().setExtendedBolus(tbr.getInsulinRate(),
+                    // // tbr.getDurationMinutes());
+                    // // }
+                    //
+                    // //returnData = getCommunicationManager().setExtendedBolus(0.5d, 30);
+                    //
+                    // }
+                    // break;
+
                     case "RefreshData.GetTBR": {
                         returnData = getCommunicationManager().getTemporaryBasal();
                     }
@@ -435,6 +507,19 @@ public class ShowAAPS2Activity extends AppCompatActivity {
 
                     case "RefreshData.GetStatus": {
                         returnData = getCommunicationManager().getPumpState();
+                    }
+                        break;
+
+                    case "RefreshData.GetHistory": {
+                        LocalDateTime ldt = new LocalDateTime();
+                        ldt = ldt.minus(Hours.hours(36));
+
+                        returnData = getCommunicationManager().getPumpHistory(null, ldt);
+                    }
+                        break;
+
+                    case "RefreshData.GetHistory2": {
+                        returnData = getCommunicationManager().getPumpHistory(lastEntry, null);
                     }
                         break;
 

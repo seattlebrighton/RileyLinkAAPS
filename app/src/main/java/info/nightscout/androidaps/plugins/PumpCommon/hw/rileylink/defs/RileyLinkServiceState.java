@@ -10,7 +10,7 @@ public enum RileyLinkServiceState {
 
     // Bluetooth
     BluetoothInitializing, // (S) init BT (if error no BT interface -> Disabled, BT not enabled -> BluetoothError)
-    BluetoothNotAvailable, // (E) BT not available, would happen only if device has no BT
+    //BluetoothNotAvailable, // (E) BT not available, would happen only if device has no BT
     BluetoothError, // (E) if BT gets disabled ( -> EnableBluetooth)
     BluetoothReady, // (OK)
 
