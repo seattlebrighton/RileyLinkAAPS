@@ -26,20 +26,29 @@ public class MainApp extends Application {
         serviceClientConnection = new ServiceClientConnection();
 
         // initialize Realm
-        RealmConfiguration realmConfiguration = new RealmConfiguration.Builder(instance()).name("rt2.realm")
-            .schemaVersion(0).deleteRealmIfMigrationNeeded() // TODO: 03/08/2016 @TIM remove
+        Realm.init(instance());
+        RealmConfiguration realmConfiguration = new RealmConfiguration.Builder() //
+            .name("rt2.realm") //
+            .schemaVersion(0) //
+            .deleteRealmIfMigrationNeeded() // TODO: 03/08/2016 @TIM remove
             .build();
         Realm.setDefaultConfiguration(realmConfiguration);
 
         sResources = getResources();
 
-        // you need to set frequency here (US = R.string.medtronic_pump_frequency_us, WW =
-        // R.string.medtronic_pump_frequency_worldwide)
+        // you need to set where pump comes from (because US pumps have different freq. 
+        // that Worldwide pumps). You need this only once.
 
-        SP.putString(MedtronicConst.Prefs.PumpFrequency, gs(R.string.medtronic_pump_frequency_us));
+        // boolean isUSPump = true;
+        //
+        // if (isUSPump)
+        // SP.putString(MedtronicConst.Prefs.PumpFrequency, gs(R.string.medtronic_pump_frequency_us));
+        // else
         // SP.putString(MedtronicConst.Prefs.PumpFrequency, gs(R.string.medtronic_pump_frequency_worldwide));
 
         // SP.putString(MedtronicConst.Prefs.RileyLinkAddress, "CD:72:E1:4C:D5:9D");
+        // SP.remove(RileyLinkConst.Prefs.RileyLinkAddress);
+
     }
 
 
