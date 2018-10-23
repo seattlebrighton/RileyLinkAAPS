@@ -12,7 +12,8 @@ public enum PumpDeviceState {
     Active, //
     ErrorWhenCommunicating, //
     TimeoutWhenCommunicating, //
-    ProblemContacting, //
+    //ProblemContacting, //
+    PumpUnreachable, //
     InvalidConfiguration;
 
     Integer resourceId = null;

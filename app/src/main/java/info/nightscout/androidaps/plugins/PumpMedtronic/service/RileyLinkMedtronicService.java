@@ -280,7 +280,7 @@ public class RileyLinkMedtronicService extends RileyLinkService {
 
     /* private functions */
 
-    private void setPumpIDString(String pumpID) {
+    public void setPumpIDString(String pumpID) {
         if (pumpID.length() != 6) {
             LOG.error("setPumpIDString: invalid pump id string: " + pumpID);
             return;

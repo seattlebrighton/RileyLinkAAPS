@@ -1,9 +1,12 @@
 package info.nightscout.androidaps.plugins.PumpMedtronic.driver;
 
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,6 +17,8 @@ import info.nightscout.androidaps.interfaces.PumpDescription;
 import info.nightscout.androidaps.plugins.PumpCommon.data.PumpStatus;
 import info.nightscout.androidaps.plugins.PumpCommon.defs.PumpType;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkConst;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkUtil;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkTargetFrequency;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.defs.RileyLinkError;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.defs.RileyLinkServiceState;
 import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicDeviceType;
@@ -39,21 +44,20 @@ public class MedtronicPumpStatus extends PumpStatus {
     public Double maxBolus;
     public Double maxBasal;
     public boolean inPreInit = true;
+
     // statuses
     public RileyLinkServiceState rileyLinkServiceState = RileyLinkServiceState.NotStarted;
     public RileyLinkError rileyLinkError;
     public PumpDeviceState pumpDeviceState = PumpDeviceState.NeverContacted;
     public MedtronicDeviceType medtronicDeviceType = null;
-    public long timeIndex;
-    public Date time;
-    public double remainUnits = 0;
-    public int remainBattery = 0;
     public double currentBasal = 0;
     public int tempBasalInProgress = 0;
     public int tempBasalRatio = 0;
     public int tempBasalRemainMin = 0;
     public Date tempBasalStart;
     public Double tempBasalAmount = 0.0d;
+
+    // fixme
     public Integer tempBasalLength = 0;
     String regexMac = "([\\da-fA-F]{1,2}(?:\\:|$)){6}";
     String regexSN = "[0-9]{6}";
@@ -62,23 +66,11 @@ public class MedtronicPumpStatus extends PumpStatus {
     private String[] frequencies;
     private boolean isFrequencyUS = false;
     private Map<String, PumpType> medtronicPumpMap = null;
-    private HashMap<String, MedtronicDeviceType> medtronicDeviceTypeMap;
+    private Map<String, MedtronicDeviceType> medtronicDeviceTypeMap = null;
 
-
-    // fixme
 
     public MedtronicPumpStatus(PumpDescription pumpDescription) {
         super(pumpDescription);
-    }
-
-
-    public long getTimeIndex() {
-        return (long)Math.ceil(time.getTime() / 60000d);
-    }
-
-
-    public void setTimeIndex(long timeIndex) {
-        this.timeIndex = timeIndex;
     }
 
 
@@ -96,10 +88,7 @@ public class MedtronicPumpStatus extends PumpStatus {
             createMedtronicDeviceTypeMap();
 
         this.lastConnection = SP.getLong(MedtronicConst.Statistics.LastGoodPumpCommunicationTime, 0L);
-        Date d = new Date();
-        d.setTime(this.lastConnection);
-
-        this.lastDataTime = d;
+        this.lastDataTime = new LocalDateTime(this.lastConnection);
     }
 
 
@@ -122,17 +111,17 @@ public class MedtronicPumpStatus extends PumpStatus {
     private void createMedtronicPumpMap() {
 
         medtronicPumpMap = new HashMap<>();
-        medtronicPumpMap.put("512", PumpType.Minimed_512_712);
-        medtronicPumpMap.put("712", PumpType.Minimed_512_712);
-        medtronicPumpMap.put("515", PumpType.Minimed_515_715);
-        medtronicPumpMap.put("715", PumpType.Minimed_515_715);
+        medtronicPumpMap.put("512", PumpType.Medtronic_512_712);
+        medtronicPumpMap.put("712", PumpType.Medtronic_512_712);
+        medtronicPumpMap.put("515", PumpType.Medtronic_515_715);
+        medtronicPumpMap.put("715", PumpType.Medtronic_515_715);
 
-        medtronicPumpMap.put("522", PumpType.Minimed_522_722);
-        medtronicPumpMap.put("722", PumpType.Minimed_522_722);
-        medtronicPumpMap.put("523", PumpType.Minimed_523_723);
-        medtronicPumpMap.put("723", PumpType.Minimed_523_723);
-        medtronicPumpMap.put("554", PumpType.Minimed_554_754_Veo);
-        medtronicPumpMap.put("754", PumpType.Minimed_554_754_Veo);
+        medtronicPumpMap.put("522", PumpType.Medtronic_522_722);
+        medtronicPumpMap.put("722", PumpType.Medtronic_522_722);
+        medtronicPumpMap.put("523", PumpType.Medtronic_523_723_Revel);
+        medtronicPumpMap.put("723", PumpType.Medtronic_523_723_Revel);
+        medtronicPumpMap.put("554", PumpType.Medtronic_554_754_Veo);
+        medtronicPumpMap.put("754", PumpType.Medtronic_554_754_Veo);
 
         frequencies = new String[2];
         frequencies[0] = MainApp.gs(R.string.medtronic_pump_frequency_us);
@@ -147,13 +136,8 @@ public class MedtronicPumpStatus extends PumpStatus {
             if (this.medtronicPumpMap == null)
                 createMedtronicPumpMap();
 
-            this.errorDescription = null;
-            this.serialNumber = null;
-            this.pumpType = null;
-            this.pumpFrequency = null;
-            this.rileyLinkAddress = null;
-            this.maxBolus = null;
-            this.maxBasal = null;
+            if (this.medtronicDeviceTypeMap == null)
+                createMedtronicDeviceTypeMap();
 
             String serialNr = SP.getString(MedtronicConst.Prefs.PumpSerial, null);
 
@@ -165,7 +149,10 @@ public class MedtronicPumpStatus extends PumpStatus {
                     this.errorDescription = MainApp.gs(R.string.medtronic_error_serial_invalid);
                     return;
                 } else {
-                    this.serialNumber = serialNr;
+                    if (!serialNr.equals(this.serialNumber)) {
+                        this.serialNumber = serialNr;
+                        serialChanged = true;
+                    }
                 }
             }
 
@@ -182,8 +169,7 @@ public class MedtronicPumpStatus extends PumpStatus {
                     return;
                 } else {
                     this.pumpType = medtronicPumpMap.get(pumpTypePart);
-
-                    MedtronicUtil.setPumpStatus(this);
+                    this.medtronicDeviceType = medtronicDeviceTypeMap.get(pumpTypePart);
 
                     if (pumpTypePart.startsWith("7"))
                         this.reservoirFullUnits = "300";
@@ -204,6 +190,10 @@ public class MedtronicPumpStatus extends PumpStatus {
                 } else {
                     this.pumpFrequency = pumpFrequency;
                     this.isFrequencyUS = pumpFrequency.equals(frequencies[0]);
+
+                    RileyLinkUtil.setRileyLinkTargetFrequency(this.isFrequencyUS ? //
+                    RileyLinkTargetFrequency.Medtronic_US
+                        : RileyLinkTargetFrequency.Medtronic_WorldWide);
                 }
             }
 
@@ -216,30 +206,62 @@ public class MedtronicPumpStatus extends PumpStatus {
                 if (!rileyLinkAddress.matches(regexMac)) {
                     this.errorDescription = MainApp.gs(R.string.medtronic_error_rileylink_address_invalid);
                 } else {
-                    this.rileyLinkAddress = rileyLinkAddress;
+                    if (!rileyLinkAddress.equals(this.rileyLinkAddress)) {
+                        this.rileyLinkAddress = rileyLinkAddress;
+                        rileyLinkAddressChanged = true;
+                    }
                 }
             }
 
-            String value = SP.getString(MedtronicConst.Prefs.MaxBolus, "25");
+            maxBolus = checkParameterValue(MedtronicConst.Prefs.MaxBolus, "25.0", 25.0d);
 
-            maxBolus = Double.parseDouble(value);
+            maxBasal = checkParameterValue(MedtronicConst.Prefs.MaxBasal, "35.0", 35.0d);
 
-            if (maxBolus > 25) {
-                SP.putString(MedtronicConst.Prefs.MaxBolus, "25");
-            }
-
-            value = SP.getString(MedtronicConst.Prefs.MaxBasal, "35");
-
-            maxBasal = Double.parseDouble(value);
-
-            if (maxBasal > 35) {
-                SP.putString(MedtronicConst.Prefs.MaxBasal, "35");
-            }
+            // startService();
 
         } catch (Exception ex) {
             this.errorDescription = ex.getMessage();
             LOG.error("Error on Verification: " + ex.getMessage(), ex);
         }
+    }
+
+
+    private boolean startService() {
+
+        LOG.debug("MedtronicPumpStatus::startService");
+
+        if (serialChanged && !inPreInit && MedtronicUtil.getMedtronicService() != null) {
+            MedtronicUtil.getMedtronicService().setPumpIDString(this.serialNumber); // short operation
+            serialChanged = false;
+        }
+
+        if (rileyLinkAddressChanged && !inPreInit && MedtronicUtil.getMedtronicService() != null) {
+            MedtronicUtil.sendBroadcastMessage(RileyLinkConst.Intents.RileyLinkNewAddressSet);
+            rileyLinkAddressChanged = false;
+        }
+
+        return (rileyLinkAddressChanged == false && serialChanged == false);
+    }
+
+
+    private double checkParameterValue(String key, String defaultValue, double defaultValueDouble) {
+        double val = 0.0d;
+
+        String value = SP.getString(key, defaultValue);
+
+        try {
+            val = Double.parseDouble(value);
+        } catch (Exception ex) {
+            LOG.error("Error parsing setting: {}, value found {}", key, value);
+            val = defaultValueDouble;
+        }
+
+        if (val > defaultValueDouble) {
+            SP.putString(MedtronicConst.Prefs.MaxBolus, defaultValue);
+            val = defaultValueDouble;
+        }
+
+        return val;
     }
 
 
@@ -253,6 +275,25 @@ public class MedtronicPumpStatus extends PumpStatus {
     @Override
     public void refreshConfiguration() {
         verifyConfiguration();
+    }
+
+
+    public boolean setNotInPreInit() {
+        this.inPreInit = false;
+
+        return startService();
+    }
+
+
+    public double getBasalProfileForHour() {
+        if (basalsByHour != null) {
+            GregorianCalendar c = new GregorianCalendar();
+            int hour = c.get(Calendar.HOUR_OF_DAY);
+
+            return basalsByHour[hour];
+        }
+
+        return 0;
     }
 
 }

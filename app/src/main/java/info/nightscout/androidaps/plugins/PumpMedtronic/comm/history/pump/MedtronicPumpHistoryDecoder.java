@@ -16,7 +16,6 @@ import info.nightscout.androidaps.plugins.PumpCommon.utils.HexDump;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.StringUtil;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.history.MedtronicHistoryDecoder;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.history.MedtronicHistoryEntry;
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.history.RawHistoryPage;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.history.RecordDecodeStatus;
 import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.BolusDTO;
 import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.BolusWizardDTO;
@@ -62,17 +61,15 @@ public class MedtronicPumpHistoryDecoder extends MedtronicHistoryDecoder {
 
 
     public MedtronicPumpHistoryDecoder() {
-
     }
 
 
-    public List<? extends MedtronicHistoryEntry> processPageAndCreateRecords(RawHistoryPage page) {
-        List<Byte> dataClear = checkPage(page);
-        return createRecords(dataClear);
-    }
+    // public List<? extends MedtronicHistoryEntry> processPageAndCreateRecords(RawHistoryPage page) {
+    // List<Byte> dataClear = checkPage(page);
+    // return createRecords(dataClear);
+    // }
 
-
-    public List<? extends MedtronicHistoryEntry> createRecords(List<Byte> dataClear) {
+    protected <E extends MedtronicHistoryEntry> List<E> createRecords(List<Byte> dataClear, Class<E> clazz) {
         prepareStatistics();
 
         int counter = 0;
@@ -80,7 +77,7 @@ public class MedtronicPumpHistoryDecoder extends MedtronicHistoryDecoder {
         boolean incompletePacket = false;
         deviceType = MedtronicUtil.getMedtronicPumpModel();
 
-        List<MedtronicHistoryEntry> outList = new ArrayList<MedtronicHistoryEntry>();
+        List<E> outList = new ArrayList<E>();
         String skipped = null;
         int elementStart = 0;
 
@@ -223,7 +220,7 @@ public class MedtronicPumpHistoryDecoder extends MedtronicHistoryDecoder {
 
                 if (decoded == RecordDecodeStatus.OK) // we add only OK records, all others are ignored
                 {
-                    outList.add(pe);
+                    outList.add((E)pe);
                 }
             }
 
@@ -246,6 +243,19 @@ public class MedtronicPumpHistoryDecoder extends MedtronicHistoryDecoder {
             LOG.error("     Error decoding: type={}, ex={}", precord.getEntryType().name(), ex.getMessage(), ex);
             return RecordDecodeStatus.Error;
         }
+    }
+
+
+    public <E extends MedtronicHistoryEntry> List<E> getTypedList(List<? extends MedtronicHistoryEntry> list,
+            Class<E> clazz) {
+
+        List<E> listOut = new ArrayList<>();
+
+        for (MedtronicHistoryEntry medtronicHistoryEntry : list) {
+            listOut.add((E)medtronicHistoryEntry);
+        }
+
+        return listOut;
     }
 
 

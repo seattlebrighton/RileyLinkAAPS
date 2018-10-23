@@ -2,6 +2,8 @@ package info.nightscout.androidaps.plugins.PumpCommon.data;
 
 import java.util.Date;
 
+import org.joda.time.LocalDateTime;
+
 import info.nightscout.androidaps.data.ProfileStore;
 import info.nightscout.androidaps.interfaces.PumpDescription;
 import info.nightscout.androidaps.plugins.PumpCommon.defs.PumpStatusType;
@@ -14,8 +16,10 @@ import info.nightscout.androidaps.plugins.PumpCommon.defs.PumpType;
 public abstract class PumpStatus {
 
     // connection
-    public Date lastDataTime;
+    public LocalDateTime lastDataTime;
     public long lastConnection = 0L;
+    public long previousConnection = 0L; // here should be stored last connection of previous session (so needs to be
+                                         // read before lastConnection is modified for first time).
 
     // last bolus
     public Date lastBolusTime;
@@ -80,7 +84,7 @@ public abstract class PumpStatus {
 
 
     public void setLastCommunicationToNow() {
-        this.lastDataTime = new Date();
+        this.lastDataTime = LocalDateTime.now();
         this.lastConnection = System.currentTimeMillis();
     }
 

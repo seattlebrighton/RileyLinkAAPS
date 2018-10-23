@@ -41,7 +41,7 @@ public class MedtronicConverter {
         switch (commandType) {
 
             case PumpModel: {
-                return MedtronicDeviceType.getByDescription(StringUtil.fromBytes(ByteUtil.substring(rawContent, 1, 3)));
+                return decodeModel(rawContent);
             }
 
             case RealTimeClock: {
@@ -84,6 +84,19 @@ public class MedtronicConverter {
 
         }
 
+    }
+
+
+    private MedtronicDeviceType decodeModel(byte[] rawContent) {
+        String rawModel = StringUtil.fromBytes(ByteUtil.substring(rawContent, 1, 3));
+        MedtronicDeviceType pumpModel = MedtronicDeviceType.getByDescription(rawModel);
+        LOG.debug("PumpModel: [raw={}, resolved={}]", rawModel, pumpModel.name());
+
+        if (pumpModel != MedtronicDeviceType.Unknown_Device) {
+            MedtronicUtil.setMedtronicPumpModel(pumpModel);
+        }
+
+        return pumpModel;
     }
 
 
