@@ -113,6 +113,39 @@ public class BasalProfileUTest extends ByteTestsAbstract {
 
 
     @Test
+    public void createBasalTest() {
+        BasalProfile profile = new BasalProfile();
+
+        int basalStrokes1 = MedtronicUtil.getBasalStrokesInt(0.5);
+        int basalStrokes2 = MedtronicUtil.getBasalStrokesInt(1);
+
+        for (int i = 0; i < 24; i++) {
+            profile.addEntry(new BasalProfileEntry(i % 2 == 0 ? 0.5 : 1, i, 0));
+        }
+
+        profile.generateRawDataFromEntries();
+
+        System.out.println("DD" + ByteUtil.getHex(profile.getRawData()));
+
+        System.out.println(profile.getBasalProfileAsString());
+    }
+
+
+    @Test
+    public void createBasalFrame222s() {
+
+        byte[] sourceArray = ByteUtil
+            .createByteArray(
+                "06000052000178050202000304000402000504000602000704000802000904000a02000b04000c02000d02000e02000f040010020011040012020013040014020015040016020017040018020019000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+                0);
+
+        BasalProfile profile = new BasalProfile(sourceArray);
+
+        System.out.println(profile.getBasalProfileAsString());
+    }
+
+
+    @Test
     public void createBasalFrames() {
 
         byte[] sourceArray = ByteUtil

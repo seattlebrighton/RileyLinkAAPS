@@ -17,9 +17,9 @@ import org.slf4j.LoggerFactory;
 
 import android.util.Log;
 
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.history.MedtronicHistoryEntry;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.history.RawHistoryPage;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.history.pump.MedtronicPumpHistoryDecoder;
+import info.nightscout.androidaps.plugins.PumpMedtronic.comm.history.pump.PumpHistoryEntry;
 import info.nightscout.androidaps.plugins.PumpMedtronic.comm.history.pump.PumpHistoryEntryType;
 import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicDeviceType;
 import info.nightscout.androidaps.plugins.PumpMedtronic.util.MedtronicUtil;
@@ -54,7 +54,7 @@ public class MedtronicPumpHistoryDecoderTest {
 
 
     @Test
-    public void processPageAndCreateRecords_522_p1() {
+    public void processPageAndCreateRecords_522_p1() throws Exception {
         byte[] raw = new byte[] {
             (byte)0x6D, (byte)0x62, (byte)0x10, (byte)0x05, (byte)0x0C, (byte)0x00, (byte)0xE8, (byte)0x00, (byte)0x00,
             (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00,
@@ -176,15 +176,15 @@ public class MedtronicPumpHistoryDecoderTest {
 
         MedtronicUtil.setMedtronicPumpModel(MedtronicDeviceType.Medtronic_522);
 
-        List<? extends MedtronicHistoryEntry> medtronicHistoryEntries = decoder.processPageAndCreateRecords(
-            rawHistoryPage, false);
+        List<PumpHistoryEntry> medtronicHistoryEntries = decoder.processPageAndCreateRecords(rawHistoryPage,
+            PumpHistoryEntry.class);
 
         LOG.info("testPageDecode: done");
     }
 
 
     @Test
-    public void test2_712_p1() {
+    public void test2_712_p1() throws Exception {
         byte[] raw = new byte[] {
             (byte)0x07, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x50, (byte)0x12, (byte)0x07, (byte)0x00,
             (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x51, (byte)0x12, (byte)0x07, (byte)0x00, (byte)0x00, (byte)0x00,
@@ -306,8 +306,8 @@ public class MedtronicPumpHistoryDecoderTest {
 
         MedtronicUtil.setMedtronicPumpModel(MedtronicDeviceType.Medtronic_512);
 
-        List<? extends MedtronicHistoryEntry> medtronicHistoryEntries = decoder.processPageAndCreateRecords(
-            rawHistoryPage, false);
+        List<PumpHistoryEntry> medtronicHistoryEntries = decoder.processPageAndCreateRecords(rawHistoryPage,
+            PumpHistoryEntry.class);
 
         LOG.info("testPageDecode: done");
 
@@ -315,7 +315,7 @@ public class MedtronicPumpHistoryDecoderTest {
 
 
     @Test
-    public void test2_712_p2() {
+    public void test2_712_p2() throws Exception {
         byte[] raw = new byte[] {
             (byte)0x19, (byte)0x00, (byte)0x07, (byte)0x40, (byte)0x00, (byte)0x01, (byte)0x06, (byte)0x06, (byte)0x11,
             (byte)0x01, (byte)0x85, (byte)0x00, (byte)0x40, (byte)0x40, (byte)0xA1, (byte)0x06, (byte)0x17, (byte)0x00,
@@ -437,8 +437,8 @@ public class MedtronicPumpHistoryDecoderTest {
 
         MedtronicUtil.setMedtronicPumpModel(MedtronicDeviceType.Medtronic_512);
 
-        List<? extends MedtronicHistoryEntry> medtronicHistoryEntries = decoder.processPageAndCreateRecords(
-            rawHistoryPage, false);
+        List<PumpHistoryEntry> medtronicHistoryEntries = decoder.processPageAndCreateRecords(rawHistoryPage,
+            PumpHistoryEntry.class);
 
         LOG.info("testPageDecode: done");
 
@@ -446,7 +446,7 @@ public class MedtronicPumpHistoryDecoderTest {
 
 
     @Test
-    public void testRead() {
+    public void testRead() throws Exception {
         String path = "/home/andy/git/diabetes-aapk/decoding-carelink/analysis/";
 
         // -----------------------------------------
@@ -478,8 +478,8 @@ public class MedtronicPumpHistoryDecoderTest {
 
             // MedtronicUtil.setMedtronicPumpModel(MedtronicDeviceType.Medtronic_512);
 
-            List<? extends MedtronicHistoryEntry> medtronicHistoryEntries = decoder.processPageAndCreateRecords(
-                rawHistoryPage, false);
+            List<PumpHistoryEntry> medtronicHistoryEntries = decoder.processPageAndCreateRecords(rawHistoryPage,
+                PumpHistoryEntry.class);
 
             LOG.info("testPageDecode: done ({} record found).", medtronicHistoryEntries.size());
 
@@ -493,7 +493,7 @@ public class MedtronicPumpHistoryDecoderTest {
 
 
     @Test
-    public void oldTests() {
+    public void oldTests() throws Exception {
         DataSpecification dataSpecification;
 
         dataSpecification = new DataSpecification(CLR, //
@@ -517,7 +517,7 @@ public class MedtronicPumpHistoryDecoderTest {
 
 
     @Test
-    public void runTest() {
+    public void runTest() throws Exception {
         DataSpecification dataSpecification;
 
         dataSpecification = new DataSpecification(CLR, //
@@ -654,7 +654,7 @@ public class MedtronicPumpHistoryDecoderTest {
     }
 
 
-    public void runTestWithParameters(DataSpecification dataSpec, int pageNr) {
+    public void runTestWithParameters(DataSpecification dataSpec, int pageNr) throws Exception {
         // String path = "/home/andy/git/diabetes-aapk/decoding-carelink/analysis/";
 
         // -----------------------------------------
@@ -688,8 +688,8 @@ public class MedtronicPumpHistoryDecoderTest {
             RawHistoryPage rawHistoryPage = new RawHistoryPage();
             rawHistoryPage.appendData(fileContents);
 
-            List<? extends MedtronicHistoryEntry> medtronicHistoryEntries = decoder.processPageAndCreateRecords(
-                rawHistoryPage, false);
+            List<PumpHistoryEntry> medtronicHistoryEntries = decoder.processPageAndCreateRecords(rawHistoryPage,
+                PumpHistoryEntry.class);
 
             LOG.info("testPageDecode: done ({} record found).", medtronicHistoryEntries.size());
 

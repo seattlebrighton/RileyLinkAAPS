@@ -558,9 +558,10 @@ public class ShowAAPS2Activity extends AppCompatActivity {
                             int basalStrokes2 = MedtronicUtil.getBasalStrokesInt(amount * 2);
 
                             for (int i = 0; i < 24; i++) {
-                                profile.addEntry(new BasalProfileEntry(i % 2 == 0 ? basalStrokes1 : basalStrokes2,
-                                    i * 2));
+                                profile.addEntry(new BasalProfileEntry(i % 2 == 0 ? amount : amount * 2.0d, i, 0));
                             }
+
+                            profile.generateRawDataFromEntries();
 
                             returnData = getCommunicationManager().setBasalProfile(profile);
                         }
