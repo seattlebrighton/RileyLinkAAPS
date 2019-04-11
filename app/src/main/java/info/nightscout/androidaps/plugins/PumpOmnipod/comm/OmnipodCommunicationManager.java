@@ -490,7 +490,10 @@ public class OmnipodCommunicationManager extends RileyLinkCommunicationManager {
 
     public void setBasalSchedule(BasalSchedule schedule, boolean confidenceReminder, Duration scheduleOffset, Duration programReminderInterval) {
         SetInsulinScheduleCommand setBasal = new SetInsulinScheduleCommand(nonceValue(), schedule, scheduleOffset);
-        BasalScheduleExtraCommand extraCommand = new BasalScheduleExtraCommand(null);
+        //BasalScheduleExtraCommand extraCommand = new BasalScheduleExtraCommand(confidenceReminder, programReminderInterval,);
+        //OmnipodMessage basalMessage = new OmnipodMessage(podState.Address, new MessageBlock[]{setBasal, extraCommand}, podState.messageNumber);
+        //StatusResponse status = exchangeMessages(basalMessage);
+
 
     }
 
