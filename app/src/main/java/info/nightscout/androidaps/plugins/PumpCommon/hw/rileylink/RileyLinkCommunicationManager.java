@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import info.nightscout.androidaps.plugins.PumpCommon.data.PumpStatus;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.IRFSpy;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RFSpy;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.FrequencyScanResults;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.FrequencyTrial;
@@ -29,7 +30,7 @@ public abstract class RileyLinkCommunicationManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(RileyLinkCommunicationManager.class);
 
-    protected final RFSpy rfspy;
+    protected final IRFSpy rfspy;
     protected final Context context;
     protected int receiverDeviceAwakeForMinutes = 1; // override this in constructor of specific implementation
     protected String receiverDeviceID; // String representation of receiver device (ex. Pump (xxxxxx) or Pod (yyyyyy))
@@ -43,7 +44,7 @@ public abstract class RileyLinkCommunicationManager {
     private boolean showPumpMessages = true;
 
 
-    public RileyLinkCommunicationManager(Context context, RFSpy rfspy, RileyLinkTargetFrequency targetFrequency) {
+    public RileyLinkCommunicationManager(Context context, IRFSpy rfspy, RileyLinkTargetFrequency targetFrequency) {
         this.context = context;
         this.rfspy = rfspy;
         this.targetFrequency = targetFrequency;
@@ -69,6 +70,8 @@ public abstract class RileyLinkCommunicationManager {
     protected <E extends RLMessage> E sendAndListen(RLMessage msg, int timeout_ms, int repeatCount, int extendPreamble_ms, Class<E> clazz) {
 
         if (showPumpMessages) {
+            String myString =  ByteUtil.shortHexString(msg.getTxData());
+
             LOG.info("Sent:" + ByteUtil.shortHexString(msg.getTxData()));
         }
 
@@ -155,6 +158,7 @@ public abstract class RileyLinkCommunicationManager {
         return (this.scanFrequencies[0] <= frequency && this.scanFrequencies[scanFrequencies.length - 1] >= frequency);
     }
 
+    private static final int SCAN_TIMEOUT = 1500;
 
     /**
      * Do device connection, with wakeup
@@ -180,7 +184,7 @@ public abstract class RileyLinkCommunicationManager {
             for (int j = 0; j < tries; j++) {
 
                 byte[] pumpMsgContent = createPumpMessageContent(RLMessageType.ReadSimpleData);
-                RFSpyResponse resp = rfspy.transmitThenReceive(new RadioPacket(pumpMsgContent, rileyLinkServiceData.versionCC110), (byte) 0, (byte) 0, (byte) 0, (byte) 0, rfspy.EXPECTED_MAX_BLUETOOTH_LATENCY_MS, (byte) 0);
+                RFSpyResponse resp = rfspy.transmitThenReceive(new RadioPacket(pumpMsgContent, rileyLinkServiceData.versionCC110), (byte) 0, (byte) 0, (byte) 0, (byte) 0, SCAN_TIMEOUT, (byte) 0);
                 if (resp.wasTimeout()) {
                     LOG.error("scanForPump: Failed to find pump at frequency {}", frequencies[i]);
                 } else if (resp.looksLikeRadioPacket()) {
@@ -237,7 +241,7 @@ public abstract class RileyLinkCommunicationManager {
         //RLMessage msg = makeRLMessage(RLMessageType.ReadSimpleData);
         byte[] pumpMsgContent = createPumpMessageContent(RLMessageType.ReadSimpleData);
         RadioPacket pkt = new RadioPacket(pumpMsgContent, rileyLinkServiceData.versionCC110);
-        RFSpyResponse resp = rfspy.transmitThenReceive(pkt, (byte) 0, (byte) 0, (byte) 0, (byte) 0, rfspy.EXPECTED_MAX_BLUETOOTH_LATENCY_MS, (byte) 0);
+        RFSpyResponse resp = rfspy.transmitThenReceive(pkt, (byte) 0, (byte) 0, (byte) 0, (byte) 0, SCAN_TIMEOUT, (byte) 0);
         if (resp.wasTimeout()) {
             LOG.warn("tune_tryFrequency: no pump response at frequency {}", freqMHz);
         } else if (resp.looksLikeRadioPacket()) {
@@ -313,7 +317,8 @@ public abstract class RileyLinkCommunicationManager {
         lastGoodReceiverCommunicationTime = System.currentTimeMillis();
 
         SP.putLong(RileyLinkConst.Prefs.LastGoodDeviceCommunicationTime, lastGoodReceiverCommunicationTime);
-        pumpStatus.setLastDataTimeToNow();
+        if (pumpStatus != null)
+            pumpStatus.setLastDataTimeToNow();
     }
 
 

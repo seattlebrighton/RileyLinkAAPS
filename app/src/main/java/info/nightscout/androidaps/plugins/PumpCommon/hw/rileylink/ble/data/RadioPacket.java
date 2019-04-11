@@ -32,13 +32,13 @@ public class RadioPacket {
     }
 
     public byte[] getEncoded() {
-        byte[] withCRC = ByteUtil.concat(pkt, CRC.crc8(pkt));
         byte[] encoded;
         switch (RileyLinkUtil.getEncoding()) {
             case Manchester://We have this encoding in RL firmware
-                encoded = withCRC;
+                encoded = pkt;
                 break;
-            case FourBSixB:
+            case FourByteSixByte:
+                byte[] withCRC = ByteUtil.concat(pkt, CRC.crc8(pkt));
                 encoded = RFTools.encode4b6b(withCRC);
                 break;
             default:

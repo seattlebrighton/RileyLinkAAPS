@@ -53,6 +53,7 @@ public class ShowAAPS2Activity extends AppCompatActivity {
 
         // FIXME
         addCommandAction("Initialize new POD", ImplementationStatus.Done, "RefreshData.InitializePod");
+        addCommandAction("Finish prime", ImplementationStatus.Done, "RefreshData.FinishPrime");
 //        addCommandAction("Set Basal Profile", ImplementationStatus.WorkInProgress, "RefreshData.SetBasalProfile");
 //        addCommandAction("Status - Bolus", ImplementationStatus.WorkInProgress, "RefreshData.GetStatus"); // weird on 512?
 //
@@ -391,8 +392,12 @@ public class ShowAAPS2Activity extends AppCompatActivity {
                 switch (selectedCommandAction.intentString) {
                     case "RefreshData.InitializePod": {
                         returnData = getCommunicationManager().initializePod();
+                        break;
                     }
-                    break;
+                    case "RefreshData.FinishPrime": {
+                        returnData = getCommunicationManager().finishPrime();
+                        break;
+                    }
 //
 //                    case "RefreshData.BasalProfile": {
 //                        returnData = getCommunicationManager().getBasalProfile();

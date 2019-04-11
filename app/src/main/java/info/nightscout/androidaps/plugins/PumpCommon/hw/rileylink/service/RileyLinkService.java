@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.gxwtech.roundtrip2.RT2Const;
 import com.gxwtech.roundtrip2.RoundtripService.RileyLinkIPCConnection;
+import com.gxwtech.roundtrip2.util.StringUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,8 +21,11 @@ import org.slf4j.LoggerFactory;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkCommunicationManager;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkConst;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkUtil;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.IRFSpy;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.IRileyLinkBLE;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RFSpy;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RileyLinkBLE;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkEncodingType;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkFirmwareVersion;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkTargetFrequency;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.defs.RileyLinkError;
@@ -45,20 +49,25 @@ import static info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLi
  */
 public abstract class RileyLinkService extends Service {
 
-    protected static final String WAKELOCKNAME = "com.gxwtech.roundtrip2.RoundtripServiceWakeLock";
     private static final Logger LOG = LoggerFactory.getLogger(RileyLinkService.class);
-    protected static volatile PowerManager.WakeLock lockStatic = null;
-    // Our hardware/software connection
-    public RileyLinkBLE rileyLinkBLE; // android-bluetooth management
+
+
     protected BluetoothAdapter bluetoothAdapter;
-    protected RFSpy rfspy; // interface for RL xxx Mhz radio.
+
+    // Our hardware/software connection
+    public IRileyLinkBLE rileyLinkBLE; // android-bluetooth management
+    protected IRFSpy rfspy; // interface for RL xxx Mhz radio.
     //protected boolean needBluetoothPermission = true;
     protected RileyLinkIPCConnection rileyLinkIPCConnection;
     protected Context context;
     //public RileyLinkCommunicationManager pumpCommunicationManager;
     protected BroadcastReceiver mBroadcastReceiver;
+
     protected RileyLinkServiceData rileyLinkServiceData;
     protected RileyLinkTargetFrequency rileyLinkTargetFrequency;
+
+    protected static final String WAKELOCKNAME = "com.gxwtech.roundtrip2.RoundtripServiceWakeLock";
+    protected static volatile PowerManager.WakeLock lockStatic = null;
 
 
     public RileyLinkService(Context context) {
@@ -67,29 +76,25 @@ public abstract class RileyLinkService extends Service {
         RileyLinkUtil.setContext(this.context);
         determineRileyLinkTargetFrequency();
         RileyLinkUtil.setRileyLinkTargetFrequency(rileyLinkTargetFrequency);
+        RileyLinkUtil.setEncoding(getEncoding());
         initRileyLinkServiceData();
     }
 
-    public synchronized static PowerManager.WakeLock getLock(Context context) {
-        if (lockStatic == null) {
-            PowerManager mgr = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
 
-            lockStatic = mgr.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, WAKELOCKNAME);
-            lockStatic.setReferenceCounted(true);
-        }
+    public abstract RileyLinkEncodingType getEncoding();
 
-        return lockStatic;
-    }
 
     /**
      * You need to determine which frequencies RileyLink will use, and set rileyLinkTargetFrequency
      */
     protected abstract void determineRileyLinkTargetFrequency();
 
+
     /**
      * If you have customized RileyLinkServiceData you need to override this
      */
     public abstract void initRileyLinkServiceData();
+
 
     @Override
     public boolean onUnbind(Intent intent) {
@@ -97,11 +102,13 @@ public abstract class RileyLinkService extends Service {
         return super.onUnbind(intent);
     }
 
+
     @Override
     public void onRebind(Intent intent) {
         LOG.warn("onRebind");
         super.onRebind(intent);
     }
+
 
     @Override
     public void onDestroy() {
@@ -114,6 +121,7 @@ public abstract class RileyLinkService extends Service {
             rileyLinkBLE = null;
         }
     }
+
 
     @Override
     public void onCreate() {
@@ -149,7 +157,7 @@ public abstract class RileyLinkService extends Service {
                                 RileyLinkUtil.setServiceState(RileyLinkServiceState.BluetoothError, RileyLinkError.BluetoothDisabled);
                             }
 
-                        } else if (action.equals(RileyLinkConst.Intents.RileyLinkReady)) {
+                        }  else if (action.equals(RileyLinkConst.Intents.RileyLinkReady)) {
                             LOG.warn("MedtronicConst.Intents.RileyLinkReady");
                             // FIXME
                             rileyLinkIPCConnection.sendNotification(new ServiceNotification(RT2Const.IPC.MSG_note_WakingPump), null);
@@ -163,7 +171,7 @@ public abstract class RileyLinkService extends Service {
                             LOG.debug("RfSpy version (BLE113): " + bleVersion);
                             rileyLinkServiceData.versionBLE113 = bleVersion;
 
-                            LOG.debug("RfSpy Radio version (CC110): " + rlVersion.toString());
+                            LOG.debug("RfSpy Radio version (CC110): " + rlVersion.name());
                             rileyLinkServiceData.versionCC110 = rlVersion;
 
                             ServiceTask task = new InitializePumpManagerTask();
@@ -245,6 +253,7 @@ public abstract class RileyLinkService extends Service {
 
     public abstract void handleIncomingServiceTransport(Intent intent);
 
+
     // Here is where the wake-lock begins:
     // We've received a service startCommand, we grab the lock.
     @Override
@@ -269,6 +278,7 @@ public abstract class RileyLinkService extends Service {
 
         return (START_REDELIVER_INTENT | START_STICKY);
     }
+
 
     private boolean bluetoothInit() {
         LOG.debug("bluetoothInit: attempting to get an adapter");
@@ -295,6 +305,7 @@ public abstract class RileyLinkService extends Service {
 
         return false;
     }
+
 
     // returns true if our Rileylink configuration changed
     public boolean reconfigureRileylink(String deviceAddress) {
@@ -331,6 +342,19 @@ public abstract class RileyLinkService extends Service {
             return true;
         }
     }
+
+
+    public synchronized static PowerManager.WakeLock getLock(Context context) {
+        if (lockStatic == null) {
+            PowerManager mgr = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+
+            lockStatic = mgr.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, WAKELOCKNAME);
+            lockStatic.setReferenceCounted(true);
+        }
+
+        return lockStatic;
+    }
+
 
     public void sendServiceTransportResponse(ServiceTransport transport, ServiceResult serviceResult) {
         // get the key (hashcode) of the client who requested this
@@ -406,7 +430,9 @@ public abstract class RileyLinkService extends Service {
     }
 
 
-    public RileyLinkTargetDevice getRileyLinkTargetDevice() {
+
+    public RileyLinkTargetDevice getRileyLinkTargetDevice()
+    {
         return this.rileyLinkServiceData.targetDevice;
     }
 }
