@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.RadioPacket;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkFirmwareVersion;
+import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
 
 public class SendAndListen extends RileyLinkCommand {
 
@@ -72,38 +73,40 @@ public class SendAndListen extends RileyLinkCommand {
 
     @Override
     public byte[] getRaw() {
+
+        boolean isPacketV2 = this.version.isSameVersion(RileyLinkFirmwareVersion.Version2AndHigher);
+
         ArrayList<Byte> bytes = new ArrayList<Byte>();
         bytes.add(this.getCommandType().code);
         bytes.add(this.sendChannel);
-        bytes.add(this.retryCount);
-        if (this.version.isSameVersion(RileyLinkFirmwareVersion.Version2AndHigher)) { //delay is unsigned 16-bit integer
+        bytes.add(this.repeatCount);
+
+        if (isPacketV2) { //delay is unsigned 16-bit integer
             byte[] delayBuff = ByteBuffer.allocate(4).putInt(delayBetweenPackets_ms).array();
             bytes.add(delayBuff[2]);
             bytes.add(delayBuff[3]);
         } else {
             bytes.add((byte) delayBetweenPackets_ms);
         }
+        
         bytes.add(this.listenChannel);
+
         byte[] timeoutBuff = ByteBuffer.allocate(4).putInt(timeout_ms).array();
+
+        bytes.add(timeoutBuff[0]);
+        bytes.add(timeoutBuff[1]);
         bytes.add(timeoutBuff[2]);
         bytes.add(timeoutBuff[3]);
+
         bytes.add(retryCount);
-        if (this.version.isSameVersion(RileyLinkFirmwareVersion.Version2AndHigher)) { //2.x (and probably higher versions) support preamble extension
+
+        if (isPacketV2) { //2.x (and probably higher versions) support preamble extension
             byte[] preambleBuf = ByteBuffer.allocate(4).putInt(preambleExtension_ms).array();
-            bytes.add(preambleBuf[2], preambleBuf[3]);
+            bytes.add(preambleBuf[2]);
+            bytes.add(preambleBuf[3]);
         }
 
-        byte[] rawBytesToSend = packetToSend.getEncoded();
-        for (int i = 0; i < rawBytesToSend.length; i++) {
-            bytes.add(rawBytesToSend[i]);
-        }
-
-        byte[] output = new byte[bytes.size()];
-        for (int i = 1; i < bytes.size(); i++) {
-            output[i] = bytes.get(i);
-        }
-
-        return output;
+        return ByteUtil.concat(ByteUtil.fromByteArray(bytes), packetToSend.getEncoded());
 
     }
 }

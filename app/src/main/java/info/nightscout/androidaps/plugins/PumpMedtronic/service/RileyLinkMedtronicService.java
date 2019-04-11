@@ -34,6 +34,7 @@ import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkConst
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RFSpy;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RileyLinkBLE;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkEncodingType;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkTargetFrequency;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.defs.RileyLinkTargetDevice;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.RileyLinkService;
@@ -217,6 +218,11 @@ public class RileyLinkMedtronicService extends RileyLinkService {
 
 
     @Override
+    public RileyLinkEncodingType getEncoding() {
+        return RileyLinkEncodingType.FourByteSixByte;
+    }
+
+    @Override
     protected void determineRileyLinkTargetFrequency() {
         boolean hasUSFrequency = SP.getString(MedtronicConst.Prefs.PumpFrequency, MainApp.gs(R.string.medtronic_pump_frequency_us)).equals(MainApp.gs(R.string.medtronic_pump_frequency_us));
 
@@ -379,6 +385,10 @@ public class RileyLinkMedtronicService extends RileyLinkService {
                         reconfigureRileylink(deviceAddress);
                     }
                     break;
+
+                case "WakeAndTune":
+                    ServiceTaskExecutor.startTask(new WakeAndTuneTask());
+
                 default:
                     LOG.error("handleIncomingServiceTransport: Failed to handle service command '" + serviceTransport.getOriginalCommandName() + "'");
                     break;

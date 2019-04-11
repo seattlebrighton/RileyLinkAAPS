@@ -16,8 +16,9 @@ import org.slf4j.LoggerFactory;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkCommunicationManager;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkConst;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkUtil;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RFSpy;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RileyLinkBLE;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RileyLinkBLEFake;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.RFSpyFake;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkEncodingType;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkTargetFrequency;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.defs.RileyLinkTargetDevice;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.RileyLinkService;
@@ -39,6 +40,10 @@ public class RileyLinkOmnipodService extends RileyLinkService {
     OmnipodCommunicationManager omnipodCommunicationManager;
     private IBinder mBinder = new LocalBinder();
 
+    @Override
+    public RileyLinkEncodingType getEncoding() {
+        return RileyLinkEncodingType.FourByteSixByte;
+    }
 
     public RileyLinkOmnipodService() {
         super(MainApp.instance().getApplicationContext());
@@ -67,18 +72,30 @@ public class RileyLinkOmnipodService extends RileyLinkService {
         // get most recently used RileyLink address
         rileyLinkServiceData.rileylinkAddress = SP.getString(RileyLinkConst.Prefs.RileyLinkAddress, "");
 
-        rileyLinkBLE = new RileyLinkBLE(this.context); // or this
-        rfspy = new RFSpy(rileyLinkBLE);
-        rfspy.startReader();
+        //rileyLinkBLE = new RileyLinkBLE(this.context); // or this
+        //rfspy = new RFSpy(rileyLinkBLE);
 
-        RileyLinkUtil.setRileyLinkBLE(rileyLinkBLE);
 
-        omnipodCommunicationManager = new OmnipodCommunicationManager(context, rfspy);
     }
 
     @Override
     public RileyLinkCommunicationManager getDeviceCommunicationManager() {
         return this.omnipodCommunicationManager;
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        //delete when capture-debug is finished
+        RileyLinkUtil.setRileyLinkService(this);
+        rfspy = new RFSpyFake();
+        //this.onCreate();
+        rileyLinkBLE = new RileyLinkBLEFake();
+        rfspy.startReader();
+
+        RileyLinkUtil.setRileyLinkBLE(rileyLinkBLE);
+
+        omnipodCommunicationManager = new OmnipodCommunicationManager(context, rfspy);
     }
 
 

@@ -1,5 +1,6 @@
 package info.nightscout.androidaps.plugins.PumpCommon.utils;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +25,16 @@ public class ByteUtil {
 
     public static int asUINT8(byte b) {
         return (b < 0) ? b + 256 : b;
+    }
+
+    public static byte[] getUInt16BigEndian(short b) {
+        byte[] bytes = new byte[2];
+        bytes[0] = highByte(b);
+        bytes[1] = lowByte(b);
+        return bytes;
+    }
+    public static byte[] getBytesFromInt(int value) {
+        return ByteBuffer.allocate(4).putInt(value).array();
     }
 
     /* For Reference: static void System.arraycopy(Object src, int srcPos, Object dest, int destPos, int length) */
@@ -78,7 +89,7 @@ public class ByteUtil {
         if (ra.length == 0) {
             return rval;
         }
-        for (int i = 0; i < ra.length; i++) {
+        for(int i = 0; i < ra.length; i++) {
             rval = rval + HEX_DIGITS[(ra[i] & 0xF0) >> 4];
             rval = rval + HEX_DIGITS[(ra[i] & 0x0F)];
             if (i < ra.length - 1) {
@@ -91,7 +102,7 @@ public class ByteUtil {
 
     public static String showPrintable(byte[] ra) {
         String s = new String();
-        for (int i = 0; i < ra.length; i++) {
+        for(int i = 0; i < ra.length; i++) {
             char c = (char) ra[i];
             if (((c >= '0') && (c <= '9')) || ((c >= 'A') && (c <= 'Z')) || ((c >= 'a') && (c <= 'z'))) {
                 s = s + c;
@@ -104,13 +115,15 @@ public class ByteUtil {
 
 
     public static byte[] fromHexString(String src) {
-        String s = src.toUpperCase();
+        if (src == null || src.length() == 0)
+            return new byte[0];
+        String s = src.toUpperCase().replaceAll("\\s", "");
         byte[] rval = new byte[]{};
         if ((s.length() % 2) != 0) {
             // invalid hex string!
             return null;
         }
-        for (int i = 0; i < s.length(); i += 2) {
+        for(int i = 0; i < s.length(); i += 2) {
             int highNibbleOrd = HEX_DIGITS_STR.indexOf(s.charAt(i));
             if (highNibbleOrd < 0) {
                 // Not a hex digit.
@@ -129,7 +142,7 @@ public class ByteUtil {
 
     public static byte[] fromByteArray(List<Byte> byteArray) {
         byte[] rval = new byte[byteArray.size()];
-        for (int i = 0; i < byteArray.size(); i++) {
+        for(int i = 0; i < byteArray.size(); i++) {
             rval[i] = byteArray.get(i);
         }
         return rval;
@@ -138,7 +151,7 @@ public class ByteUtil {
 
     public static ArrayList<Byte> toByteArray(byte[] data) {
         ArrayList<Byte> rval = new ArrayList<>(data.length);
-        for (int i = 0; i < data.length; i++) {
+        for(int i = 0; i < data.length; i++) {
             rval.add(i, new Byte(data[i]));
         }
         return rval;
@@ -157,7 +170,7 @@ public class ByteUtil {
             return -1;
         }
         int acc = 0;
-        for (i = 0; i < len1; i++) {
+        for(i = 0; i < len1; i++) {
             acc += s1[i];
             acc -= s2[i];
             if (acc != 0) {
@@ -217,25 +230,36 @@ public class ByteUtil {
         return toInt(b1, b2, null, null, flag);
     }
 
-    public static List<Byte> getListFromByteArray(byte[] array) {
-        List<Byte> listOut = new ArrayList<Byte>();
-
-        for (byte val : array) {
-            listOut.add(val);
-        }
-
-        return listOut;
-    }
-
-    public static int makeUnsignedShort(int i, int j) {
-        int k = (i & 0xff) << 8 | j & 0xff;
-        return k;
+    public static byte[] getBytesFromInt16(int value) {
+        byte[] array = getBytesFromInt(value);
+        return getByteArray(array[2], array[3]);
     }
 
 
     public enum BitConversion {
         LITTLE_ENDIAN, // 20 0 0 0 = reverse
         BIG_ENDIAN // 0 0 0 20 = normal - java
+    }
+
+
+    public static List<Byte> getListFromByteArray(byte[] array) {
+        List<Byte> listOut = new ArrayList<Byte>();
+
+        for(byte val : array) {
+            listOut.add(val);
+        }
+
+        return listOut;
+    }
+
+    public static byte[] getByteArray(byte... input) {
+        return input;
+    }
+
+
+    public static int makeUnsignedShort(int i, int j) {
+        int k = (i & 0xff) << 8 | j & 0xff;
+        return k;
     }
 
 }

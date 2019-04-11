@@ -9,7 +9,7 @@ ext {
 
 android {
     compileSdkVersion 27
-    buildToolsVersion "23.0.2"
+    buildToolsVersion '28.0.2'
     // 23.4.0  23.0.2
     defaultConfig {
         applicationId "com.gxwtech.roundtrip2"
@@ -29,29 +29,31 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
 
-    compile 'com.android.support:appcompat-v7:27.1.0'
-    compile 'com.android.support:design:27.1.0'
-    compile 'com.android.support:support-v4:27.1.0'
-    compile 'com.android.support:recyclerview-v7:27.1.0'
-    compile 'com.android.support:design:27.1.0'
-    compile 'commons-collections:commons-collections:3.2.1'
-    compile "org.apache.commons:commons-lang3:3.6"
+    implementation 'com.android.support:appcompat-v7:27.1.0'
+    implementation 'com.android.support:design:27.1.0'
+    implementation 'com.android.support:support-v4:27.1.0'
+    implementation 'com.android.support:recyclerview-v7:27.1.0'
+    implementation 'com.android.support:design:27.1.0'
+    implementation 'commons-collections:commons-collections:3.2.1'
+    implementation "org.apache.commons:commons-lang3:3.6"
 
 
-    compile 'joda-time:joda-time:2.9.1'
+    implementation 'joda-time:joda-time:2.9.1'
     //compile 'android.support.v4.widget'
-    compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    compile 'com.google.code.gson:gson:2.4'
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    implementation 'com.google.code.gson:gson:2.4'
 
-    compile("com.github.tony19:logback-android-classic:1.1.1-6") {
+    implementation("com.github.tony19:logback-android-classic:1.1.1-6") {
         exclude group: "com.google.android", module: "android"
     }
-    compile 'org.slf4j:slf4j-api:1.7.12'
-    compile 'junit:junit:4.12'
-    compile 'org.apache.commons:commons-lang3:3.7'
+    implementation 'org.slf4j:slf4j-api:1.7.12'
+    implementation 'junit:junit:4.12'
+    implementation 'org.apache.commons:commons-lang3:3.7'
+
+    implementation 'com.google.code.gson:gson:2.8.5'
 
     //compile 'org.mockito:mockito-core:2.7.22'
     //compile 'org.powermock:powermock-api-mockito2:1.7.3'

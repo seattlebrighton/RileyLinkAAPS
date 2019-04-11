@@ -26,7 +26,8 @@ public class MainApp extends Application {
         serviceClientConnection = new ServiceClientConnection();
 
         //initialize Realm
-        RealmConfiguration realmConfiguration = new RealmConfiguration.Builder(instance()).name("rt2.realm").schemaVersion(0).deleteRealmIfMigrationNeeded() // TODO: 03/08/2016 @TIM remove
+        Realm.init(instance());
+        RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().name("rt2.realm").schemaVersion(0).deleteRealmIfMigrationNeeded() // TODO: 03/08/2016 @TIM remove
                 .build();
         Realm.setDefaultConfiguration(realmConfiguration);
 

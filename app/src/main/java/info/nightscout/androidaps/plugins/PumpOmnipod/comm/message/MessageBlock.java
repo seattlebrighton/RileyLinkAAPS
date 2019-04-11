@@ -1,4 +1,4 @@
-package info.nightscout.androidaps.plugins.PumpOmnipod.comm.command;
+package info.nightscout.androidaps.plugins.PumpOmnipod.comm.message;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -6,9 +6,12 @@ import java.io.IOException;
 import info.nightscout.androidaps.plugins.PumpOmnipod.comm.message.MessageBlockType;
 
 public abstract class MessageBlock {
-    protected byte[] rawData;
+    protected byte[] encodedData = new byte[0];
 
-    abstract public MessageBlockType getType();
+    public MessageBlock(byte[] encodedData) {
+
+    }
+    public abstract MessageBlockType getType();
 
     //This method returns raw message representation
     //It should be rewritten in a derived class if raw representation of a concrete message
@@ -17,11 +20,17 @@ public abstract class MessageBlock {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         try {
             stream.write(this.getType().getValue());
-            stream.write(rawData);
+            stream.write((byte)encodedData.length);
+            stream.write(encodedData);
         } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
         return stream.toByteArray();
     }
+
+    protected byte[] getByteArray(byte... input) {
+        return input;
+    }
+
 }

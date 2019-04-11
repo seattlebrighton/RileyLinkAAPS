@@ -11,7 +11,10 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.data.GattAttributes;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.RileyLinkEncodingType;
+import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.defs.command.SetSoftwareEncoding;
 import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.ble.operations.BLECommOperationResult;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ByteUtil;
 import info.nightscout.androidaps.plugins.PumpCommon.utils.ThreadUtil;
@@ -22,16 +25,17 @@ import info.nightscout.androidaps.plugins.PumpCommon.utils.ThreadUtil;
 public class RFSpyReader {
 
     private static final Logger LOG = LoggerFactory.getLogger(RFSpyReader.class);
-    AsyncTask<Void, Void, Void> readerTask;
+
     //private Context context;
-    private RileyLinkBLE rileyLinkBle;
+    private IRileyLinkBLE rileyLinkBle;
     private Semaphore waitForRadioData = new Semaphore(0, true);
+    AsyncTask<Void, Void, Void> readerTask;
     private LinkedBlockingQueue<byte[]> mDataQueue = new LinkedBlockingQueue<>();
     private int acquireCount = 0;
     private int releaseCount = 0;
 
 
-    public RFSpyReader(/*Context context,*/ RileyLinkBLE rileyLinkBle) {
+    public RFSpyReader(/*Context context,*/ IRileyLinkBLE rileyLinkBle) {
         //this.context = context;
         this.rileyLinkBle = rileyLinkBle;
     }
@@ -88,6 +92,9 @@ public class RFSpyReader {
                 UUID serviceUUID = UUID.fromString(GattAttributes.SERVICE_RADIO);
                 UUID radioDataUUID = UUID.fromString(GattAttributes.CHARA_RADIO_DATA);
                 BLECommOperationResult result;
+                boolean stopAtNull = true;
+                if (RileyLinkUtil.getEncoding() == RileyLinkEncodingType.Manchester)
+                    stopAtNull = false;
                 while (true) {
                     try {
                         acquireCount++;
@@ -99,11 +106,13 @@ public class RFSpyReader {
                         SystemClock.sleep(100);
 
                         if (result.resultCode == BLECommOperationResult.RESULT_SUCCESS) {
-                            // only data up to the first null is valid
-                            for (int i = 0; i < result.value.length; i++) {
-                                if (result.value[i] == 0) {
-                                    result.value = ByteUtil.substring(result.value, 0, i);
-                                    break;
+                            if (stopAtNull) {
+                                // only data up to the first null is valid
+                                for (int i = 0; i < result.value.length; i++) {
+                                    if (result.value[i] == 0) {
+                                        result.value = ByteUtil.substring(result.value, 0, i);
+                                        break;
+                                    }
                                 }
                             }
                             mDataQueue.add(result.value);

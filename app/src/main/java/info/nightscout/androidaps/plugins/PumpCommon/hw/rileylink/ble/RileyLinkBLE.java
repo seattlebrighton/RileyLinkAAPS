@@ -40,19 +40,25 @@ import info.nightscout.androidaps.plugins.PumpCommon.utils.ThreadUtil;
  * Created by geoff on 5/26/16.
  * Added: State handling, configuration of RF for different configuration ranges, connection handling
  */
-public class RileyLinkBLE {
+public class RileyLinkBLE implements IRileyLinkBLE {
 
     private static final Logger LOG = LoggerFactory.getLogger(RFTools.class);
-    private final Context context;
+
     public boolean gattDebugEnabled = true;
-    boolean manualDisconnect = false;
+
     private BluetoothAdapter bluetoothAdapter;
     private BluetoothGattCallback bluetoothGattCallback;
+
+    private final Context context;
+
     private BluetoothDevice rileyLinkDevice;
     private BluetoothGatt bluetoothConnectionGatt = null;
+
     private BLECommOperation mCurrentOperation;
     private Semaphore gattOperationSema = new Semaphore(1, true);
+
     private Runnable radioResponseCountNotified;
+
     private boolean mIsConnected = false;
 
 
@@ -208,7 +214,7 @@ public class RileyLinkBLE {
 
                     boolean rileyLinkFound = false;
 
-                    for (BluetoothGattService service : services) {
+                    for(BluetoothGattService service : services) {
                         final UUID uuidService = service.getUuid();
 
                         if (isAnyRileyLinkServiceFound(service)) {
@@ -243,6 +249,7 @@ public class RileyLinkBLE {
         };
     }
 
+
     private boolean isAnyRileyLinkServiceFound(BluetoothGattService service) {
 
         boolean found = false;
@@ -254,7 +261,7 @@ public class RileyLinkBLE {
         } else {
             List<BluetoothGattService> includedServices = service.getIncludedServices();
 
-            for (BluetoothGattService serviceI : includedServices) {
+            for(BluetoothGattService serviceI : includedServices) {
                 if (isAnyRileyLinkServiceFound(serviceI)) {
                     return true;
                 }
@@ -265,10 +272,13 @@ public class RileyLinkBLE {
         return false;
     }
 
+
     public BluetoothDevice getRileyLinkDevice() {
         return this.rileyLinkDevice;
     }
 
+
+    @Override
     public void debugService(BluetoothGattService service, int indentCount) {
 
         String indentString = StringUtils.repeat(' ', indentCount);
@@ -284,7 +294,7 @@ public class RileyLinkBLE {
             stringBuilder.append(GattAttributes.lookup(uuidServiceString, "Unknown service"));
             stringBuilder.append(" (" + uuidServiceString + ")");
 
-            for (BluetoothGattCharacteristic character : service.getCharacteristics()) {
+            for(BluetoothGattCharacteristic character : service.getCharacteristics()) {
                 final String uuidCharacteristicString = character.getUuid().toString();
 
                 stringBuilder.append("\n    ");
@@ -299,21 +309,27 @@ public class RileyLinkBLE {
 
             List<BluetoothGattService> includedServices = service.getIncludedServices();
 
-            for (BluetoothGattService serviceI : includedServices) {
+            for(BluetoothGattService serviceI : includedServices) {
                 debugService(serviceI, indentCount + 4);
             }
         }
         //}
     }
 
+
+    @Override
     public void registerRadioResponseCountNotification(Runnable notifier) {
         radioResponseCountNotified = notifier;
     }
 
+
+    @Override
     public boolean isConnected() {
         return mIsConnected;
     }
 
+
+    @Override
     public boolean discoverServices() {
         if (bluetoothConnectionGatt.discoverServices()) {
             LOG.warn("Starting to discover GATT Services.");
@@ -324,6 +340,8 @@ public class RileyLinkBLE {
         }
     }
 
+
+    @Override
     public boolean enableNotifications() {
         BLECommOperationResult result = setNotification_blocking(UUID.fromString(GattAttributes.SERVICE_RADIO), //
                 UUID.fromString(GattAttributes.CHARA_RADIO_RESPONSE_COUNT));
@@ -334,6 +352,8 @@ public class RileyLinkBLE {
         return true;
     }
 
+
+    @Override
     public void findRileyLink(String RileyLinkAddress) {
         LOG.debug("RileyLink address: " + RileyLinkAddress);
         // Must verify that this is a valid MAC, or crash.
@@ -343,7 +363,9 @@ public class RileyLinkBLE {
         connectGatt();
     }
 
+
     // This function must be run on UI thread.
+    @Override
     public void connectGatt() {
         bluetoothConnectionGatt = rileyLinkDevice.connectGatt(context, true, bluetoothGattCallback);
         if (bluetoothConnectionGatt == null) {
@@ -356,6 +378,11 @@ public class RileyLinkBLE {
         }
     }
 
+
+    boolean manualDisconnect = false;
+
+
+    @Override
     public void disconnect() {
         mIsConnected = false;
         LOG.warn("Closing GATT connection");
@@ -370,6 +397,7 @@ public class RileyLinkBLE {
     }
 
 
+    @Override
     public void close() {
         if (bluetoothConnectionGatt != null) {
             bluetoothConnectionGatt.close();
@@ -378,6 +406,7 @@ public class RileyLinkBLE {
     }
 
 
+    @Override
     public BLECommOperationResult setNotification_blocking(UUID serviceUUID, UUID charaUUID) {
         BLECommOperationResult rval = new BLECommOperationResult();
         if (bluetoothConnectionGatt != null) {
@@ -403,7 +432,7 @@ public class RileyLinkBLE {
                     bluetoothConnectionGatt.setCharacteristicNotification(chara, true);
                     List<BluetoothGattDescriptor> list = chara.getDescriptors();
                     if (gattDebugEnabled) {
-                        for (int i = 0; i < list.size(); i++) {
+                        for(int i = 0; i < list.size(); i++) {
                             LOG.debug("Found descriptor: " + list.get(i).toString());
                         }
                     }
@@ -431,6 +460,7 @@ public class RileyLinkBLE {
 
 
     // call from main
+    @Override
     public BLECommOperationResult writeCharacteristic_blocking(UUID serviceUUID, UUID charaUUID, byte[] value) {
         BLECommOperationResult rval = new BLECommOperationResult();
         if (bluetoothConnectionGatt != null) {
@@ -477,6 +507,7 @@ public class RileyLinkBLE {
     }
 
 
+    @Override
     public BLECommOperationResult readCharacteristic_blocking(UUID serviceUUID, UUID charaUUID) {
         BLECommOperationResult rval = new BLECommOperationResult();
         if (bluetoothConnectionGatt != null) {
