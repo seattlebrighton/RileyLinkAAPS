@@ -1,14 +1,7 @@
 package com.gxwtech.roundtrip2.RoundtripService.Tasks;
 
-import android.os.Bundle;
-
-import com.gxwtech.roundtrip2.RoundtripService.medtronic.PumpData.ISFTable;
-
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.ServiceResult;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.ServiceTransport;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.tasks.PumpTask;
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.history.TimeFormat;
-import info.nightscout.androidaps.plugins.PumpMedtronic.service.RileyLinkMedtronicService;
+import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.data.ServiceTransport;
+import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.tasks.PumpTask;
 
 /**
  * Created by geoff on 7/10/16.

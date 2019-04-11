@@ -16,8 +16,8 @@ import android.view.MenuItem;
 
 import java.util.List;
 
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkConst;
-import info.nightscout.androidaps.plugins.PumpMedtronic.util.MedtronicConst;
+import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.RileyLinkConst;
+import info.nightscout.androidaps.plugins.pump.medtronic.util.MedtronicConst;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On

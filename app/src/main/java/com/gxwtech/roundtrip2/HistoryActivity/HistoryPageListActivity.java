@@ -27,8 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.ServiceResult;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.ServiceTransport;
+import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.data.ServiceResult;
+import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.data.ServiceTransport;
 
 /**
  * An activity representing a list of HistoryPages. This activity

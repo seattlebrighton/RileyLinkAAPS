@@ -43,7 +43,7 @@
         </activity>
 
         <service
-            android:name="info.nightscout.androidaps.plugins.PumpOmnipod.service.RileyLinkOmnipodService"
+            android:name="info.nightscout.androidaps.plugins.pump.omnipod.service.RileyLinkOmnipodService"
             android:exported="false"
             android:label="@string/roundtrip_service_name">
             <intent-filter>

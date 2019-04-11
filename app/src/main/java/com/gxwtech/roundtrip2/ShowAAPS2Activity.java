@@ -14,25 +14,15 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkUtil;
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.MedtronicCommunicationManager;
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.BasalProfile;
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.BasalProfileEntry;
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.TempBasalPair;
-import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.BatteryStatusDTO;
-import info.nightscout.androidaps.plugins.PumpMedtronic.data.dto.PumpSettingDTO;
-import info.nightscout.androidaps.plugins.PumpMedtronic.defs.BatteryType;
-import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicDeviceType;
-import info.nightscout.androidaps.plugins.PumpMedtronic.util.MedtronicUtil;
-import info.nightscout.androidaps.plugins.PumpOmnipod.comm.OmnipodCommunicationManager;
+import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.RileyLinkUtil;
+import info.nightscout.androidaps.plugins.pump.medtronic.comm.data.TempBasalPair;
+import info.nightscout.androidaps.plugins.pump.omnipod.comm.OmnipodCommunicationManager;
 
 public class ShowAAPS2Activity extends AppCompatActivity {
 

@@ -18,12 +18,12 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkUtil;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.ServiceCommand;
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.service.data.ServiceTransport;
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.MedtronicCommunicationManager;
-import info.nightscout.androidaps.plugins.PumpMedtronic.comm.data.BasalProfile;
-import info.nightscout.androidaps.plugins.PumpMedtronic.defs.MedtronicDeviceType;
+import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.RileyLinkUtil;
+import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.data.ServiceCommand;
+import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.service.data.ServiceTransport;
+import info.nightscout.androidaps.plugins.pump.medtronic.comm.MedtronicCommunicationManager;
+import info.nightscout.androidaps.plugins.pump.medtronic.comm.data.BasalProfile;
+import info.nightscout.androidaps.plugins.pump.medtronic.defs.MedtronicDeviceType;
 
 public class ShowAAPSActivity extends AppCompatActivity {
 

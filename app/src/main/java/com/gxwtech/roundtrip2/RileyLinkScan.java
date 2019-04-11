@@ -39,8 +39,7 @@ import com.gxwtech.roundtrip2.util.LocationHelper;
 import java.util.ArrayList;
 import java.util.List;
 
-import info.nightscout.androidaps.plugins.PumpCommon.hw.rileylink.RileyLinkConst;
-import info.nightscout.androidaps.plugins.PumpMedtronic.util.MedtronicConst;
+import info.nightscout.androidaps.plugins.pump.common.hw.rileylink.RileyLinkConst;
 import info.nightscout.utils.SP;
 
 

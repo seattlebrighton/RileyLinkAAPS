@@ -3,7 +3,7 @@ package com.gxwtech.roundtrip2;
 import android.app.Application;
 import android.content.res.Resources;
 
-import info.nightscout.androidaps.plugins.PumpMedtronic.util.MedtronicConst;
+import info.nightscout.androidaps.plugins.pump.medtronic.util.MedtronicConst;
 import info.nightscout.utils.SP;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
