@@ -16,15 +16,9 @@ public class AlertConfiguration{
     private BeepRepeat beepRepeat;
     private BeepType beepType;
 
-    public AlertConfiguration(
-            AlertType alertType,
-            boolean audible,
-            boolean autoOffModifier,
-            int duration,
-            ExpirationAdvisory expirationType,
-            BeepRepeat beepRepeat,
-            BeepType beepType
-    ) {
+    public AlertConfiguration(AlertType alertType, boolean audible, boolean autoOffModifier,
+                              int duration, ExpirationAdvisory expirationType,
+                              BeepRepeat beepRepeat, BeepType beepType) {
         this.alertType = alertType;
         this.audible = audible;
         this.autoOffModifier = autoOffModifier;
@@ -41,8 +35,7 @@ public class AlertConfiguration{
         firstByte |= expirationType.expirationType.getValue();
         firstByte += audible ? (1 << 3) : 0;
 
-        byte[] valueBuffer = new byte[0];
-        valueBuffer = ByteUtil.getBytesFromInt(duration);
+        byte[] valueBuffer = ByteUtil.getBytesFromInt(duration);
 
         byte durationHigh = (byte) (valueBuffer[2] & (byte)1);
         firstByte |= durationHigh;
@@ -60,12 +53,11 @@ public class AlertConfiguration{
                 valueBuffer = ByteUtil.getBytesFromInt(duration);
                 break;
         }
+
         encodedData[2] = valueBuffer[2];
         encodedData[3] = valueBuffer[3];
         encodedData[4] = beepRepeat.getValue();
         encodedData[5] = beepType.getValue();
         return encodedData;
     }
-
-
 }

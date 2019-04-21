@@ -10,12 +10,8 @@ public class BasalScheduleCommandPart extends DeliverySchedule implements IRawRe
     private final int pulsesRemaining;
     private final BasalDeliveryTable basalTable;
 
-    public BasalScheduleCommandPart(
-            byte currentSegment,
-            int secondsRemaining,
-            int pulsesRemaining,
-            BasalDeliveryTable basalTable
-    ) {
+    public BasalScheduleCommandPart(byte currentSegment, int secondsRemaining, int pulsesRemaining,
+                                    BasalDeliveryTable basalTable) {
 
         this.currentSegment = currentSegment;
         this.secondsRemaining = secondsRemaining;

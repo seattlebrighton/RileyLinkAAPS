@@ -52,7 +52,6 @@ public class RileyLinkOmnipodService extends RileyLinkService {
         RileyLinkUtil.setRileyLinkService(this);
     }
 
-
     @Override
     protected void determineRileyLinkTargetFrequency() {
         this.rileyLinkTargetFrequency = RileyLinkTargetFrequency.Omnipod;
@@ -64,7 +63,6 @@ public class RileyLinkOmnipodService extends RileyLinkService {
 
     @Override
     public void initRileyLinkServiceData() {
-
         rileyLinkServiceData = new RileyLinkServiceData(RileyLinkTargetDevice.Omnipod);
 
         RileyLinkUtil.setRileyLinkServiceData(rileyLinkServiceData);
@@ -74,8 +72,6 @@ public class RileyLinkOmnipodService extends RileyLinkService {
 
         //rileyLinkBLE = new RileyLinkBLE(this.context); // or this
         //rfspy = new RFSpy(rileyLinkBLE);
-
-
     }
 
     @Override
@@ -98,16 +94,13 @@ public class RileyLinkOmnipodService extends RileyLinkService {
         omnipodCommunicationManager = new OmnipodCommunicationManager(context, rfspy);
     }
 
-
     @Override
     public void addPumpSpecificIntents(IntentFilter intentFilter) {
     }
 
-
     @Override
     public void handlePumpSpecificIntents(Intent intent) {
     }
-
 
     @Override
     public void handleIncomingServiceTransport(Intent intent) {
@@ -116,7 +109,6 @@ public class RileyLinkOmnipodService extends RileyLinkService {
         ServiceTransport serviceTransport = new ServiceTransport(bundle);
 
         if (serviceTransport.getServiceCommand().isPumpCommand()) {
-
             LOG.debug("IsPumpCommand not implemented.");
         } else {
             switch (serviceTransport.getOriginalCommandName()) {
@@ -136,9 +128,7 @@ public class RileyLinkOmnipodService extends RileyLinkService {
                     break;
             }
         }
-
     }
-
 
     //@Nullable
     //@Override
@@ -157,6 +147,5 @@ public class RileyLinkOmnipodService extends RileyLinkService {
             return RileyLinkOmnipodService.this;
         }
     }
-
 
 }
