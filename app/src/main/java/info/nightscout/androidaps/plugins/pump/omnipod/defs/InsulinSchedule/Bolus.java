@@ -10,11 +10,9 @@ public class Bolus extends DeliverySchedule implements IRawRepresentable {
     private final int multiplier;
 
     public Bolus(double units, int multiplier) {
-
         this.units = units;
         this.multiplier = multiplier;
     }
-
 
     @Override
     public byte[] getRawData() {
@@ -32,7 +30,6 @@ public class Bolus extends DeliverySchedule implements IRawRepresentable {
         rawData[5] = buffer[2];
         rawData[6] = buffer[3];
         return rawData;
-
     }
 
     @Override

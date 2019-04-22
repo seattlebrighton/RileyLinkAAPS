@@ -1,6 +1,7 @@
 package info.nightscout.androidaps.plugins.pump.omnipod.defs;
 
-public enum ReservoirStatus {
+// https://github.com/openaps/openomni/wiki/Pod-Progress-State
+public enum PodProgressState {
     Initialized (0),
     TankPowerActivated (1),
     TankFillCompleted (2),
@@ -17,7 +18,7 @@ public enum ReservoirStatus {
 
     byte value;
 
-    ReservoirStatus(int value) {
+    PodProgressState(int value) {
         this.value = (byte)value;
     }
 
@@ -25,8 +26,8 @@ public enum ReservoirStatus {
         return value;
     }
 
-    public static ReservoirStatus fromByte(byte input) {
-        for (ReservoirStatus type : values()) {
+    public static PodProgressState fromByte(byte input) {
+        for (PodProgressState type : values()) {
             if (type.value == input) {
                 return type;
             }

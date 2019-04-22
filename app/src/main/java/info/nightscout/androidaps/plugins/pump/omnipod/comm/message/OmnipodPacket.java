@@ -28,12 +28,8 @@ public class OmnipodPacket implements RLMessage {
             //FIXME: Throw not enough data exception
             return;
         }
-        this.packetAddress = ByteUtil.toInt(
-                new Integer(encoded[0])
-                , new Integer(encoded[1])
-                , new Integer(encoded[2])
-                , new Integer(encoded[3])
-                , ByteUtil.BitConversion.BIG_ENDIAN);
+        this.packetAddress = ByteUtil.toInt(new Integer(encoded[0]), new Integer(encoded[1]),
+                new Integer(encoded[2]), new Integer(encoded[3]), ByteUtil.BitConversion.BIG_ENDIAN);
         this.packetType = PacketType.fromByte((byte)(((int)encoded[4] & 0xFF)>> 5));
         if (this.packetType == null) {
             //FIXME: Log invalid packet type
@@ -59,19 +55,20 @@ public class OmnipodPacket implements RLMessage {
     }
 
     public OmnipodPacket(int packetAddress, PacketType packetType, int packetNumber, byte[] encodedMessage) {
-
         this.packetAddress = packetAddress;
         this.packetType = packetType;
         this.sequenceNumber = packetNumber;
         this.encodedMessage = encodedMessage;
-        if (encodedMessage.length > packetType.MaxBodyLength())
-            this.encodedMessage = ByteUtil.substring(encodedMessage, 0,  packetType.MaxBodyLength());
+        if (encodedMessage.length > packetType.maxBodyLength()) {
+            this.encodedMessage = ByteUtil.substring(encodedMessage, 0, packetType.maxBodyLength());
+        }
         this._isValid = true;
     }
 
     public int getAddress() {
         return packetAddress;
     }
+
     public int getSequenceNumber() {
         return sequenceNumber;
     }
@@ -80,24 +77,19 @@ public class OmnipodPacket implements RLMessage {
         return encodedMessage;
     }
 
-
     @Override
     public byte[] getTxData() {
         byte[] output = new byte[0];
         output = ByteUtil.concat(output, ByteUtil.getBytesFromInt(this.packetAddress));
         output = ByteUtil.concat(output, (byte)((this.packetType.getValue() << 5) + (sequenceNumber & 0b11111)));
         output = ByteUtil.concat(output, encodedMessage);
-        String myString = ByteUtil.shortHexString(output);
         output = ByteUtil.concat(output, OmniCRC.crc8(output));
-        myString = ByteUtil.shortHexString(output);
         return output;
-
     }
 
     @Override
     public boolean isValid() {
         return _isValid;
     }
-
 
 }

@@ -20,8 +20,8 @@ package info.nightscout.androidaps.plugins.pump.medtronic.comm.data.history2;
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place, Suite 330, Boston, MA 02111-1307 USA
  * <p>
- * Filename:     Record Decode Status
- * Description:  Record Decode Status shows if entry was decoded. Used mostly for statistics.
+ * Filename:     Record decode Status
+ * Description:  Record decode Status shows if entry was decoded. Used mostly for statistics.
  * <p>
  * Author: Andy {andy@atech-software.com}
  */
